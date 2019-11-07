@@ -18,10 +18,10 @@
             <div class="card">
                 <article class="card-group-item">
                     <header class="card-header">
-                        <h6 class="title">Categories</h6>
+                        <h6 class="title">tags</h6>
                     </header>
                     <div class="filter-content">
-                        <div class="list-group list-group-flush">
+                        <div class="list-group list-group-flush" id="tagsContainer">
                             <a href="#" class="list-group-item">Animals<span
                                     class="float-right badge badge-light round">142</span></a>
                             <a href="#" class="list-group-item">Rom<span
@@ -43,7 +43,7 @@
                 </article>
                 <article class="card-group-item">
                     <header class="card-header">
-                        <h6 class="title">price range</h6>
+                        <h6 class="title">price</h6>
                     </header>
                     <div class="filter-content">
                         <div class="card-body">
@@ -80,7 +80,7 @@
             </div>
         </div>
         <div class="col-sm-10">
-            <div class="row">
+            <div class="row " id="productsContainer">
                 <a class="card m-2" style="width: 20rem;" href="#">
                     <img src="https://via.placeholder.com/300" class="card-img-top" alt="product">
                     <div class="card-body">
@@ -118,6 +118,25 @@
                     </div>
                 </div>
             </div>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                  <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                  <li class="page-item"><a class="page-link" href="#">1</a></li>
+                  <li class="page-item"><a class="page-link" href="#">2</a></li>
+                  <li class="page-item"><a class="page-link" href="#">3</a></li>
+                  <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
         </div>
     </div>
     <div id="footer"></div>
@@ -131,6 +150,7 @@
             await loadFooter("footer.html");
         })
     </script>
+    <script src="/js/products.js"></script>
 </body>
 
 </html>

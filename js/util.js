@@ -39,10 +39,10 @@ function addToCart(item) {
         cart[item.id] = qty;
     }
     sessionStorage.setItem('cart', JSON.stringify(cart));
-    sessionStorage.setItem('total', getTotal(cart));
+    sessionStorage.setItem('total', getTotal());
 }
 
-function getTotal(cart) {
+function getTotal() {
     let total = 0;
     let cart = getCart();
     cart.forEach(key => {

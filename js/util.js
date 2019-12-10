@@ -22,21 +22,29 @@ function setNavItemActive(id) {
 }
 
 function addToCart(item) {
-    // {id: {price: 1, qty: 1}}
-    var cart = {};
-    if ('cart' in sessionStorage)
-        cart = JSON.parse(sessionStorage.getItem('cart'));
+    // {id: qty}
+    let cart = getCart();
+    
     if (item.id in cart) {
         cart[item.id].qty += 1;
     } else {
-        cart[item.id] = {price: item.price, qty: 1};
+        cart[item.id] = qty;
     }
     sessionStorage.setItem('cart', JSON.stringify(cart));
     sessionStorage.setItem('total', getTotal(cart));
 }
 
+function getCart() {
+    if ('cart' in sessionStorage) {
+        return JSON.parse(sessionStorage.getItem('cart'));
+    } else {
+        return {}
+    }
+}
+
 function getTotal(cart) {
     let total = 0;
+    let cart = getCart();
     cart.forEach(key => {
         total += cart[key].price * cart[key].qty;
     });

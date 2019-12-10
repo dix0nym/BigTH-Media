@@ -21,6 +21,14 @@ function setNavItemActive(id) {
     });
 }
 
+function getCart() {
+    if ('cart' in sessionStorage) {
+        return JSON.parse(sessionStorage.getItem('cart'));
+    } else {
+        return {}
+    }
+}
+
 function addToCart(item) {
     // {id: qty}
     let cart = getCart();
@@ -32,14 +40,6 @@ function addToCart(item) {
     }
     sessionStorage.setItem('cart', JSON.stringify(cart));
     sessionStorage.setItem('total', getTotal(cart));
-}
-
-function getCart() {
-    if ('cart' in sessionStorage) {
-        return JSON.parse(sessionStorage.getItem('cart'));
-    } else {
-        return {}
-    }
 }
 
 function getTotal(cart) {

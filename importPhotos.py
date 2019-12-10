@@ -50,7 +50,8 @@ for f in files:
         except Exception as e:
             print(e)
             continue
-        if tag < 0 or tag >= len(tags):
+        tag = tag - 1
+        if tag < 0 or tag > len(tags):
             print("tag '{}' not known (0 < tag < {})".format(tag, len(tags)))
             continue
         cur.execute(tag_sql, (productId, tag))

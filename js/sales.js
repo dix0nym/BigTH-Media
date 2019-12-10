@@ -41,12 +41,7 @@ function addSetToCart(event) {
     const btn = $(event.currentTarget);
     const entryToAdd = btn.attr("data-id");
 
-    var item = {
-        id: entryToAdd,
-        qty: 1
-    }
-
-    addToCart(item);
+    addToCart(entryToAdd);
 }
 
 function renderOffers(offers) {

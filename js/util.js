@@ -29,36 +29,26 @@ function getCart() {
     }
 }
 
-function addToCart(item) {
-    // {id: qty}
-    let cart = getCart();
-    
-    if (item.id in cart) {
-        cart[item.id].qty += 1;
-    } else {
-        cart[item.id] = qty;
-    }
+function setCart(cart) {
     sessionStorage.setItem('cart', JSON.stringify(cart));
-    sessionStorage.setItem('total', getTotal());
 }
 
-function getTotal() {
-    let total = 0;
+function addToCart(id) {
     let cart = getCart();
-    cart.forEach(key => {
-        total += cart[key].price * cart[key].qty;
-    });
-    return total;
+    console.log(JSON.stringify(cart));
+    if (id in cart) {
+        cart[id] += 1;
+    } else {
+        cart[id] = 1;
+    }
+    setCart(cart);
+    console.log(JSON.stringify(cart));
 }
 
 function removeFromCart(item) {
-    if (!('cart' in sessionStorage)) {
-        console.log('cant remove item from empty cart!');
-    }
-    var cart = sessionStorage.getItem('cart');
+    let cart = getCart();
     if (item.id in card) {
         delete card[item.id];
+        setCart(cart);
     }
-    sessionStorage.setItem('cart', JSON.stringify(cart));
-    sessionStorage.setItem('total', getTotal(cart));
 }

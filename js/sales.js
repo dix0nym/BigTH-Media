@@ -2,9 +2,21 @@ $(async () => {
     offers = await loadOffers();
     renderOffers(offers);
 
+    /*
+    TODO Sven: Dafuer sorgen, dass ein Toast pro Click erscheint; ggf auch style.css ueberarbeiten
+    */
 
     $('.addToCart').on('click', event => {
         addSetToCart(event);
+
+        id = renderToast(event);        
+        idString = '#toast'+id;
+
+        $(idString).toast({
+            autohide: true,
+            delay: 2000
+        });
+        $(idString).toast('show');
     });
 });
 
@@ -23,7 +35,7 @@ async function loadOffers() {
         {
             title: "Spezialangebot2",
             id: 1000,
-            price: 19.99,
+            price: 29.99,
             items: [
                 {img: "https://via.placeholder.com/150", id: 4, title: "Test4", tags: ["china", "country"], photograph: "BigTH", price: 5000.33},
                 {img: "https://via.placeholder.com/150", id: 5, title: "Test5", tags: ["cars"], photograph: "Unkown", price: 100.33},
@@ -91,7 +103,7 @@ function renderOffer(offer) {
     carousel.append(carouselCtrlNxt);
     const containerFooter = $('<div class="d-flex flex-row-reverse"/>');
     const containerFooterAddToCartBtn = $('<button type="button" class="addToCart btn btn-lite fa fa-cart-plus fa-2x" aria-hidden="true" data-id="1000"/>');
-    const containerFooterPriceTag = $('<h5 class=" mt-2">19.99€</h5>');
+    const containerFooterPriceTag = $('<h5 class=" mt-2">'+offer.price+'€</h5>');
     containerFooter.append(containerFooterAddToCartBtn);
     containerFooter.append(containerFooterPriceTag);
 
@@ -101,4 +113,26 @@ function renderOffer(offer) {
     container.append(containerFooter);
     
     return container;
+}
+
+function renderToast(event) {
+    const btn = $(event.currentTarget);
+    const addedEntry = btn.attr("data-id");
+
+    const toastContainer = $('#toastContainer');
+    toastContainer.empty();
+
+    const toast = $('<div class="toast ml-auto" id="toast'+addedEntry+'" role="alert" aria-live="assertive" aria-atomic="true"/>');
+    const toastHeader = $('<div class="toast-header"/>');
+    const toastHeaderTitle = $('<strong class="mr-auto"/>');
+    toastHeader.text("Success");
+    toastHeader.append(toastHeaderTitle);
+    const toastBody = $('<div class="toast-body"/>');
+    toastBody.text("Added item to shopping cart.");
+    toast.append(toastHeader);
+    toast.append(toastBody);
+
+    toastContainer.append(toast);
+
+    return addedEntry;
 }

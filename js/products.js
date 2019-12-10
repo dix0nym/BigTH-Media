@@ -1,3 +1,4 @@
+import { formatToMilliseconds } from "../backend/helper";
 
 let tags = {};
 let selectedTags = [];
@@ -26,14 +27,19 @@ function addTagListeners(){
 }
 
 async function loadProducts() {
-    let products =  [
-            {img: "https://via.placeholder.com/150", id: 1, title: "Test", tags: ["animals"], photograph: "Unkown", price: 1000.33},
-            {img: "https://via.placeholder.com/150", id: 2, title: "Test2", tags: ["animals", "rom"], photograph: "BigTH", price: 7777.33},
-            {img: "https://via.placeholder.com/150", id: 3, title: "Test3", tags: ["hiking", "alpen"], photograph: "Unkown", price: 135.33},
-            {img: "https://via.placeholder.com/150", id: 4, title: "Test4", tags: ["china", "country"], photograph: "BigTH", price: 5000.33},
-            {img: "https://via.placeholder.com/150", id: 5, title: "Test5", tags: ["cars"], photograph: "Unkown", price: 100.33},
-            {img: "https://via.placeholder.com/150", id: 6, title: "Test6", tags: ["nachaufnamen"], photograph: "BigTH", price: 2000.33},
-        ];
+    try {
+        const productResponse = await fetch("/produkt/alle/");
+        var products = productResponse.json();
+        products.forEach(product => {
+            const BildResponse = await fetch("/produktbild/gib/" + product.id);
+            product.img = BildResponse.json().BildPfad;
+            const tagResponse = await fetch("/")
+            product.tags = 
+        })
+    } catch (exception) {
+        console.log(exception);
+        return;
+    }
     return products;
 }
 
@@ -97,7 +103,7 @@ function createProduct(data) {
     img.attr('src', data.img);
     const body = $('<div class="card-body"/>');
     const title = $('<h5 class="card-title"/>');
-    title.text(data.title);
+    title.text(data.Bezeichnung);
     body.append(title);
     const tags = $('<div class="tags"/>');
     data.tags.forEach(itag => {

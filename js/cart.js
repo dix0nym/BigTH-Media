@@ -8,13 +8,15 @@ async function loadData(cart) {
     let data = {}
     cart.forEach(id => {
         try {
-            const response = await fetch("/api/products/" + id);
-            var product = response.json();
+            const productResponse = await fetch("/produkt/gib/" + id);
+            const bildResponse = await fetch("/produktbild/gib/" + id);
+            var product = productResponse.json();
+            var bild = bildResponse.json();
         } catch (exception) {
             console.log(exception);
             return;
         }
-        data[id] = {id: product.id, img_src: product.img_src, title: product.title, desc: product.desc, price: product.price, qty: cart[id].qty}
+        data[id] = {id: product.ID, img_src: bild.BildPfad, title: product.Bezeichnung, desc: product.Bezeichnung, price: product.Nettopreis, qty: cart[id].qty}
     });
     return data;
 }

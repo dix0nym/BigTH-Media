@@ -9,7 +9,7 @@ async function loadData() {
     }
     let id = searchParams.get('id');
     try {
-        const response = await fetch("/api/products/" + id);
+        const response = await fetch("/api/products/gib/" + id);
         var product = response.json();
     } catch (exception) {
         console.log(exception);

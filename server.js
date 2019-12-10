@@ -5,6 +5,7 @@ Object.fromEntries = l => l.reduce((a, [k,v]) => ({...a, [k]: v}), {})
 
 const helper = require("./helper.js");
 helper.log("Starting server...");
+var path = require('path');
 
 try {
     // connect database
@@ -36,6 +37,9 @@ try {
         next();
     });
 
+    app.engine('html', require('ejs').renderFile);
+    app.set('view engine', 'html');
+
     // start server
     app.listen(HTTP_PORT, () => {
         helper.log("Start Web Server...");
@@ -49,8 +53,13 @@ try {
     console.log("Binding enpoints...");
 
     // bind root endpoint
+    app.use(express.static(path.join(__dirname, 'public')));
+
     app.get("/", (request, response) => {
-        helper.log("Server called without any specification");
+        response.render('index.html');
+    });
+
+    app.get("/api/status", (request, response) => {
         response.status(200).json(helper.jsonMsg("Server API arbeitet an Port " + HTTP_PORT));
     });
 
@@ -65,9 +74,6 @@ try {
 
     serviceRouter = require("./services/download.js");
     app.use(TOPLEVELPATH, serviceRouter);
-    
-    serviceRouter = require("./services/produktkategorie.js");
-    app.use(TOPLEVELPATH, serviceRouter);
 
     serviceRouter = require("./services/zahlungsart.js");
     app.use(TOPLEVELPATH, serviceRouter);
@@ -81,15 +87,13 @@ try {
     serviceRouter = require("./services/produkt.js");
     app.use(TOPLEVELPATH, serviceRouter);
 
-
     serviceRouter = require("./services/bestellung.js");
     app.use(TOPLEVELPATH, serviceRouter);
 
-
-    serviceRouter = require("./services/einheit.js");
+    serviceRouter = require("./services/bewertung.js");
     app.use(TOPLEVELPATH, serviceRouter);
 
-    serviceRouter = require("./services/bewertung.js");
+    serviceRouter = require("./services/tags.js");
     app.use(TOPLEVELPATH, serviceRouter);
     
 } catch (ex) {

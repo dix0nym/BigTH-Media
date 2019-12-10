@@ -1,5 +1,6 @@
 const helper = require("../helper.js");
 const ProduktDao = require("../dao/produktDao.js");
+const Produkt2TagsDao = require("../dao/produkt2TagsDao.js");
 const express = require("express");
 var serviceRouter = express.Router();
 
@@ -8,6 +9,7 @@ serviceRouter.get("/produkt/gib/:id", function(request, response) {
 
     const produktDao = new ProduktDao(request.app.locals.dbConnection);
     try {
+        console.log(request.params.id);
         var result = produktDao.loadById(request.params.id);
         helper.log("Service Produkt: Record loaded");
         response.status(200).json(helper.jsonMsgOK(result));
@@ -27,6 +29,20 @@ serviceRouter.get("/produkt/alle/", function(request, response) {
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
         helper.logError("Service Produkt: Error loading all records. Exception occured: " + ex.message);
+        response.status(400).json(helper.jsonMsgError(ex.message));
+    }
+});
+
+serviceRouter.get("/produkt/:id/tags/", (request, response) => {
+    helper.log("Service Tags: Client requested all tags from productid=" + request.params.id);
+
+    const produkt2TagsDao = new Produkt2TagsDao(request.app.locals.dbConnection);
+    try {
+        var result = produkt2TagsDao.loadById(request.params.id);
+        helper.log("Service Tags: Records loaded");
+        response.status(200).json(helper.jsonMsgOK(result));
+    } catch (ex) {
+        helper.logError("Service Tags: Error loading record by id. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }
 });
@@ -59,11 +75,6 @@ serviceRouter.post("/produkt", function(request, response) {
         errorMsgs.push("nettopreis fehlt");
     if (!helper.isNumeric(request.body.nettopreis)) 
         errorMsgs.push("nettopreis muss eine Zahl sein");
-    if (helper.isUndefined(request.body.kategorie)) {
-        errorMsgs.push("kategorie fehlt");
-    } else if (helper.isUndefined(request.body.kategorie.id)) {
-        errorMsgs.push("kategorie gesetzt, aber id fehlt");
-    }        
     if (helper.isUndefined(request.body.mehrwertsteuer)) {
         errorMsgs.push("mehrwertsteuer fehlt");
     } else if (helper.isUndefined(request.body.mehrwertsteuer.id)) {
@@ -87,7 +98,7 @@ serviceRouter.post("/produkt", function(request, response) {
 
     const produktDao = new ProduktDao(request.app.locals.dbConnection);
     try {
-        var result = produktDao.create(request.body.kategorie.id, request.body.bezeichnung, request.body.beschreibung, request.body.mehrwertsteuer.id, request.body.details, request.body.nettopreis, request.body.datenblatt, request.body.bilder);
+        var result = produktDao.create(request.body.bezeichnung, request.body.beschreibung, request.body.mehrwertsteuer.id, request.body.details, request.body.nettopreis, request.body.datenblatt, request.body.bilder);
         helper.log("Service Produkt: Record inserted");
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
@@ -111,12 +122,7 @@ serviceRouter.put("/produkt", function(request, response) {
     if (helper.isUndefined(request.body.nettopreis)) 
         errorMsgs.push("nettopreis fehlt");
     if (!helper.isNumeric(request.body.nettopreis)) 
-        errorMsgs.push("nettopreis muss eine Zahl sein");
-    if (helper.isUndefined(request.body.kategorie)) {
-        errorMsgs.push("kategorie fehlt");
-    } else if (helper.isUndefined(request.body.kategorie.id)) {
-        errorMsgs.push("kategorie gesetzt, aber id fehlt");
-    }        
+        errorMsgs.push("nettopreis muss eine Zahl sein"); 
     if (helper.isUndefined(request.body.mehrwertsteuer)) {
         errorMsgs.push("mehrwertsteuer fehlt");
     } else if (helper.isUndefined(request.body.mehrwertsteuer.id)) {
@@ -140,7 +146,7 @@ serviceRouter.put("/produkt", function(request, response) {
 
     const produktDao = new ProduktDao(request.app.locals.dbConnection);
     try {
-        var result = produktDao.update(request.body.id, request.body.kategorie.id, request.body.bezeichnung, request.body.beschreibung, request.body.mehrwertsteuer.id, request.body.details, request.body.nettopreis, request.body.datenblatt, request.body.bilder);
+        var result = produktDao.update(request.body.id, request.body.bezeichnung, request.body.beschreibung, request.body.mehrwertsteuer.id, request.body.details, request.body.nettopreis, request.body.datenblatt, request.body.bilder);
         helper.log("Service Produkt: Record updated, id=" + request.body.id);
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {

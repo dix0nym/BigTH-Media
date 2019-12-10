@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>BigTH-Media Shopping Cart</title>
+</head>
+
+<body>
+    <div id="header"></div>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header bg-dark text-light">
+                <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                BigTH-Media
+                <a href="/pages/products.html" class="btn btn-outline-info btn-sm pull-right">continue shopping</a>
+                <div class="clearfix"></div>
+            </div>
+            <div class="card-body" id="cart-container">
+                <div class="row cart-entry">
+                    <div class="text-center text-muted">shopping cart is empty</div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="/pages/checkout.html" class="btn btn-success pull-right mr-2">Buy now</a>
+                <div class="pull-right m-2" id="price-wrapper">
+                    total: <b>0.00€</b>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer"></div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="/js/util.js"></script>
+    <script>
+        $(async () => {
+            await loadHeader("header.html", "")
+            await loadFooter("footer.html");
+        });
+        </script>
+    <script src="/js/cart.js"></script>
+</body>
+
+</html>

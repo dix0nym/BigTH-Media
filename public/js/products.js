@@ -1,5 +1,3 @@
-import { formatToMilliseconds } from "../backend/helper";
-
 let tags = {};
 let selectedTags = [];
 let products = [];
@@ -8,9 +6,9 @@ let products = [];
 $(async () => {
     // load products
     products  = await loadProducts();
-    renderProducts(products);
+    // await renderProducts(products);
     // add listeners
-    addTagListeners(products);
+    // await addTagListeners(products);
 });
 
 
@@ -27,20 +25,24 @@ function addTagListeners(){
 }
 
 async function loadProducts() {
-    try {
-        const productResponse = await fetch("/produkt/alle/");
-        var products = productResponse.json();
-        products.forEach(product => {
-            const BildResponse = await fetch("/produktbild/gib/" + product.id);
-            product.img = BildResponse.json().BildPfad;
-            const tagResponse = await fetch("/")
-            product.tags = 
-        })
-    } catch (exception) {
-        console.log(exception);
-        return;
-    }
-    return products;
+    // try {
+    const productResponse = await fetch("/produkt/alle/");
+    var products = await productResponse.json();
+    // console.log(products);
+    // for(var product in products.daten) {
+    //     console.log(product);
+    //     const BildResponse = await fetch("/produktbild/gib/" + product.id);
+    //     var bild = await BildResponse.json();
+    //     product.img = bild.bildpfad;
+    //     const tagResponse = await fetch("/produkt/" + product.id + "/tags");
+    //     product.tags = await tagResponse.json();
+    // }
+    // } catch (exception) {
+    //     console.log(exception);
+    //     return;
+    // }
+    // renderProducts(products);
+    // addTagListeners(products);
 }
 
 function updateProducts(products) {

@@ -89,4 +89,4 @@ class VATDao {
     }
 }
 
-module.exports = MehrwertsteuerDao;
+module.exports = VATDao;

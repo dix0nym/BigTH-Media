@@ -34,31 +34,25 @@ app.get("/", (request, response) => {
 // APIs
 TOPLEVELPATH = "/api/";
 
-serviceRouter = require("./services/adresse.js");
+serviceRouter = require("./services/address.js");
 app.use(TOPLEVELPATH, serviceRouter);
 
-serviceRouter = require("./services/person.js");
+serviceRouter = require("./services/customer.js");
 app.use(TOPLEVELPATH, serviceRouter);
 
 serviceRouter = require("./services/download.js");
 app.use(TOPLEVELPATH, serviceRouter);
 
-serviceRouter = require("./services/zahlungsart.js");
+serviceRouter = require("./services/paymentmethod.js");
 app.use(TOPLEVELPATH, serviceRouter);
 
-serviceRouter = require("./services/mehrwertsteuer.js");
+serviceRouter = require("./services/vat.js");
 app.use(TOPLEVELPATH, serviceRouter);
 
-serviceRouter = require("./services/produktbild.js");
+serviceRouter = require("./services/product.js");
 app.use(TOPLEVELPATH, serviceRouter);
 
-serviceRouter = require("./services/produkt.js");
-app.use(TOPLEVELPATH, serviceRouter);
-
-serviceRouter = require("./services/bestellung.js");
-app.use(TOPLEVELPATH, serviceRouter);
-
-serviceRouter = require("./services/bewertung.js");
+serviceRouter = require("./services/order.js");
 app.use(TOPLEVELPATH, serviceRouter);
 
 serviceRouter = require("./services/tags.js");

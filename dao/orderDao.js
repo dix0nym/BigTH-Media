@@ -200,4 +200,4 @@ class OrderDao {
     }
 }
 
-module.exports = BestellungDao;
+module.exports = OrderDao;

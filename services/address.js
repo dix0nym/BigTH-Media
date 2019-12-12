@@ -136,4 +136,4 @@ serviceRouter.delete("/address/:id", function(request, response) {
     }
 });
 
-module.expcitys = serviceRouter;
+module.exports = serviceRouter;

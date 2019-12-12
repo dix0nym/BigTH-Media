@@ -1,5 +1,4 @@
 const helper = require("../helper.js");
-const Produkt2TagsDao = require("../dao/produkt2TagsDao.js");
 const TagsDao = require("../dao/tagDao.js");
 const express = require("express");
 var serviceRouter = express.Router();

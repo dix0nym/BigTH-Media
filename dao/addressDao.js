@@ -1,5 +1,5 @@
 const helper = require("../helper.js");
-const LandDao = require("./countryDao.js");
+const CountryDao = require("./countryDao.js");
 
 class AddressDao {
 
@@ -12,7 +12,7 @@ class AddressDao {
     }
 
     loadById(id) {
-        const landDao = new LandDao(this._conn);
+        const countryDao = new CountryDao(this._conn);
 
         var sql = "SELECT * FROM Address WHERE ID=?";
         var statement = this._conn.prepare(sql);
@@ -23,15 +23,15 @@ class AddressDao {
 
         result = helper.objectKeysToLower(result);
 
-        result.land = landDao.loadById(result.landid);
+        result.land = countryDao.loadById(result.landid);
         delete result.landid;
 
         return result;
     }
 
     loadAll() {
-        const landDao = new LandDao(this._conn);
-        var countries = landDao.loadAll();
+        const countryDao = new CountryDao(this._conn);
+        var countries = countryDao.loadAll();
 
         var sql = "SELECT * FROM Address";
         var statement = this._conn.prepare(sql);
@@ -108,8 +108,8 @@ class AddressDao {
     }
 
     toString() {
-        helper.log("AdresseDao [_conn=" + this._conn + "]");
+        helper.log("AddressDao [_conn=" + this._conn + "]");
     }
 }
 
-module.exports = AdresseDao;
+module.exports = AddressDao;

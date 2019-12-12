@@ -1,6 +1,7 @@
 const helper = require("../helper.js");
+const LandDao = require("./countryDao.js");
 
-class ProduktbildDao {
+class AddressDao {
 
     constructor(dbConnection) {
         this._conn = dbConnection;
@@ -11,7 +12,9 @@ class ProduktbildDao {
     }
 
     loadById(id) {
-        var sql = "SELECT * FROM Produktbild WHERE ID=?";
+        const landDao = new LandDao(this._conn);
+
+        var sql = "SELECT * FROM Address WHERE ID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
@@ -20,14 +23,17 @@ class ProduktbildDao {
 
         result = helper.objectKeysToLower(result);
 
-        result.produkt = { "id": result.produktid };
-        delete result.produktid;
+        result.land = landDao.loadById(result.landid);
+        delete result.landid;
 
         return result;
     }
 
     loadAll() {
-        var sql = "SELECT * FROM Produktbild";
+        const landDao = new LandDao(this._conn);
+        var countries = landDao.loadAll();
+
+        var sql = "SELECT * FROM Address";
         var statement = this._conn.prepare(sql);
         var result = statement.all();
 
@@ -37,33 +43,20 @@ class ProduktbildDao {
         result = helper.arrayObjectKeysToLower(result);
 
         for (var i = 0; i < result.length; i++) {
-            result[i].produkt = { "id": result[i].produktid };
-            delete result[i].produktid;
-        }
-
-        return result;
-    }
-
-    loadByParent(id) {
-        var sql = "SELECT * FROM Produktbild WHERE ProduktID=?";
-        var statement = this._conn.prepare(sql);
-        var result = statement.all(id);
-
-        if (helper.isArrayEmpty(result)) 
-            return [];
-
-        result = helper.arrayObjectKeysToLower(result);
-
-        for (var i = 0; i < result.length; i++) {
-            result[i].produkt = { "id": result[i].produktid };
-            delete result[i].produktid;
+            for (var element of countries) {
+                if (element.id == result[i].landid) {
+                    result[i].land = element;
+                    break;
+                }
+            }
+            delete result[i].landid;
         }
 
         return result;
     }
 
     exists(id) {
-        var sql = "SELECT COUNT(ID) AS cnt FROM Produktbild WHERE ID=?";
+        var sql = "SELECT COUNT(ID) AS cnt FROM Address WHERE ID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
@@ -73,10 +66,10 @@ class ProduktbildDao {
         return false;
     }
 
-    create(bildpfad = "", produktid = 1) {
-        var sql = "INSERT INTO Produktbild (Bildpfad,ProduktID) VALUES (?,?)";
+    create(strasse = "", hausnummer = "", adresszusatz = "", plz = "", ort = "", landid = 1) {
+        var sql = "INSERT INTO Address (Street,Number,AdditionalAddressInfo,ZIP,City,CountryID) VALUES (?,?,?,?,?,?)";
         var statement = this._conn.prepare(sql);
-        var params = [bildpfad, produktid];
+        var params = [strasse, hausnummer, adresszusatz, plz, ort, landid];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -86,10 +79,10 @@ class ProduktbildDao {
         return newObj;
     }
 
-    update(id, bildpfad = "", produktid = 1) {
-        var sql = "UPDATE Produktbild SET Bildpfad=?,ProduktID=? WHERE ID=?";
+    update(id, strasse = "", hausnummer = "", adresszusatz = "", plz = "", ort = "", landid = 1) {
+        var sql = "UPDATE Adresse SET Street=?,Number=?,AdditionalAddressInfo=?,ZIP=?,City=?,CountryID=? WHERE ID=?";
         var statement = this._conn.prepare(sql);
-        var params = [bildpfad, produktid, id];
+        var params = [strasse, hausnummer, adresszusatz, plz, ort, landid, id];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -101,7 +94,7 @@ class ProduktbildDao {
 
     delete(id) {
         try {
-            var sql = "DELETE FROM Produktbild WHERE ID=?";
+            var sql = "DELETE FROM Addresse WHERE ID=?";
             var statement = this._conn.prepare(sql);
             var result = statement.run(id);
 
@@ -114,21 +107,9 @@ class ProduktbildDao {
         }
     }
 
-    deleteByParent(id) {
-        try {
-            var sql = "DELETE FROM Produktbild WHERE ProduktID=?";
-            var statement = this._conn.prepare(sql);
-            var result = statement.run(id);
-
-            return true;
-        } catch (ex) {
-            throw new Error("Could not delete Records by id=" + produktid + ". Reason: " + ex.message);
-        }
-    }
-
     toString() {
-        helper.log("ProduktbildDao [_conn=" + this._conn + "]");
+        helper.log("AdresseDao [_conn=" + this._conn + "]");
     }
 }
 
-module.exports = ProduktbildDao;
+module.exports = AdresseDao;

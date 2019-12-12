@@ -3,7 +3,7 @@ const DownloadDao = require("../dao/downloadDao.js");
 const express = require("express");
 var serviceRouter = express.Router();
 
-serviceRouter.get("/download/gib/:id", function(request, response) {
+serviceRouter.get("/download/get/:id", function(request, response) {
     helper.log("Service Download: Client requested one record, id=" + request.params.id);
 
     const downloadDao = new DownloadDao(request.app.locals.dbConnection);
@@ -17,7 +17,7 @@ serviceRouter.get("/download/gib/:id", function(request, response) {
     }
 });
 
-serviceRouter.get("/download/alle", function(request, response) {
+serviceRouter.get("/download/all/", function(request, response) {
     helper.log("Service Download: Client requested all records");
 
     const downloadDao = new DownloadDao(request.app.locals.dbConnection);
@@ -31,14 +31,14 @@ serviceRouter.get("/download/alle", function(request, response) {
     }
 });
 
-serviceRouter.get("/download/existiert/:id", function(request, response) {
+serviceRouter.get("/download/exists/:id", function(request, response) {
     helper.log("Service Download: Client requested check, if record exists, id=" + request.params.id);
 
     const downloadDao = new DownloadDao(request.app.locals.dbConnection);
     try {
         var result = downloadDao.exists(request.params.id);
         helper.log("Service Download: Check if record exists by id=" + request.params.id + ", result=" + result);
-        response.status(200).json(helper.jsonMsgOK({ "id": request.params.id, "existiert": result }));
+        response.status(200).json(helper.jsonMsgOK({ "id": request.params.id, "exists": result }));
     } catch (ex) {
         helper.logError("Service Download: Error checking if record exists. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
@@ -49,22 +49,20 @@ serviceRouter.post("/download", function(request, response) {
     helper.log("Service Download: Client requested creation of new record");
 
     var errorMsgs=[];
-    if (helper.isUndefined(request.body.bezeichnung)) 
-        errorMsgs.push("bezeichnung fehlt");
-    if (helper.isUndefined(request.body.beschreibung)) 
-        request.body.beschreibung = "";
-    if (helper.isUndefined(request.body.dateipfad)) 
-        errorMsgs.push("dateipfad fehlt");
+    if (helper.isUndefined(request.body.uuid)) 
+        errorMsgs.push("uuid missing");
+    if (helper.isUndefined(request.body.productid)) 
+        errorMsgs.push("productid missing");
     
     if (errorMsgs.length > 0) {
         helper.log("Service Download: Creation not possible, data missing");
-        response.status(400).json(helper.jsonMsgError("Hinzufügen nicht möglich. Fehlende Daten: " + helper.concatArray(errorMsgs)));
+        response.status(400).json(helper.jsonMsgError("Creation not possible, data missing: " + helper.concatArray(errorMsgs)));
         return;
     }
 
     const downloadDao = new DownloadDao(request.app.locals.dbConnection);
     try {
-        var result = downloadDao.create(request.body.bezeichnung, request.body.beschreibung, request.body.dateipfad);
+        var result = downloadDao.create(request.body.uuid, request.body.productid);
         helper.log("Service Download: Record inserted");
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
@@ -79,11 +77,9 @@ serviceRouter.put("/download", function(request, response) {
     var errorMsgs=[];
     if (helper.isUndefined(request.body.id)) 
         errorMsgs.push("id fehlt");
-    if (helper.isUndefined(request.body.bezeichnung)) 
+    if (helper.isUndefined(request.body.uuid)) 
         errorMsgs.push("bezeichnung fehlt");
-    if (helper.isUndefined(request.body.beschreibung)) 
-        request.body.beschreibung = "";
-    if (helper.isUndefined(request.body.dateipfad)) 
+    if (helper.isUndefined(request.body.productid)) 
         errorMsgs.push("dateipfad fehlt");
 
     if (errorMsgs.length > 0) {
@@ -94,7 +90,7 @@ serviceRouter.put("/download", function(request, response) {
 
     const downloadDao = new DownloadDao(request.app.locals.dbConnection);
     try {
-        var result = downloadDao.update(request.body.id, request.body.bezeichnung, request.body.beschreibung, request.body.dateipfad);
+        var result = downloadDao.update(request.body.id, request.body.uuid, request.body.productid);
         helper.log("Service Download: Record updated, id=" + request.body.id);
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
@@ -111,7 +107,7 @@ serviceRouter.delete("/download/:id", function(request, response) {
         var obj = downloadDao.loadById(request.params.id);
         downloadDao.delete(request.params.id);
         helper.log("Service Download: Deletion of record successfull, id=" + request.params.id);
-        response.status(200).json(helper.jsonMsgOK({ "gelöscht": true, "eintrag": obj }));
+        response.status(200).json(helper.jsonMsgOK({ "deleted": true, "entry": obj }));
     } catch (ex) {
         helper.logError("Service Download: Error deleting record. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));

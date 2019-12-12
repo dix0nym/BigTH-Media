@@ -1,6 +1,6 @@
 const helper = require("../helper.js");
 
-class LandDao {
+class PaymentMethodDao {
 
     constructor(dbConnection) {
         this._conn = dbConnection;
@@ -11,7 +11,7 @@ class LandDao {
     }
 
     loadById(id) {
-        var sql = "SELECT * FROM Land WHERE ID=?";
+        var sql = "SELECT * FROM PaymentMethod WHERE ID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
@@ -22,7 +22,7 @@ class LandDao {
     }
 
     loadAll() {
-        var sql = "SELECT * FROM Land";
+        var sql = "SELECT * FROM PaymentMethod";
         var statement = this._conn.prepare(sql);
         var result = statement.all();
 
@@ -33,7 +33,7 @@ class LandDao {
     }
 
     exists(id) {
-        var sql = "SELECT COUNT(ID) AS cnt FROM Land WHERE ID=?";
+        var sql = "SELECT COUNT(ID) AS cnt FROM PaymentMethod WHERE ID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
@@ -43,10 +43,10 @@ class LandDao {
         return false;
     }
 
-    create(kennzeichnung = "", bezeichnung = "") {
-        var sql = "INSERT INTO Land (Kennzeichnung,Bezeichnung) VALUES (?,?)";
+    create(title = "") {
+        var sql = "INSERT INTO PaymentMethod (Title) VALUES (?)";
         var statement = this._conn.prepare(sql);
-        var params = [kennzeichnung, bezeichnung];
+        var params = [title];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -56,10 +56,10 @@ class LandDao {
         return newObj;
     }
 
-    update(id, kennzeichnung = "", bezeichnung = "") {
-        var sql = "UPDATE Land SET Kennzeichnung=?,Bezeichnung=? WHERE ID=?";
+    update(id, title = "") {
+        var sql = "UPDATE PaymentMethod SET Title=? WHERE ID=?";
         var statement = this._conn.prepare(sql);
-        var params = [kennzeichnung, bezeichnung, id];
+        var params = [title, id];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -71,7 +71,7 @@ class LandDao {
 
     delete(id) {
         try {
-            var sql = "DELETE FROM Land WHERE ID=?";
+            var sql = "DELETE FROM PaymentMethod WHERE ID=?";
             var statement = this._conn.prepare(sql);
             var result = statement.run(id);
 
@@ -85,8 +85,8 @@ class LandDao {
     }
 
     toString() {
-        helper.log("LandDao [_conn=" + this._conn + "]");
+        helper.log("PaymentMethodDao [_conn=" + this._conn + "]");
     }
 }
 
-module.exports = LandDao;
+module.exports = PaymentMethodDao;

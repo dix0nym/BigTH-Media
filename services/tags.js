@@ -4,7 +4,7 @@ const TagsDao = require("../dao/tagDao.js");
 const express = require("express");
 var serviceRouter = express.Router();
 
-serviceRouter.get("/tags/:id", (request, response) => {
+serviceRouter.get("/tags/get/:id", (request, response) => {
     helper.log("Service Tags: Client request tag with id=" + request.params.id);
     const tagsDao = new TagsDao(request.app.locals.dbConnection);
     try {
@@ -17,7 +17,7 @@ serviceRouter.get("/tags/:id", (request, response) => {
     }
 });
 
-serviceRouter.get("/tags/alle", (request, response) => {
+serviceRouter.get("/tags/all/", (request, response) => {
     helper.log("Service Tags: Client request all tags");
     const tagsDao = new TagsDao(request.app.locals.dbConnection);
     try {

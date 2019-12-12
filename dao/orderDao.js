@@ -1,9 +1,9 @@
 const helper = require("../helper.js");
-const BestellpositionDao = require("./bestellpositionDao.js");
-const PersonDao = require("./personDao.js");
-const ZahlungsartDao = require("./zahlungsartDao.js");
+const OrderPositionDao = require("./orderpositionDao.js");
+const CustomerDao = require("./customerDao.js");
+const PaymentMethodDao = require("./paymentMethodDao.js");
 
-class BestellungDao {
+class OrderDao {
 
     constructor(dbConnection) {
         this._conn = dbConnection;
@@ -14,11 +14,11 @@ class BestellungDao {
     }
 
     loadById(id) {
-        const bestellpositionDao = new BestellpositionDao(this._conn);
-        const personDao = new PersonDao(this._conn);
-        const zahlungsartDao = new ZahlungsartDao(this._conn);
+        const orderPositionDao = new OrderPositionDao(this._conn);
+        const customerDao = new CustomerDao(this._conn);
+        const paymentMethodDao = new PaymentMethodDao(this._conn);
 
-        var sql = "SELECT * FROM Bestellung WHERE ID=?";
+        var sql = "SELECT * FROM Order WHERE ID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
@@ -27,26 +27,26 @@ class BestellungDao {
 
         result = helper.objectKeysToLower(result);
 
-        result.bestellzeitpunkt = helper.formatToGermanDateTime(helper.parseSQLDateTimeString(result.bestellzeitpunkt));
+        result.orderTime = helper.formatToGermanDateTime(helper.parseSQLDateTimeString(result.bestellzeitpunkt));
 
-        if (helper.isNull(result.bestellerid)) {
-            result.besteller = null;
+        if (helper.isNull(result.customerid)) {
+            result.customer = null;
         } else {
-            result.besteller = personDao.loadById(result.bestellerid);
+            result.customer = customerDao.loadById(result.customerid);
         }
-        delete result.bestellerid;
+        delete result.customerid;
 
-        result.zahlungsart = zahlungsartDao.loadById(result.zahlungsartid);
-        delete result.zahlungsartid;
+        result.paymentmethod = paymentMethodDao.loadById(result.paymentid);
+        delete result.paymentid;
 
-        result.bestellpositionen = bestellpositionDao.loadByParent(result.id);
+        result.orderposition = orderPositionDao.loadByParent(result.id);
         
-        result.total = { "netto": 0, "brutto": 0, "mehrwertsteuer": 0 };
+        result.total = { "netprice": 0, "price": 0, "vat": 0 };
 
-        for (i = 0; i < result.bestellpositionen.length; i++) {
-            result.total.netto += result.bestellpositionen[i].nettosumme;
-            result.total.brutto += result.bestellpositionen[i].bruttosumme;
-            result.total.mehrwertsteuer += result.bestellpositionen[i].mehrwertsteuersumme;
+        for (i = 0; i < result.orderposition.length; i++) {
+            result.total.netprice += result.orderposition[i].nettosumme;
+            result.total.price += result.orderposition[i].bruttosumme;
+            result.total.vat += result.bestellpositionen[i].mehrwertsteuersumme;
         }
 
         result.total.netto = helper.round(result.total.netto);
@@ -57,12 +57,12 @@ class BestellungDao {
     }
 
     loadAll() {
-        const bestellpositionDao = new BestellpositionDao(this._conn);
-        var positions = bestellpositionDao.loadAll();
-        const personDao = new PersonDao(this._conn);
-        var persons = personDao.loadAll();
-        const zahlungsartDao = new ZahlungsartDao(this._conn);
-        var methods = zahlungsartDao.loadAll();
+        const OrderPositionDao = new OrderPositionDao(this._conn);
+        var positions = OrderPositionDao.loadAll();
+        const customerDao = new customerDao(this._conn);
+        var persons = customerDao.loadAll();
+        const PaymentMethodDao = new PaymentMethodDao(this._conn);
+        var methods = PaymentMethodDao.loadAll();
 
         var sql = "SELECT * FROM Bestellung";
         var statement = this._conn.prepare(sql);
@@ -129,7 +129,7 @@ class BestellungDao {
     }
 
     create(bestellzeitpunkt = null, bestellerid = null, zahlungsartid = null, bestellpositionen = []) {
-        const bestellpositionDao = new BestellpositionDao(this._conn);
+        const OrderPositionDao = new OrderPositionDao(this._conn);
 
         if (helper.isNull(bestellzeitpunkt)) 
             bestellzeitpunkt = helper.getNow();
@@ -144,7 +144,7 @@ class BestellungDao {
 
         if (bestellpositionen.length > 0) {
             for (var element of bestellpositionen) {
-                bestellpositionDao.create(result.lastInsertRowid, element.produkt.id, element.menge);
+                OrderPositionDao.create(result.lastInsertRowid, element.produkt.id, element.menge);
             }
         }
 
@@ -153,8 +153,8 @@ class BestellungDao {
     }
 
     update(id, bestellzeitpunkt = null, bestellerid = null, zahlungsartid = null, bestellpositionen = []) {
-        const bestellpositionDao = new BestellpositionDao(this._conn);
-        bestellpositionDao.deleteByParent(id);
+        const OrderPositionDao = new OrderPositionDao(this._conn);
+        OrderPositionDao.deleteByParent(id);
 
         if (helper.isNull(bestellzeitpunkt)) 
             bestellzeitpunkt = helper.getNow();
@@ -169,7 +169,7 @@ class BestellungDao {
         
         if (bestellpositionen.length > 0) {
             for (var element of bestellpositionen) {
-                bestellpositionDao.create(id, element.produkt.id, element.menge);
+                OrderPositionDao.create(id, element.produkt.id, element.menge);
             }
         }
 
@@ -179,8 +179,8 @@ class BestellungDao {
 
     delete(id) {
         try {
-            const bestellpositionDao = new BestellpositionDao(this._conn);
-            bestellpositionDao.deleteByParent(id);
+            const OrderPositionDao = new OrderPositionDao(this._conn);
+            OrderPositionDao.deleteByParent(id);
 
             var sql = "DELETE FROM Bestellung WHERE ID=?";
             var statement = this._conn.prepare(sql);

@@ -1,7 +1,7 @@
 const helper = require("../helper.js");
 const TagDao = require("./tagDao.js");
 
-class Produkt2TagsDao {
+class Product2TagsDao {
 
     constructor(dbConnection) {
         this._conn = dbConnection;
@@ -13,7 +13,7 @@ class Produkt2TagsDao {
 
     loadById(id) {
         const tagDao = new TagDao(this._conn);
-        var sql = "SELECT * FROM Produkt2Tags WHERE ProduktID=?";
+        var sql = "SELECT * FROM Product2Tags WHERE ProductID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.all(id);
         if (helper.isArrayEmpty(result))
@@ -27,7 +27,7 @@ class Produkt2TagsDao {
     }
 
     loadAll() {
-        var sql = "SELECT * from Produkt2Tags";
+        var sql = "SELECT * from Product2Tags";
         var statement = this._conn.prepare(sql);
         var result = statement.all()
 
@@ -40,7 +40,7 @@ class Produkt2TagsDao {
     }
 
     hasTags(id) {
-        var sql = "SELECT COUNT(ID) AS cnt FROM Produkt2Tags WHERE ProduktID=?";
+        var sql = "SELECT COUNT(ID) AS cnt FROM Product2Tags WHERE ProductID=?";
         var statement = statement.get(id);
         var result = statment.get(id);
 
@@ -54,4 +54,4 @@ class Produkt2TagsDao {
     }
 }
 
-module.exports = Produkt2TagsDao;
+module.exports = Product2TagsDao;

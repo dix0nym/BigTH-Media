@@ -1,7 +1,6 @@
 const helper = require("../helper.js");
-const LandDao = require("./landDao.js");
 
-class AdresseDao {
+class CountryDao {
 
     constructor(dbConnection) {
         this._conn = dbConnection;
@@ -12,51 +11,29 @@ class AdresseDao {
     }
 
     loadById(id) {
-        const landDao = new LandDao(this._conn);
-
-        var sql = "SELECT * FROM Adresse WHERE ID=?";
+        var sql = "SELECT * FROM Country WHERE ID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
         if (helper.isUndefined(result)) 
             throw new Error("No Record found by id=" + id);
 
-        result = helper.objectKeysToLower(result);
-
-        result.land = landDao.loadById(result.landid);
-        delete result.landid;
-
-        return result;
+        return helper.objectKeysToLower(result);
     }
 
     loadAll() {
-        const landDao = new LandDao(this._conn);
-        var countries = landDao.loadAll();
-
-        var sql = "SELECT * FROM Adresse";
+        var sql = "SELECT * FROM Country";
         var statement = this._conn.prepare(sql);
         var result = statement.all();
 
         if (helper.isArrayEmpty(result)) 
             return [];
         
-        result = helper.arrayObjectKeysToLower(result);
-
-        for (var i = 0; i < result.length; i++) {
-            for (var element of countries) {
-                if (element.id == result[i].landid) {
-                    result[i].land = element;
-                    break;
-                }
-            }
-            delete result[i].landid;
-        }
-
-        return result;
+        return helper.arrayObjectKeysToLower(result);
     }
 
     exists(id) {
-        var sql = "SELECT COUNT(ID) AS cnt FROM Adresse WHERE ID=?";
+        var sql = "SELECT COUNT(ID) AS cnt FROM Country WHERE ID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
@@ -66,10 +43,10 @@ class AdresseDao {
         return false;
     }
 
-    create(strasse = "", hausnummer = "", adresszusatz = "", plz = "", ort = "", landid = 1) {
-        var sql = "INSERT INTO Adresse (Strasse,Hausnummer,Adresszusatz,PLZ,Ort,LandID) VALUES (?,?,?,?,?,?)";
+    create(code = "", name = "") {
+        var sql = "INSERT INTO Country (Code, Name) VALUES (?,?)";
         var statement = this._conn.prepare(sql);
-        var params = [strasse, hausnummer, adresszusatz, plz, ort, landid];
+        var params = [code, name];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -79,10 +56,10 @@ class AdresseDao {
         return newObj;
     }
 
-    update(id, strasse = "", hausnummer = "", adresszusatz = "", plz = "", ort = "", landid = 1) {
-        var sql = "UPDATE Adresse SET Strasse=?,Hausnummer=?,Adresszusatz=?,PLZ=?,Ort=?,LandID=? WHERE ID=?";
+    update(id, code = "", name = "") {
+        var sql = "UPDATE Land SET Code=?,Name=? WHERE ID=?";
         var statement = this._conn.prepare(sql);
-        var params = [strasse, hausnummer, adresszusatz, plz, ort, landid, id];
+        var params = [code, name, id];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -94,7 +71,7 @@ class AdresseDao {
 
     delete(id) {
         try {
-            var sql = "DELETE FROM Adresse WHERE ID=?";
+            var sql = "DELETE FROM Country WHERE ID=?";
             var statement = this._conn.prepare(sql);
             var result = statement.run(id);
 
@@ -108,8 +85,8 @@ class AdresseDao {
     }
 
     toString() {
-        helper.log("AdresseDao [_conn=" + this._conn + "]");
+        helper.log("CountryDao [_conn=" + this._conn + "]");
     }
 }
 
-module.exports = AdresseDao;
+module.exports = CountryDao;

@@ -4,77 +4,80 @@ let products = [];
 
 
 $(async () => {
-    // load products
-    products  = await loadProducts();
-    // await renderProducts(products);
-    // add listeners
-    // await addTagListeners(products);
+    products = await loadProducts();
 });
 
-
-function addTagListeners(){
-    $('.tag').on('click', event => {
-        console.log(event);
-        let clickedTag = $(event.currentTarget);
-        clickedTag.toggleClass('active');
-        selectedTags.splice(0, selectedTags.length);
-        $('#tagsContainer .tag.active').each((_, tag) => selectedTags.push($(tag).attr('data-name')));
-        let filteredProducts = products.filter(f => selectedTags.every(tag => f.tags.includes(tag)));
-        updateProducts(filteredProducts);
-    });
+async function loadProducts() {
+    const productResponse = await fetch("/api/product/all/");
+    var products = await productResponse.json();
+    if (products.error) {
+        console.log("failed to fetch products");
+        return;
+    }
+    var products = products.data;
+    for(var i = 0; i < products.length; i++) {
+        const tagsResponse = await fetch("/api/product/" + products[i].id + "/tags");
+        var tagsR = await tagsResponse.json();
+        if (tagsR.error) {
+            console.log("failed to fetch tags");
+            return;
+        }
+        products[i].tags = tagsR.data.map(k => k.name);
+    }
+    renderProducts(products);
+    tags = await loadTags(products);
+    return products;
 }
 
-async function loadProducts() {
-    // try {
-    const productResponse = await fetch("/produkt/alle/");
-    var products = await productResponse.json();
-    // console.log(products);
-    // for(var product in products.daten) {
-    //     console.log(product);
-    //     const BildResponse = await fetch("/produktbild/gib/" + product.id);
-    //     var bild = await BildResponse.json();
-    //     product.img = bild.bildpfad;
-    //     const tagResponse = await fetch("/produkt/" + product.id + "/tags");
-    //     product.tags = await tagResponse.json();
-    // }
-    // } catch (exception) {
-    //     console.log(exception);
-    //     return;
-    // }
-    // renderProducts(products);
-    // addTagListeners(products);
+async function loadTags(products) {
+    const tagsResponse = await fetch("/api/tags/all/");
+    var tagJson = await tagsResponse.json();
+    if (tagJson.error) {
+        console.log("failed to fetch tags");
+        return;
+    }
+    var tags = tagJson.data.reduce(function(map, obj) {
+        map[obj.name] = {name: obj.name, id: obj.id, count: 0};
+        return map;
+    }, {});
+    console.log("loaded tags: ", tags);
+    products.forEach(product => {
+        product.tags.forEach(tag => {
+            tags[tag].count += 1;
+        })
+    })
+    renderTags(tags);
+    return tags;
 }
 
 function updateProducts(products) {
     const productContainer = $('#productsContainer');
     productContainer.empty();
-    let currentTags = {};
+    for(var k in tags) {
+        tags[k] = 0;
+    }
     products.forEach(product => {
         const newProduct = createProduct(product);
         productContainer.append(newProduct);
         product.tags.forEach( tag => {
-            if (!(tag in currentTags)) {
-                currentTags[tag] = 0;
+            if (!(tag in tags)) {
+                tags[tag] = 0;
             } 
-            currentTags[tag] += 1;
-        });
+            tags[tag] += 1;
+        })
     });
-    updateTags(currentTags);
-}
-
-function updateTags(currentTags) {
-    const tagsContainer = $('#tagsContainer');
-    tagsContainer.empty();
-    Object.keys(tags).forEach(tag => {
-        if (tag in currentTags) {
-            tags[tag] = currentTags[tag];
+    $('.tag').each( (idx, tag) => {
+        var name = $(tag).attr('data-name');
+        if (name in tags) {
+            console.log(name, tags[name], tags[name] > 0);
+            $(tag).toggle(tags[name] > 0);
+            $('span', tag).text(tags[name]);
         } else {
-            tags[tag] = 0;
+            console.log(name, "not in tags", tags);
         }
-        const tagElement = createTag(tag, tags[tag], selectedTags.includes(tag));
-        tagsContainer.append(tagElement);
+        console.log(tags);
     });
-    addTagListeners();
+
 }
 
 function renderProducts(products) {
@@ -82,7 +85,7 @@ function renderProducts(products) {
     productContainer.empty();
     const tagsContainer = $('#tagsContainer');
     tagsContainer.empty();
-    products.forEach(product => {
+    for(var product of products) {
         const newProduct = createProduct(product);
         product.tags.forEach( tag => {
             if (!(tag in tags)) {
@@ -91,44 +94,52 @@ function renderProducts(products) {
             tags[tag] += 1;
         })
         productContainer.append(newProduct);
-    });
+    }
 
-    Object.keys(tags).forEach(key => {
-        const tag = createTag(key, tags[key], false);
-        tagsContainer.append(tag);
-    });
+    // Object.keys(tags).forEach(key => {
+    //     const tag = createTag(key, tags[key], false);
+    //     tagsContainer.append(tag);
+    // });
+}
+
+function renderTags(tags) {
+    const tagsContainer = $('#tagsContainer');
+    tagsContainer.empty()
+    for(var tagid in tags) {
+        const newTag = createTag(tagid, tags[tagid]);
+        tagsContainer.append(newTag);
+    }
 }
 
 function createProduct(data) {
+    console.log(data);
     const product = $('<div class="card m-2" style="width: 15rem;" href="/product.html?id=' + data.id + '"/>');
     let img = $('<img class="card-img-top"/>');
-    img.attr('src', data.img);
+    img.attr('src', "../media/resized/" + data.filename);
     const body = $('<div class="card-body"/>');
     const title = $('<h5 class="card-title"/>');
-    title.text(data.Bezeichnung);
+    title.text(data.title);
     body.append(title);
-    const tags = $('<div class="tags"/>');
-    data.tags.forEach(itag => {
-        const tag = $('<span class="tag badge badge-fill badge-primary mr-2"/>');
-        tag.text(itag);
-        tags.append(tag);
-    });
-    body.append(tags);
     product.append(img);
     product.append(body);
     return product;
 }
 
-function createTag(name, count, active) {
-    const tag = $('<a href="#" class="list-group-item tag"/>')
-    if (active) {
-        tag.addClass('active');
-    }
+function createTag(tagid, data) {
+    const tag = $('<a href="#" class="list-group-item tag" data-id="' + tagid + '"/>')
     const counter = $('<span class="float-right badge badge-light round"/>')
-    counter.text(count)
-    tag.text(name);
-    tag.attr("data-name", name)
+    counter.text(data.count)
+    tag.text(data.name);
+    tag.attr("data-name", data.name)
     tag.append(counter);
+    tag.on('click', event => {
+        let clickedTag = $(event.currentTarget);
+        clickedTag.toggleClass('active');
+        selectedTags.splice(0, selectedTags.length);
+        $('#tagsContainer .tag.active').each((_, tag) => selectedTags.push($(tag).attr('data-name')));
+        let filteredProducts = products.filter(f => selectedTags.every(tag => f.tags.includes(tag)));
+        updateProducts(filteredProducts);
+    });
     return tag;
 }
 

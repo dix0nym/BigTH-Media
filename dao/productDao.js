@@ -1,7 +1,5 @@
 const helper = require("../helper.js");
 const VATDao = require("./vatDao.js");
-const DownloadDao = require("./downloadDao.js");
-const Product2TagsDao = require("./product2TagsDao.js");
 
 class ProductDao {
 
@@ -14,9 +12,7 @@ class ProductDao {
     }
 
     loadById(id) {
-        const vatDAO = new VATDao(this._conn);
-        const downloadDao = new DownloadDao(this._conn);
-        const product2TagsDao = new Product2TagsDao(this._conn);
+        const vatDao = new VATDao(this._conn);
 
         var sql = "SELECT * FROM Product WHERE ID=?";
         var statement = this._conn.prepare(sql);
@@ -29,15 +25,6 @@ class ProductDao {
 
         result.vat = vatDao.loadById(result.vatid);
         delete result.vatid;
-        
-        // result.tags = product2TagsDao.loadById(id);
-
-        if (helper.isNull(result.datenblattid)) {
-            result.datenblatt = null;
-        } else {
-            result.datenblatt = downloadDao.loadById(result.downloadid);
-        }
-        delete result.datenblattid;
 
         result.vatPart = helper.round((result.netprice / 100) * result.vat.percentage);
 

@@ -9,20 +9,15 @@ async function loadData(cart) {
 
     for(var id in cart) {
         try {
-            const productResponse = await fetch("/api/produkt/gib/" + id);
+            const productResponse = await fetch("/api/product/get/" + id);
             console.log(productResponse);
             if (!productResponse.ok) {
                 console.log("failed", productResponse);
                 return data;
             }
             var product = await productResponse.json();
-            console.log(product);
-            product = product.daten;
-            const bildResponse = await fetch("/api/produktbild/gib/" + id);
-            console.log(bildResponse)
-            var bild = await bildResponse.json();
-            bild = bild.daten;
-            data.push({id: product.id, img_src: bild.bildpfad, title: product.bezeichnung, desc: product.details, netto: product.nettopreis, steuer: product.mehrwertsteuer.steuersatz, brutto: product.bruttopreis, qty: cart[id]});
+            product = product.data;
+            data.push({id: product.id, img_src: product.filename, title: product.bezeichnung, desc: product.details, netto: product.nettopreis, steuer: product.mehrwertsteuer.steuersatz, brutto: product.bruttopreis, qty: cart[id]});
         } catch (exception) {
             console.log(exception);
             return;
@@ -38,7 +33,7 @@ function createRow(rowdata) {
     
     let imgWrapper = $('<div class="col-xs-2 col-md-2"/>');
     let productImg = $('<img class="img-responsive alt="preview"/>');
-    productImg.attr('src', rowdata.img_src);
+    productImg.attr('src', "../media/resized/" + rowdata.img_src);
     imgWrapper.append(productImg);
     row.append(imgWrapper)
 
@@ -125,7 +120,6 @@ async function addQty(clickedButtonEvent) {
         setCart(cart);
     }
     calcTotal();
-    // TODO: update total
 }
 
 function calcTotal() {
@@ -157,6 +151,4 @@ async function removeQty(clickedButtonEvent) {
         }
     }
     calcTotal();
-    // TODO: update total
-
 }

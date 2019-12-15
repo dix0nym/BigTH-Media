@@ -51,8 +51,8 @@ serviceRouter.post("/customer", function(request, response) {
     var errorMsgs=[];
     if (helper.isUndefined(request.body.title)) {
         errorMsgs.push("title missing");
-    } else if (request.body.title.toLowerCase() !== "herr" && request.body.title.toLowerCase() !== "frau") {
-        errorMsgs.push("title wrong. Mr und Mrs sind erlaubt");
+    } else if (request.body.title.toLowerCase() !== "mr" && request.body.title.toLowerCase() !== "mrs") {
+        errorMsgs.push("title wrong. Mr and Mrs are allowed");
     }        
     if (helper.isUndefined(request.body.name)) 
         errorMsgs.push("name missing");
@@ -79,7 +79,7 @@ serviceRouter.post("/customer", function(request, response) {
     
     if (errorMsgs.length > 0) {
         helper.log("Service Person: Creation not possible, data missing");
-        response.status(400).json(helper.jsonMsgError("Hinzufügen nicht möglich. Fehlende Daten: " + helper.concatArray(errorMsgs)));
+        response.status(400).json(helper.jsonMsgError("Creation not possible, data missing " + helper.concatArray(errorMsgs)));
         return;
     }
 
@@ -102,8 +102,8 @@ serviceRouter.put("/customer", function(request, response) {
         errorMsgs.push("id missing");
     if (helper.isUndefined(request.body.title)) {
         errorMsgs.push("title missing");
-    } else if (request.body.title.toLowerCase() !== "herr" && request.body.title.toLowerCase() !== "frau") {
-        errorMsgs.push("title falsch. Herr und Frau sind erlaubt");
+    } else if (request.body.title.toLowerCase() !== "mr" && request.body.title.toLowerCase() !== "mrs") {
+        errorMsgs.push("title wrong. Mr and Mrs are allowd");
     }        
     if (helper.isUndefined(request.body.name)) 
         errorMsgs.push("name missing");
@@ -112,7 +112,7 @@ serviceRouter.put("/customer", function(request, response) {
     if (helper.isUndefined(request.body.address)) {
         errorMsgs.push("address missing");
     } else if (helper.isUndefined(request.body.address.id)) {
-        errorMsgs.push("address gesetzt, aber id missing");
+        errorMsgs.push("address defined, but id missing");
     }
     if (helper.isUndefined(request.body.phonenumber)) 
         request.body.phonenumber = "";

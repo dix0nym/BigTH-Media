@@ -10,7 +10,6 @@ class TagDao {
     }
 
     loadById(id) {
-        
         var sql = "SELECT * FROM Tags WHERE ID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
@@ -34,10 +33,29 @@ class TagDao {
         return result;
     }
 
+    countById(id) {
+        var sql = "SELECT COUNT(ProductID) as cnt FROM Product2Tags WHERE TagID=?";
+        var statement = this._conn.prepare(sql);
+        var result = statement.get(id);
+        return result.cnt;
+    }
+
+    countAll() {
+        var sql = "SELECT TagID, COUNT(ProductID) as cnt FROM Product2Tags GROUP BY TagID";
+        var statment = this._conn.prepare(sql);
+        var result = statment.all();
+        result = helper.arrayObjectKeysToLower(result);
+        for(var i = 0; i < result.length; i++) {
+            result[i].tag = this.loadById(result[i].tagid)
+            delete result[i].tagid;
+        }
+        return result;
+    }
+
     exists(id) {
         var sql = "SELECT COUNT(ID) AS cnt FROM Tags WHERE ID=?";
-        var statement = statement.get(id);
-        var result = statment.get(id);
+        var statement = this._conn.prepare(sql);
+        var result = statement.get(id);
 
         if (result.cnt == 1) 
             return true;

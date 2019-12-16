@@ -72,27 +72,27 @@ module.exports.logError = function(val) {
 // return json object as message
 module.exports.jsonMsg = function(message = "OK", payload = null, error = false) {
     return {
-        "nachricht": message, 
-        "fehler": error,
-        "daten": payload
+        "msg": message, 
+        "error": error,
+        "data": payload
     };
 }
 
 // return json object as error message
 module.exports.jsonMsgError = function(message = "Fehler") {
     return {
-        "nachricht": message, 
-        "fehler": true,
-        "daten": null
+        "msg": message, 
+        "error": true,
+        "data": null
     };
 }
 
 // return json object as success message
 module.exports.jsonMsgOK = function(payload) {
     return {
-        "nachricht": "OK", 
-        "fehler": false,
-        "daten": payload
+        "msg": "OK", 
+        "error": false,
+        "data": payload
     };
 }
 

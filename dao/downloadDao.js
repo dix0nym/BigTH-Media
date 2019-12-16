@@ -1,4 +1,5 @@
 const helper = require("../helper.js");
+const ProductDao = require("./productDao.js");
 
 class DownloadDao {
 
@@ -11,6 +12,8 @@ class DownloadDao {
     }
 
     loadById(id) {
+        const productDao = new ProductDao(this._conn);
+
         var sql = "SELECT * FROM Download WHERE ID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
@@ -18,7 +21,10 @@ class DownloadDao {
         if (helper.isUndefined(result)) 
             throw new Error("No Record found by id=" + id);
 
-        return helper.objectKeysToLower(result);
+        result = helper.objectKeysToLower(result);
+        result.product = productDao.loadById(result.productid);
+        delete result.productid;
+        return result;
     }
 
     loadAll() {
@@ -29,7 +35,12 @@ class DownloadDao {
         if (helper.isArrayEmpty(result)) 
             return [];
         
-        return helper.arrayObjectKeysToLower(result);
+        result = helper.arrayObjectKeysToLower(result);
+        for(var i = 0; i < result.length; i ++) {
+            result.product = productDao.loadById(result.productid);
+            delete result.productid;
+        }
+        return result;
     }
 
     exists(id) {
@@ -43,10 +54,10 @@ class DownloadDao {
         return false;
     }
 
-    create(bezeichnung = "", beschreibung = "", dateipfad = "") {
-        var sql = "INSERT INTO Download (Bezeichnung,Beschreibung,Dateipfad) VALUES (?,?,?)";
+    create(uuid = "", productid = "") {
+        var sql = "INSERT INTO Download (UUID,ProductID) VALUES (?,?)";
         var statement = this._conn.prepare(sql);
-        var params = [bezeichnung, beschreibung, dateipfad];
+        var params = [uuid, productid];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -56,10 +67,10 @@ class DownloadDao {
         return newObj;
     }
 
-    update(id, bezeichnung = "", beschreibung = "", dateipfad = "") {
-        var sql = "UPDATE Download SET Bezeichnung=?,Beschreibung=?,Dateipfad=? WHERE ID=?";
+    update(id, uuid = "", productid = "") {
+        var sql = "UPDATE Download SET UUID=?,ProductID=? WHERE ID=?";
         var statement = this._conn.prepare(sql);
-        var params = [bezeichnung, beschreibung, dateipfad, id];
+        var params = [uuid, productid, id];
         var result = statement.run(params);
 
         if (result.changes != 1) 

@@ -14,39 +14,47 @@
     <div class="container mt-5">
         <form id="personal-information" action="/pages/payment.html">
             <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="inputName">Name</label>
-                    <input type="text" class="form-control" id="inputName" placeholder="Name" />
+                <div class="form-group col-md-2">
+                    <label for="inputTitle">Title</label>
+                    <select class="custom-select" id="inputTitle" name="title">
+                        <option selected>title...</option>
+                        <option value="Mr">Mr</option>
+                        <option value="Mrs">Mrs</option>
+                    </select>
                 </div>
-                <div class="form-group col-md-6">
-                    <label for="inputFamilyName">Familyname</label>
-                    <input type="text" class="form-control" id="inputFamilyName" placeholder="Familyname" />
+                <div class="form-group col-md-5">
+                    <label for="inputName">Name</label>
+                    <input type="text" class="form-control" id="inputName" placeholder="Name" name="name"/>
+                </div>
+                <div class="form-group col-md-5">
+                    <label for="inputSurname">Surname</label>
+                    <input type="text" class="form-control" id="inputSurname" placeholder="Surname" name="surname" />
                 </div>
             </div>
             <div class="form-group">
                 <label for="inputEmail">Email</label>
-                <input type="email" class="form-control" id="inputEmail" placeholder="Email" />
+                <input type="email" class="form-control" id="inputEmail" placeholder="Email" name="mail" />
             </div>
             <div class="form-group">
                 <label for="inputAddress">Address</label>
-                <input type="text" class="form-control" id="inputAddress" placeholder="Streetname Number" />
+                <input type="text" class="form-control" id="inputAddress" placeholder="Streetname Number" name="streetnumber"/>
             </div>
             <div class="form-group">
                 <label for="inputAddress2">Address 2</label>
-                <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, room or floor" />
+                <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, room or floor" name="additionaladdressinfo"/>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="inputCity">City</label>
-                    <input type="text" class="form-control" id="inputCity" />
+                    <input type="text" class="form-control" id="inputCity" name="city"/>
                 </div>
                 <div class="form-group col-md-4">
-                    <label for="inputState">State</label>
-                    <input type="text" class="form-control" id="inputState" />
+                    <label for="inputState">Country</label>
+                    <input type="text" class="form-control" id="inputState" name="country"/>
                 </div>
                 <div class="form-group col-md-2">
                     <label for="inputZip">Zip</label>
-                    <input type="text" class="form-control" id="inputZip" />
+                    <input type="text" class="form-control" id="inputZip" name="zip" />
                 </div>
             </div>
             <div class="form-group">
@@ -70,6 +78,7 @@
             $("#footer").load("footer.html");
         });
     </script>
+    <script src="../js/customer.js"></script>
 </body>
 
 </html>

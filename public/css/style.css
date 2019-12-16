@@ -100,18 +100,13 @@ body {
     width: 10%;
 }
 
-<<<<<<< HEAD
-#footerorient {
-=======
-
 /* product.html */
 
 .productImg {
     height: 600px;
 }
 
-.footer {
->>>>>>> cd72fe00fb863f29b26368525115dcdd03f85cff
+#footerorient {
     position: relative;
     bottom: 0px;
     height:30px;

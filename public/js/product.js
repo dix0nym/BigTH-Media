@@ -9,35 +9,34 @@ async function loadData() {
     }
     let id = searchParams.get('id');
     try {
-        const response = await fetch("/api/products/gib/" + id);
-        var product = response.json();
+        const response = await fetch("/api/product/get/" + id);
+        var product = await response.json();
     } catch (exception) {
         console.log(exception);
         return;
     }
-    renderProduct(product);
+    renderProduct(product.data);
 }
 
 function renderProduct(data) {
+    console.log(data);
     const container = $('#productContainer');
-    const img = $('<img class="card-img-top" alt="product"/>')
-    img.attr('src', data.img);
-    const body = $('<div class="card-body"/>');
-    const title = $('<h5 class="card-title"/>');
-    title.text(data.title);
-    body.append(body);
-    const text =$('<p class="card-text"/>');
-    text.text(data.text);
-    body.append(text);
-
-    const body2 = body.clone();
-    const btnBuy = $('<a class="btn btn-primary" id="buyBtn"/>');
-    btnBuy.click(async () => {
-        addToCart(data);
-    });
-    body2.append(btnBuy);
-
-    container.append(img);
-    container.append(body);
-    container.append(body2);
+    const card = $('<div class="card bg-dark text-white mt-3"/>');
+    const modalAnchor = $(' <a class="mx-auto" data-toggle="modal" data-target="bigViewModal"/>');
+    const img = $('<img class="productImg mt-4" alt="product"/>');
+    img.attr('src', '/media/compressed/'+data.filename);
+    modalAnchor.append(img);
+    card.append(modalAnchor);
+    const cardBody = $('<div class="card-body"/>');
+    const bodyHeader = $('<h5 class="card-title"/>');
+    bodyHeader.text(data.title);
+    const cardText = $('<p class="card-text"/>');
+    cardText.text(data.details);
+    const addtToCartBtn = $('<button type="button" class="btn btn-outline-info fa fa-cart-plus fa-2x" href="#"/>');
+    addtToCartBtn.attr('data-id', data.id);
+    cardBody.append(bodyHeader);
+    cardBody.append(cardText);
+    cardBody.append(addtToCartBtn);
+    card.append(cardBody);
+    container.append(card);
 }

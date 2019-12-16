@@ -1,5 +1,9 @@
 body {
-    background-color: lightgrey;
+    background-color: #343a40;
+}
+/* header.html */
+#header {
+    border-bottom: 1px solid #17a2b8;
 }
 
 .landingImg {
@@ -31,7 +35,7 @@ body {
     display: inline-block;
     vertical-align: top;
 }
-
+/*
 #test {
     display: flex;
     align-items: center;
@@ -50,7 +54,7 @@ body {
     -webkit-box-direction: normal;
     text-align: center;
 }
-
+*/
 #btnSales {
     /* z-index: 10;
     position: absolute; */
@@ -96,7 +100,18 @@ body {
     width: 10%;
 }
 
+<<<<<<< HEAD
 #footerorient {
+=======
+
+/* product.html */
+
+.productImg {
+    height: 600px;
+}
+
+.footer {
+>>>>>>> cd72fe00fb863f29b26368525115dcdd03f85cff
     position: relative;
     bottom: 0px;
     height:30px;

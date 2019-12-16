@@ -1,6 +1,6 @@
 const helper = require("../helper.js");
 const MehrwertsteuerDao = require("./mehrwertsteuerDao.js");
-const ProduktDao = require("./produktDao.js");
+const ProductDao = require("./productDao.js");
 
 class Product2SalesDao {
     
@@ -13,8 +13,8 @@ class Product2SalesDao {
     }
 
     loadProductsBySalesId(id) {
-        const produktDao = new ProduktDao(this._conn);
-
+        const productDao = new ProductDao(this._conn);
+        
         var sql = "SELECT * FROM Product2Sales p2s INNER JOIN Product p ON p2s.ProductID=p.ProductID WHERE p2s.SalesID=?"
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);

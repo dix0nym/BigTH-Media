@@ -25,46 +25,16 @@ $(async () => {
 });
 
 async function loadSales() {
-    /*let offers =  [
-        {
-            title: "Spezialangebot1",
-            id: 1000,
-            price: 19.99,
-            items: [
-                {img: "https://via.placeholder.com/150", id: 1, title: "Test", tags: ["animals"], photograph: "Unkown", price: 1000.33},
-                {img: "https://via.placeholder.com/150", id: 2, title: "Test2", tags: ["animals", "rom"], photograph: "BigTH", price: 7777.33},
-                {img: "https://via.placeholder.com/150", id: 3, title: "Test3", tags: ["hiking", "alpen"], photograph: "Unkown", price: 135.33}
-            ]
-        },
-        {
-            title: "Spezialangebot2",
-            id: 1000,
-            price: 29.99,
-            items: [
-                {img: "https://via.placeholder.com/150", id: 4, title: "Test4", tags: ["china", "country"], photograph: "BigTH", price: 5000.33},
-                {img: "https://via.placeholder.com/150", id: 5, title: "Test5", tags: ["cars"], photograph: "Unkown", price: 100.33},
-                {img: "https://via.placeholder.com/150", id: 6, title: "Test6", tags: ["nachaufnamen"], photograph: "BigTH", price: 2000.33},
-                {img: "https://via.placeholder.com/150", id: 7, title: "Test7", tags: ["china", "country"], photograph: "BigTH", price: 5000.33},
-                {img: "https://via.placeholder.com/150", id: 8, title: "Test8", tags: ["cars"], photograph: "Unkown", price: 100.33},
-                {img: "https://via.placeholder.com/150", id: 9, title: "Test9", tags: ["nachaufnamen"], photograph: "BigTH", price: 2000.33},
-            ]
-        }
-    ];*/
-    /*
-        TODO Sven: Service zum Abfragen der Angebote aus der Datenbank einbinden
-    */
     let searchParams = new URLSearchParams(window.location.search);
     try {
         const response = await fetch("/api/sales/all/");
-        //console.log(response);
         var sales = await response.json();
-        //console.log(sales.daten);
     } catch (exception) {
         console.log(exception);
         return;
     }
     
-    return sales.daten;
+    return sales.data;
 }
 
 function addSetToCart(event) {
@@ -78,8 +48,6 @@ function renderSales(sales) {
     const salesContainer = $('#salesContainer');
     salesContainer.empty();
 
-    //console.log(sales);
-
     sales.forEach(sale => {
         const newSale = renderSale(sale);
         salesContainer.append(newSale);
@@ -88,11 +56,7 @@ function renderSales(sales) {
 }
 
 function renderSale(sale) {
-
     firstItem = true;
-
-    console.log(sale);
-    console.log(sale.items);
 
     const container = $('<div class="container mt-1 w-60"/>');
     const containerHeader = $('<h5 class="my-2 mb-0">'+sale.title+'</h5>');

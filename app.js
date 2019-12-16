@@ -58,4 +58,7 @@ app.use(TOPLEVELPATH, serviceRouter);
 serviceRouter = require("./services/tags.js");
 app.use(TOPLEVELPATH, serviceRouter);
 
+serviceRouter = require("./services/country.js");
+app.use(TOPLEVELPATH, serviceRouter);
+
 module.exports = app;

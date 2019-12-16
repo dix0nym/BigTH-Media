@@ -88,8 +88,11 @@ body {
 }
 
 /* sales.html */
-/*#toastContainer {
-    position: absolute;
-    right: 10;
-    bottom: 10;
-}*/
+
+.carouselImg {
+    height: 500px;
+}
+
+.w-10 {
+    width: 10%;
+}

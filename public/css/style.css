@@ -96,3 +96,15 @@ body {
 .w-10 {
     width: 10%;
 }
+
+.footer {
+    position: relative;
+    bottom: 0px;
+    height:30px;
+    overflow: hidden;
+}
+
+.right{
+    text-align: right;
+    padding-right: 40px;
+}

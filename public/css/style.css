@@ -1,5 +1,9 @@
 body {
-    background-color: lightgrey;
+    background-color: #343a40;
+}
+/* header.html */
+#header {
+    border-bottom: 1px solid #17a2b8;
 }
 
 .landingImg {
@@ -31,7 +35,7 @@ body {
     display: inline-block;
     vertical-align: top;
 }
-
+/*
 #test {
     display: flex;
     align-items: center;
@@ -51,7 +55,7 @@ body {
     -webkit-box-direction: normal;
     text-align: center;
 }
-
+*/
 #btnSales {
     /* z-index: 10;
     position: absolute; */
@@ -95,4 +99,10 @@ body {
 
 .w-10 {
     width: 10%;
+}
+
+/* product.html */
+
+.productImg {
+    height: 600px;
 }

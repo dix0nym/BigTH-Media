@@ -58,6 +58,8 @@ function renderSales(sales) {
 function renderSale(sale) {
     firstItem = true;
 
+    console.log(sale);
+    
     const container = $('<div class="container mt-1 w-60"/>');
     const containerHeader = $('<h5 class="my-2 mb-0 text-center">'+sale.title+'</h5>');
     const jumbotron = $('<div class="jumbotron mx-auto mb-0 w-100 bg-dark"/>');
@@ -89,7 +91,8 @@ function renderSale(sale) {
     carousel.append(carouselCtrlPrev);
     carousel.append(carouselCtrlNxt);
     const containerFooter = $('<div class="d-flex flex-row-reverse"/>');
-    const containerFooterAddToCartBtn = $('<button type="button" class="addToCart btn btn-lite fa fa-cart-plus fa-2x" aria-hidden="true" data-id="1000"/>');
+    const containerFooterAddToCartBtn = $('<button type="button" class="addToCart btn btn-lite fa fa-cart-plus fa-2x" aria-hidden="true"/>');
+    containerFooterAddToCartBtn.attr('data-id', sale.id);
     const containerFooterPriceTag = $('<h5 class=" mt-2">'+sale.price+'€</h5>');
     containerFooter.append(containerFooterAddToCartBtn);
     containerFooter.append(containerFooterPriceTag);

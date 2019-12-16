@@ -11,6 +11,7 @@ serviceRouter.get("/product/get/:id", function(request, response) {
     try {
         console.log(request.params.id);
         var result = productDao.loadById(request.params.id);
+        console.log(result);
         helper.log("Service Produkt: Record loaded");
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {

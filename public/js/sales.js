@@ -1,9 +1,13 @@
+//let sales = [];
+
 $(async () => {
-    offers = await loadOffers();
-    renderOffers(offers);
+    sales = await loadSales();
+    renderSales(sales);
 
     /*
     TODO Sven: Dafuer sorgen, dass ein Toast pro Click erscheint; ggf auch style.css ueberarbeiten
+
+    TODO Sven: Offers in Sales umbenennen
     */
 
     $('.addToCart').on('click', event => {
@@ -20,8 +24,8 @@ $(async () => {
     });
 });
 
-async function loadOffers() {
-    let offers =  [
+async function loadSales() {
+    /*let offers =  [
         {
             title: "Spezialangebot1",
             id: 1000,
@@ -45,8 +49,22 @@ async function loadOffers() {
                 {img: "https://via.placeholder.com/150", id: 9, title: "Test9", tags: ["nachaufnamen"], photograph: "BigTH", price: 2000.33},
             ]
         }
-    ];
-return offers;
+    ];*/
+    /*
+        TODO Sven: Service zum Abfragen der Angebote aus der Datenbank einbinden
+    */
+    let searchParams = new URLSearchParams(window.location.search);
+    try {
+        const response = await fetch("/api/sales/all/");
+        //console.log(response);
+        var sales = await response.json();
+        //console.log(sales.daten);
+    } catch (exception) {
+        console.log(exception);
+        return;
+    }
+    
+    return sales.daten;
 }
 
 function addSetToCart(event) {
@@ -56,43 +74,48 @@ function addSetToCart(event) {
     addToCart(entryToAdd);
 }
 
-function renderOffers(offers) {
-    const offersContainer = $('#offersContainer');
-    offersContainer.empty();
+function renderSales(sales) {
+    const salesContainer = $('#salesContainer');
+    salesContainer.empty();
 
-    offers.forEach(offer => {
-        const newOffer = renderOffer(offer);
-        offersContainer.append(newOffer);
+    //console.log(sales);
+
+    sales.forEach(sale => {
+        const newSale = renderSale(sale);
+        salesContainer.append(newSale);
     });
 
 }
 
-function renderOffer(offer) {
+function renderSale(sale) {
 
     firstItem = true;
 
-    const container = $('<div class="container mt-1 w-50"/>');
-    const containerHeader = $('<h5 class="my-2 mb-0">Richtig geiles Sparpaket 1</h5>');
+    console.log(sale);
+    console.log(sale.items);
+
+    const container = $('<div class="container mt-1 w-60"/>');
+    const containerHeader = $('<h5 class="my-2 mb-0">'+sale.title+'</h5>');
     const jumbotron = $('<div class="jumbotron mx-auto mb-0 w-100 bg-dark"/>');
-    const carousel = $('<div id="'+offer.title+'" class="carousel slide" data-ride="carousel"/>');
+    const carousel = $('<div id="Sale'+sale.id+'" class="carousel slide" data-ride="carousel"/>');
     const carouselInner = $('<div class="carousel-inner"/>');
-    offer.items.forEach((item) => {
+    sale.items.forEach((item) => {
         const carouselItem = $('<div class="carousel-item text-center"/>');
         if (firstItem) {
             carouselItem.addClass('active')
             firstItem = false;
         }
-        const carouselImg = $('<img src="'+item.img+'" class="d-block mx-auto" alt="'+item.id+'"/>');
+        const carouselImg = $('<img src="/media/compressed/'+item.filename+'" class="d-block mx-auto carouselImg" alt="'+item.id+'"/>');
         carouselItem.append(carouselImg);
         carouselInner.append(carouselItem);
     });
-    const carouselCtrlPrev = $('<a class="carousel-control-prev" href="#'+offer.title+'" role="button" data-slide="prev"/>');
+    const carouselCtrlPrev = $('<a class="carousel-control-prev w-10" href="#Sale'+sale.id+'" role="button" data-slide="prev"/>');
     const carouselCtrlPrevBtn = $('<span class="carousel-control-prev-icon" aria-hidden="true"/>');
     const carouselCtrlPrevDesc = $('<span class="sr-only"/>');
     carouselCtrlPrevDesc.text("Previous");
     carouselCtrlPrev.append(carouselCtrlPrevBtn);
     carouselCtrlPrev.append(carouselCtrlPrevDesc);
-    const carouselCtrlNxt = $('<a class="carousel-control-next" href="#'+offer.title+'" role="button" data-slide="next"/>');
+    const carouselCtrlNxt = $('<a class="carousel-control-next w-10" href="#Sale'+sale.id+'" role="button" data-slide="next"/>');
     const carouselCtrlNxtBtn = $('<span class="carousel-control-next-icon" aria-hidden="true"/>');
     const carouselCtrlNxtDesc = $('<span class="sr-only"/>');
     carouselCtrlNxtDesc.text("Next");
@@ -103,7 +126,7 @@ function renderOffer(offer) {
     carousel.append(carouselCtrlNxt);
     const containerFooter = $('<div class="d-flex flex-row-reverse"/>');
     const containerFooterAddToCartBtn = $('<button type="button" class="addToCart btn btn-lite fa fa-cart-plus fa-2x" aria-hidden="true" data-id="1000"/>');
-    const containerFooterPriceTag = $('<h5 class=" mt-2">'+offer.price+'€</h5>');
+    const containerFooterPriceTag = $('<h5 class=" mt-2">'+sale.price+'€</h5>');
     containerFooter.append(containerFooterAddToCartBtn);
     containerFooter.append(containerFooterPriceTag);
 

@@ -116,7 +116,7 @@ function createProduct(data) {
     const product = $('<div class="card m-2" style="width: 15rem;" />');
     let img = $('<img class="card-img-top"/>');
     img.attr('src', "../media/resized/" + data.filename);
-    const anchor = $('<a href="/product.html?id=' + data.id + '"/>');
+    const anchor = $('<a href="/pages/product.html?id=' + data.id + '"/>');
     const body = $('<div class="card-body"/>');
     const title = $('<h5 class="card-title">' + data.title + '</h5>');
     body.append(title);

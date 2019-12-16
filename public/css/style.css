@@ -42,7 +42,6 @@ body {
     z-index: 3;
     -webkit-box-align: center;
     flex-direction: row;
-
 }
 
 #test2 {
@@ -97,14 +96,25 @@ body {
     width: 10%;
 }
 
-.footer {
+#footerorient {
     position: relative;
     bottom: 0px;
     height:30px;
     overflow: hidden;
+    border-top: #17a2b8;
+    border-width: 1px;
+    border-style: solid;
 }
 
 .right{
     text-align: right;
     padding-right: 40px;
+}
+
+.center{
+    text-align: center;
+}
+
+.greycolor{
+    color: rgba(255,255,255,.75);
 }

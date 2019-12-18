@@ -23,8 +23,8 @@ class AddressDao {
 
         result = helper.objectKeysToLower(result);
 
-        result.land = countryDao.loadById(result.landid);
-        delete result.landid;
+        result.land = countryDao.loadById(result.countryid);
+        delete result.countryid;
 
         return result;
     }
@@ -44,12 +44,12 @@ class AddressDao {
 
         for (var i = 0; i < result.length; i++) {
             for (var element of countries) {
-                if (element.id == result[i].landid) {
+                if (element.id == result[i].countryid) {
                     result[i].land = element;
                     break;
                 }
             }
-            delete result[i].landid;
+            delete result[i].countryid;
         }
 
         return result;
@@ -66,10 +66,10 @@ class AddressDao {
         return false;
     }
 
-    create(strasse = "", hausnummer = "", adresszusatz = "", plz = "", ort = "", landid = 1) {
+    create(street = "", number = "", additionaladdressinfo = "", zip = "", city = "", countryid = 1) {
         var sql = "INSERT INTO Address (Street,Number,AdditionalAddressInfo,ZIP,City,CountryID) VALUES (?,?,?,?,?,?)";
         var statement = this._conn.prepare(sql);
-        var params = [strasse, hausnummer, adresszusatz, plz, ort, landid];
+        var params = [street, number, additionaladdressinfo, zip, city, countryid];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -79,10 +79,10 @@ class AddressDao {
         return newObj;
     }
 
-    update(id, strasse = "", hausnummer = "", adresszusatz = "", plz = "", ort = "", landid = 1) {
+    update(id, street = "", number = "", additionaladdressinfo = "", zip = "", city = "", countryid = 1) {
         var sql = "UPDATE Adresse SET Street=?,Number=?,AdditionalAddressInfo=?,ZIP=?,City=?,CountryID=? WHERE ID=?";
         var statement = this._conn.prepare(sql);
-        var params = [strasse, hausnummer, adresszusatz, plz, ort, landid, id];
+        var params = [street, number, additionaladdressinfo, zip, city, countryid, id];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -94,7 +94,7 @@ class AddressDao {
 
     delete(id) {
         try {
-            var sql = "DELETE FROM Addresse WHERE ID=?";
+            var sql = "DELETE FROM Address WHERE ID=?";
             var statement = this._conn.prepare(sql);
             var result = statement.run(id);
 

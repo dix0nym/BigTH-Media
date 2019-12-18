@@ -26,9 +26,9 @@ class ProductDao {
         result.vat = vatDao.loadById(result.vatid);
         delete result.vatid;
 
-        result.vatPart = helper.round((result.netprice / 100) * result.vat.percentage);
+        result.vatpart = helper.round((result.netprice / 100) * result.vat.percentage);
 
-        result.grossPrice = helper.round(result.netprice + result.vatPart);
+        result.grossprice = helper.round(result.netprice + result.vatpart);
 
         return result;
     }

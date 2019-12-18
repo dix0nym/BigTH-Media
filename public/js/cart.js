@@ -20,7 +20,9 @@ async function loadData(cart) {
             }
             var product = await productResponse.json();
             product = product.data;
-            data.push({id: product.id, img_src: product.filename, title: product.bezeichnung, desc: product.details, netto: product.nettopreis, steuer: product.mehrwertsteuer.steuersatz, brutto: product.bruttopreis, qty: cart[id]});
+            product.qty = cart[id]
+            data.push(product);
+            // data.push({id: product.id, img_src: product.filename, title: product.bezeichnung, desc: product.details, netto: product.nettopreis, steuer: product.mehrwertsteuer.steuersatz, brutto: product.bruttopreis, qty: cart[id]});
         } catch (exception) {
             console.log(exception);
             return;
@@ -36,20 +38,20 @@ function createRow(rowdata) {
     
     let imgWrapper = $('<div class="col-xs-2 col-md-2"/>');
     let productImg = $('<img class="img-responsive alt="preview"/>');
-    productImg.attr('src', "../media/resized/" + rowdata.img_src);
+    productImg.attr('src', "../media/resized/" + rowdata.filename);
     imgWrapper.append(productImg);
     row.append(imgWrapper)
 
     let titlewrapper = $('<div class="col-xs-4 col-md-6"/>');
     let title = $('<h4 class="product-name"><strong>' + rowdata.title + '</strong></h4>');
-    let desc = $('<h4><small>' + rowdata.desc + '</small></h4>');
+    let desc = $('<h4><small>' + rowdata.details + '</small></h4>');
     titlewrapper.append(title)
     titlewrapper.append(desc);
     row.append(titlewrapper)
 
     let priceQtyWrapper = $('<div class="col-xs-6 col-md-4 row align-self-center"/>');
     let priceWrapper = $('<div class="col-xs-4 col-md-4 text-right align-self-center" style="padding-top: 5px"/>');
-    let price = $('<h6><strong><div id="price">' + rowdata.brutto + '</div> (' + rowdata.netto + ' + ' + rowdata.steuer + '%) <span class="text-muted">x</span></strong</h6>');
+    let price = $('<h6><strong><div id="price">' + rowdata.grossprice + '</div> (' + rowdata.netprice + ' + ' + rowdata.vat.percentage + '%) <span class="text-muted">x</span></strong</h6>');
     priceWrapper.append(price);
     priceQtyWrapper.append(priceWrapper);
 
@@ -89,6 +91,7 @@ async function createCartEntries(data){
         $('.deleteEntryBtn', container).click(async (clickedButtonEvent) => deleteCartEntry(clickedButtonEvent));
         $('.btnAddQty', container).click(async (clickedButtonEvent) => addQty(clickedButtonEvent));
         $('.btnRedQty', container).click(async (clickedButtonEvent) => removeQty(clickedButtonEvent));
+        calcTotal();
     }
 }
 
@@ -155,3 +158,12 @@ async function removeQty(clickedButtonEvent) {
     }
     calcTotal();
 }
+
+$('#buyBtn').on('click', () => {
+    if (Object.keys(getCart()).length > 0) {
+        window.location.href = $('#buyBtn').attr('href');
+    } else {
+        $('#error').text("Cart is empty");
+        $('#error').show();
+    }
+});

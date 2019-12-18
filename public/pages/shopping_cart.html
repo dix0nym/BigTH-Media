@@ -14,6 +14,7 @@
 <body>
     <div id="header"></div>
     <div class="container mt-5">
+        <div class="alert alert-danger" style="display: none;" id="error" role="alert"></div>
         <div class="card">
             <div class="card-header bg-dark text-light">
                 <i class="fa fa-shopping-cart" aria-hidden="true"></i>
@@ -27,7 +28,7 @@
                 </div>
             </div>
             <div class="card-footer">
-                <a href="/pages/checkout.html" class="btn btn-success pull-right mr-2">Buy now</a>
+                <a id="buyBtn" href="/pages/checkout.html" class="btn btn-success pull-right mr-2">Buy now</a>
                 <div class="pull-right m-2" id="price-wrapper">
                     total: <b>0.00€</b>
                 </div>

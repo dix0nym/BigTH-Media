@@ -52,3 +52,11 @@ function removeFromCart(item) {
         setCart(cart);
     }
 }
+
+function setCustomer(customer) {
+    sessionStorage.setItem('customer', JSON.stringify(customer));
+}
+
+function getCustomer() {
+    return JSON.parse(sessionStorage.getItem('customer'));
+}

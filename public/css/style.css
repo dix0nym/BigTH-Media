@@ -1,5 +1,9 @@
 body {
-    background-color: lightgrey;
+    background-color: #343a40;
+}
+/* header.html */
+#header {
+    border-bottom: 1px solid #17a2b8;
 }
 
 .landingImg {
@@ -31,7 +35,7 @@ body {
     display: inline-block;
     vertical-align: top;
 }
-
+/*
 #test {
     display: flex;
     align-items: center;
@@ -42,7 +46,6 @@ body {
     z-index: 3;
     -webkit-box-align: center;
     flex-direction: row;
-
 }
 
 #test2 {
@@ -51,7 +54,7 @@ body {
     -webkit-box-direction: normal;
     text-align: center;
 }
-
+*/
 #btnSales {
     /* z-index: 10;
     position: absolute; */
@@ -95,4 +98,33 @@ body {
 
 .w-10 {
     width: 10%;
+}
+
+/* product.html */
+
+.productImg {
+    height: 600px;
+}
+
+#footerorient {
+    position: relative;
+    bottom: 0px;
+    height:30px;
+    overflow: hidden;
+    border-top: #17a2b8;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.right{
+    text-align: right;
+    padding-right: 40px;
+}
+
+.center{
+    text-align: center;
+}
+
+.greycolor{
+    color: rgba(255,255,255,.75);
 }

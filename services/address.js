@@ -1,5 +1,6 @@
 const helper = require("../helper.js");
 const AddressDao = require("../dao/addressDao.js");
+const CountryDao = require("../dao/countryDao.js");
 const express = require("express");
 var serviceRouter = express.Router();
 
@@ -46,9 +47,10 @@ serviceRouter.get("/address/exists/:id", function(request, response) {
 });
 
 serviceRouter.post("/address", function(request, response) {
+    console.log(request.body);
     helper.log("Service Address: Client requested creation of new record");
 
-    var errorMsgs=[];
+    var errorMsgs = [];
     if (helper.isUndefined(request.body.street)) 
         errorMsgs.push("street missing");
     if (helper.isUndefined(request.body.number)) 
@@ -59,10 +61,9 @@ serviceRouter.post("/address", function(request, response) {
         errorMsgs.push("zip missing");
     if (helper.isUndefined(request.body.city)) 
         errorMsgs.push("city missing");
-    if (helper.isUndefined(request.body.country)) {
-        errorMsgs.push("land missing");
-    } else if (helper.isUndefined(request.body.country.id)) {
-        errorMsgs.push("land.id missing");
+    if (helper.isUndefined(request.body.countryid)) {
+        console.log("country missing");
+        errorMsgs.push("country missing");
     }
     
     if (errorMsgs.length > 0) {
@@ -71,52 +72,23 @@ serviceRouter.post("/address", function(request, response) {
         return;
     }
 
-    const addressDao = new AddressDao(request.app.locals.dbConnection);
-    try {
-        var result = addressDao.create(request.body.street, request.body.number, request.body.additionaladdressinfo, request.body.zip, request.body.city, request.body.country.id);
-        helper.log("Service Address: Record inserted");
-        response.status(200).json(helper.jsonMsgOK(result));
-    } catch (ex) {
-        helper.logError("Service Address: Error creating new record. Exception occured: " + ex.message);
-        response.status(400).json(helper.jsonMsgError(ex.message));
-    }    
-});
+    const countryDao = new CountryDao(request.app.locals.dbConnection);
+    var country = countryDao.loadById(request.body.countryid);
 
-serviceRouter.put("/address", function(request, response) {
-    helper.log("Service Address: Client requested update of existing record");
-
-    var errorMsgs=[];
-    if (helper.isUndefined(request.body.id)) 
-        errorMsgs.push("id missing");
-    if (helper.isUndefined(request.body.strasse)) 
-        errorMsgs.push("strasse missing");
-    if (helper.isUndefined(request.body.number)) 
-        errorMsgs.push("number missing");
-    if (helper.isUndefined(request.body.additionaladdressinfo)) 
-        request.body.additionaladdressinfo = "";
-    if (helper.isUndefined(request.body.zip)) 
-        errorMsgs.push("zip missing");
-    if (helper.isUndefined(request.body.city)) 
-        errorMsgs.push("city missing");
-    if (helper.isUndefined(request.body.country)) {
-        errorMsgs.push("land missing");
-    } else if (helper.isUndefined(request.body.country.id)) {
-        errorMsgs.push("land.id missing");
-    }
-
-    if (errorMsgs.length > 0) {
-        helper.log("Service Address: Update not possible, data missing");
-        response.status(400).json(helper.jsonMsgError("Update not possible. Missing data: " + helper.concatArray(errorMsgs)));
+    if (helper.isUndefined(country)) {
+        // country not found
+        helper.logError("Service Address: Error creating new record. Exception occured: country not found by id:" + request.body.countryid);
+        response.status(400).json(helper.jsonMsgError("country not found by id:" + request.body.countryid));
         return;
     }
 
     const addressDao = new AddressDao(request.app.locals.dbConnection);
     try {
-        var result = addressDao.update(request.body.id, request.body.strasse, request.body.number, request.body.adresszusatz, request.body.zip, request.body.city, request.body.land.id);
-        helper.log("Service Address: Record updated, id=" + request.body.id);
+        var result = addressDao.create(request.body.street, request.body.number, request.body.additionaladdressinfo, request.body.zip, request.body.city, request.body.countryid);
+        helper.log("Service Address: Record inserted");
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
-        helper.logError("Service Address: Error updating record by id. Exception occured: " + ex.message);
+        helper.logError("Service Address: Error creating new record. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }    
 });

@@ -21,9 +21,9 @@ async function loadData() {
 function renderProduct(data) {
     console.log(data);
     const container = $('#productContainer');
-    const card = $('<div class="card bg-dark text-white mt-3"/>');
+    const card = $('<div class="card text-white" style="background-color:red;"/>');
     const modalAnchor = $(' <a class="mx-auto" data-toggle="modal" data-target="bigViewModal"/>');
-    const img = $('<img class="productImg mt-4" alt="product"/>');
+    const img = $('<img class="productImg mt-4" alt="product style="height: 700px;"/>');
     img.attr('src', '/media/compressed/'+data.filename);
     modalAnchor.append(img);
     card.append(modalAnchor);

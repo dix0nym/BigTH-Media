@@ -6,6 +6,26 @@ body {
     border-bottom: 1px solid #17a2b8;
 }
 
+/* footer.html */
+#footerorient {
+    position: relative;
+    bottom: 0px;
+    height:30px;
+    overflow: hidden;
+    border-top: #17a2b8;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.right{
+    text-align: right;
+    padding-right: 40px;
+}
+
+.greycolor{
+    color: rgba(255,255,255,.75);
+}
+
 .landingImg {
     /* height: 100%;
     width: 100%;
@@ -106,25 +126,16 @@ body {
     height: 600px;
 }
 
-#footerorient {
-    position: relative;
-    bottom: 0px;
-    height:30px;
-    overflow: hidden;
-    border-top: #17a2b8;
-    border-width: 1px;
-    border-style: solid;
+/* products.html */
+.row {
+    margin-right: 0px !important;
 }
 
-.right{
-    text-align: right;
-    padding-right: 40px;
+#productsContainer .card {
+    background-color: #343a40;
+    border: 1px solid #17a2b8;
 }
 
-.center{
-    text-align: center;
-}
-
-.greycolor{
-    color: rgba(255,255,255,.75);
+#productContainer {
+    min-height: 100%;
 }

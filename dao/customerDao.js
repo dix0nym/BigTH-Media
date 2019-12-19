@@ -1,7 +1,7 @@
 const helper = require("../helper.js");
-const AdresseDao = require("./addressDao.js");
+const AddressDao = require("./addressDao.js");
 
-class PersonDao {
+class CustomerDao {
 
     constructor(dbConnection) {
         this._conn = dbConnection;
@@ -23,15 +23,15 @@ class PersonDao {
 
         result = helper.objectKeysToLower(result);
 
-        if (result.anrede == 0) 
-            result.anrede = "Mr.";
+        if (result.title == 0) 
+            result.title = "Mr.";
         else 
-            result.anrede = "Mrs.";
+            result.title = "Mrs.";
 
-        result.geburtstag = helper.formatToGermanDate(helper.parseSQLDateTimeString(result.geburtstag));
+        result.dateofbirth = helper.parseSQLDateTimeString(result.dateofbirth);
 
-        result.adresse = adresseDao.loadById(result.adresseid);
-        delete result.adresseid;
+        result.adresse = adresseDao.loadById(result.addressid);
+        delete result.addressid;
 
         return result;
     }
@@ -50,20 +50,20 @@ class PersonDao {
         result = helper.arrayObjectKeysToLower(result);
 
         for (var i = 0; i < result.length; i++) {
-            if (result[i].anrede == 0) 
-                result[i].anrede = "Mr.";
+            if (result[i].title == 0) 
+                result[i].title = "Mr.";
             else 
-                result[i].anrede = "Mrs.";
+                result[i].title = "Mrs.";
 
-            result[i].geburtstag = helper.formatToGermanDate(helper.parseSQLDateTimeString(result[i].geburtstag));
+            result[i].dateofbirth = helper.parseSQLDateTimeString(result[i].dateofbirth);
             
             for (var element of addresses) {
-                if (element.id == result[i].adresseid) {
+                if (element.id == result[i].addressid) {
                     result[i].adresse = element;
                     break;
                 }
             }
-            delete result[i].adresseid;
+            delete result[i].addressid;
         }
 
         return result;
@@ -80,10 +80,10 @@ class PersonDao {
         return false;
     }
 
-    create(anrede = "Herr", vorname = "", nachname = "", adresseid = 1, telefonnummer = "", email = "", geburtstag = null) {
-        var sql = "INSERT INTO Customer (Title,Name,Surname,AddressID,PhoneNummer,Mail,DateOfBirth) VALUES (?,?,?,?,?,?,?)";
+    create(title = "Mr", name = "", surname = "", addressid = 1, phonenumber = "", mail = "", dateofbirth = null) {
+        var sql = "INSERT INTO Customer (Title,Name,Surname,AddressID,PhoneNumber,Mail,DateOfBirth) VALUES (?,?,?,?,?,?,?)";
         var statement = this._conn.prepare(sql);
-        var params = [(helper.strStartsWith(anrede, "He") ? 0 : 1), vorname, nachname, adresseid, telefonnummer, email, (helper.isNull(geburtstag) ? null : helper.formatToSQLDate(geburtstag))];
+        var params = [(title.toLowerCase() == 'mr' ? 0 : 1), name, surname, addressid, phonenumber, mail, (helper.isNull(dateofbirth) ? null : dateofbirth)];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -93,10 +93,10 @@ class PersonDao {
         return newObj;
     }
 
-    update(id, anrede = "Herr", vorname = "", nachname = "", adresseid = 1, telefonnummer = "", email = "", geburtstag = null) {
-        var sql = "UPDATE Customer SET Title=?,Name=?,Surname=?,AddressID=?,PhoneNummer=?,Mail=?,DateOfBirth=? WHERE ID=?";
+    update(id, title = "Mr", name = "", surname = "", addressid = 1, phonenumber = "", mail = "", dateofbirth = null) {
+        var sql = "UPDATE Customer SET Title=?,Name=?,Surname=?,AddressID=?,PhoneNumber=?,Mail=?,DateOfBirth=? WHERE ID=?";
         var statement = this._conn.prepare(sql);
-        var params = [(helper.strStartsWith(anrede, "He") ? 0 : 1), vorname, nachname, adresseid, telefonnummer, email, (helper.isNull(geburtstag) ? null : helper.formatToSQLDate(geburtstag)), id];
+        var params = [(title.toLowerCase() == 'mr' ? 0 : 1), name, surname, addressid, phonenumber, mail, (helper.isNull(dateofbirth) ? null : dateofbirth), id];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -108,7 +108,7 @@ class PersonDao {
 
     delete(id) {
         try {
-            var sql = "DELETE FROM Person WHERE ID=?";
+            var sql = "DELETE FROM Customer WHERE ID=?";
             var statement = this._conn.prepare(sql);
             var result = statement.run(id);
 
@@ -122,8 +122,8 @@ class PersonDao {
     }
 
     toString() {
-        helper.log("PersonDao [_conn=" + this._conn + "]");
+        helper.log("CustomerDao [_conn=" + this._conn + "]");
     }
 }
 
-module.exports = PersonDao;
+module.exports = CustomerDao;

@@ -27,7 +27,7 @@ class OrderDao {
 
         result = helper.objectKeysToLower(result);
 
-        result.orderTime = helper.formatToGermanDateTime(helper.parseSQLDateTimeString(result.bestellzeitpunkt));
+        result.orderTime = helper.parseSQLDateTimeString(result.orderdate);
 
         if (helper.isNull(result.customerid)) {
             result.customer = null;
@@ -41,17 +41,17 @@ class OrderDao {
 
         result.orderposition = orderPositionDao.loadByParent(result.id);
         
-        result.total = { "netprice": 0, "price": 0, "vat": 0 };
+        result.total = { "nettotal": 0, "grosstotal": 0, "vat": 0 };
 
         for (i = 0; i < result.orderposition.length; i++) {
-            result.total.netprice += result.orderposition[i].nettosumme;
-            result.total.price += result.orderposition[i].bruttosumme;
-            result.total.vat += result.bestellpositionen[i].mehrwertsteuersumme;
+            result.total.nettotal += result.orderposition[i].netprice;
+            result.total.grosstotal += result.orderposition[i].grossprice;
+            result.total.vat += result.orderpositions[i].vatpart;
         }
 
-        result.total.netto = helper.round(result.total.netto);
-        result.total.brutto = helper.round(result.total.brutto);
-        result.total.mehrwertsteuer = helper.round(result.total.mehrwertsteuer);
+        result.total.netprice = helper.round(result.total.netprice);
+        result.total.grossprice = helper.round(result.total.grossprice);
+        result.total.vat = helper.round(result.total.vat);
 
         return result;
     }
@@ -64,7 +64,7 @@ class OrderDao {
         const PaymentMethodDao = new PaymentMethodDao(this._conn);
         var methods = PaymentMethodDao.loadAll();
 
-        var sql = "SELECT * FROM Bestellung";
+        var sql = "SELECT * FROM Order";
         var statement = this._conn.prepare(sql);
         var result = statement.all();
 
@@ -74,51 +74,49 @@ class OrderDao {
         result = helper.arrayObjectKeysToLower(result);
 
         for (var i = 0; i < result.length; i++) {
-            result[i].bestellzeitpunkt = helper.formatToGermanDateTime(helper.parseSQLDateTimeString(result[i].bestellzeitpunkt));
-
-            if (helper.isNull(result[i].bestellerid)) {
+            if (helper.isNull(result[i].customerid)) {
                 result[i].besteller = null;
             } else {
                 for (var element of persons) {
-                    if (element.id == result[i].bestellerid) {
+                    if (element.id == result[i].customerid) {
                         result[i].besteller = element;
                         break;
                     }
                 }
             }
-            delete result[i].bestellerid;
+            delete result[i].customerid;
 
             for (var element of methods) {
-                if (element.id == result[i].zahlungsartid) {
+                if (element.id == result[i].paymentid) {
                     result[i].zahlungsart = element;
                     break;
                 }
             }
-            delete result[i].zahlungsartid;
+            delete result[i].paymentid;
 
-            result[i].bestellpositionen = [];
+            result[i].orderpositions = [];
 
-            result[i].total = { "netto": 0, "brutto": 0, "mehrwertsteuer": 0 };
+            result[i].total = { "nettotal": 0, "grosstotal": 0, "vat": 0 };
 
             for (var element of positions) {
-                if (element.bestellung.id == result[i].id) {
-                    result[i].total.netto += element.nettosumme;
-                    result[i].total.brutto += element.bruttosumme;
-                    result[i].total.mehrwertsteuer += element.mehrwertsteuersumme;
-                    result[i].bestellpositionen.push(element);    
+                if (element.order.id == result[i].id) {
+                    result[i].total.nettotal += element.netprice;
+                    result[i].total.grosstotal += element.bruttosumme;
+                    result[i].total.vat += element.vatpart;
+                    result[i].orderpositions.push(element);    
                 }                
             }
 
-            result[i].total.netto = helper.round(result[i].total.netto);
-            result[i].total.brutto = helper.round(result[i].total.brutto);
-            result[i].total.mehrwertsteuer = helper.round(result[i].total.mehrwertsteuer);
+            result[i].total.nettotal = helper.round(result[i].total.nettotal);
+            result[i].total.grosstotal = helper.round(result[i].total.grosstotal);
+            result[i].total.vat = helper.round(result[i].total.vat);
         }
 
         return result;
     }
 
     exists(id) {
-        var sql = "SELECT COUNT(ID) AS cnt FROM Bestellung WHERE ID=?";
+        var sql = "SELECT COUNT(ID) AS cnt FROM Order WHERE ID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
@@ -128,23 +126,23 @@ class OrderDao {
         return false;
     }
 
-    create(bestellzeitpunkt = null, bestellerid = null, zahlungsartid = null, bestellpositionen = []) {
+    create(orderdate = null, customerid = null, paymentid = null, orderpositions = []) {
         const OrderPositionDao = new OrderPositionDao(this._conn);
 
-        if (helper.isNull(bestellzeitpunkt)) 
-            bestellzeitpunkt = helper.getNow();
+        if (helper.isNull(orderdate)) 
+            orderdate = helper.getNow();
 
-        var sql = "INSERT INTO Bestellung (Bestellzeitpunkt,BestellerID,ZahlungsartID) VALUES (?,?,?)";
+        var sql = "INSERT INTO Order (OrderDate,CustomerID,PaymentID) VALUES (?,?,?)";
         var statement = this._conn.prepare(sql);
-        var params = [helper.formatToSQLDateTime(bestellzeitpunkt), bestellerid, zahlungsartid];
+        var params = [helper.formatToSQLDateTime(orderdate), customerid, paymentid];
         var result = statement.run(params);
 
         if (result.changes != 1) 
             throw new Error("Could not insert new Record. Data: " + params);
 
-        if (bestellpositionen.length > 0) {
-            for (var element of bestellpositionen) {
-                OrderPositionDao.create(result.lastInsertRowid, element.produkt.id, element.menge);
+        if (orderpositions.length > 0) {
+            for (var element of orderpositions) {
+                OrderPositionDao.create(result.lastInsertRowid, element.product.id, element.amount);
             }
         }
 
@@ -152,24 +150,24 @@ class OrderDao {
         return newObj;
     }
 
-    update(id, bestellzeitpunkt = null, bestellerid = null, zahlungsartid = null, bestellpositionen = []) {
+    update(id, orderdate = null, customerid = null, paymentid = null, orderpositions = []) {
         const OrderPositionDao = new OrderPositionDao(this._conn);
         OrderPositionDao.deleteByParent(id);
 
-        if (helper.isNull(bestellzeitpunkt)) 
-            bestellzeitpunkt = helper.getNow();
+        if (helper.isNull(orderdate)) 
+            orderdate = helper.getNow();
 
-        var sql = "UPDATE Bestellung SET Bestellzeitpunkt=?,BestellerID=?,ZahlungsartID=? WHERE ID=?";
+        var sql = "UPDATE Order SET OrderDate=?,CustomerID=?,ZahlungsartID=? WHERE ID=?";
         var statement = this._conn.prepare(sql);
-        var params = [helper.formatToSQLDateTime(bestellzeitpunkt), bestellerid, zahlungsartid, id];
+        var params = [helper.formatToSQLDateTime(orderdate), customerid, paymentid, id];
         var result = statement.run(params);
 
         if (result.changes != 1) 
             throw new Error("Could not update existing Record. Data: " + params);
         
-        if (bestellpositionen.length > 0) {
-            for (var element of bestellpositionen) {
-                OrderPositionDao.create(id, element.produkt.id, element.menge);
+        if (orderpositions.length > 0) {
+            for (var element of orderpositions) {
+                OrderPositionDao.create(id, element.product.id, element.amount);
             }
         }
 
@@ -182,7 +180,7 @@ class OrderDao {
             const OrderPositionDao = new OrderPositionDao(this._conn);
             OrderPositionDao.deleteByParent(id);
 
-            var sql = "DELETE FROM Bestellung WHERE ID=?";
+            var sql = "DELETE FROM Order WHERE ID=?";
             var statement = this._conn.prepare(sql);
             var result = statement.run(id);
 
@@ -196,7 +194,7 @@ class OrderDao {
     }
 
     toString() {
-        helper.log("BestellungDao [_conn=" + this._conn + "]");
+        helper.log("OrderDao [_conn=" + this._conn + "]");
     }
 }
 

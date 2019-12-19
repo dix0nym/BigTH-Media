@@ -47,65 +47,10 @@ serviceRouter.get("/order/exists/:id", function(request, response) {
 
 serviceRouter.post("/order", function(request, response) {
     helper.log("Service Order: Client requested creation of new record");
-
+    console.log(request.body);
     var errorMsgs=[];
-    if (helper.isUndefined(request.body.ordertimestamp)) {
+    if (helper.isUndefined(request.body.ordertimestamp))
         request.body.ordertimestamp = helper.getNow();
-    } else if (!helper.isGermanDateTimeFormat(request.body.ordertimestamp)) {
-        errorMsgs.push("ordertimestamp hat das falsche Format, erlaubt: dd.mm.jjjj hh.mm.ss");
-    } else {
-        request.body.ordertimestamp = helper.parseGermanDateTimeString(request.body.ordertimestamp);
-    }
-    if (helper.isUndefined(request.body.customer)) {
-        request.body.customer = null;
-    } else if (helper.isUndefined(request.body.customer.id)) {
-        errorMsgs.push("customer gesetzt, aber id missing");
-    } else {
-        request.body.customer = request.body.customer.id;
-    }
-    if (helper.isUndefined(request.body.paymentMethod)) {
-        errorMsgs.push("paymentMethod missing");
-    } else if (helper.isUndefined(request.body.paymentMethod.id)) {
-        errorMsgs.push("paymentMethod gesetzt, aber id missing");
-    }
-    if (helper.isUndefined(request.body.oderposition)) {
-        errorMsgs.push("oderposition fehlen");
-    } else if (!helper.isArray(request.body.oderposition)) {
-        errorMsgs.push("oderposition ist kein array");
-    } else if (request.body.oderposition.length == 0) {
-        errorMsgs.push("oderposition is leer, nichts zu speichern");
-    }
-    
-    if (errorMsgs.length > 0) {
-        helper.log("Service Order: Creation not possible, data missing");
-        response.status(400).json(helper.jsonMsgError("Hinzufügen nicht möglich. Fehlende Daten: " + helper.concatArray(errorMsgs)));
-        return;
-    }
-
-    const orderDao = new OrderDao(request.app.locals.dbConnection);
-    try {
-        var result = orderDao.create(request.body.ordertimestamp, request.body.customer, request.body.paymentMethod.id, request.body.oderposition);
-        helper.log("Service Order: Record inserted");
-        response.status(200).json(helper.jsonMsgOK(result));
-    } catch (ex) {
-        helper.logError("Service Order: Error creating new record. Exception occured: " + ex.message);
-        response.status(400).json(helper.jsonMsgError(ex.message));
-    }
-});
-
-serviceRouter.put("/order", function(request, response) {
-    helper.log("Service Order: Client requested update of existing record");
-
-    var errorMsgs=[];
-    if (helper.isUndefined(request.body.id)) 
-        errorMsgs.push("id missing");
-    if (helper.isUndefined(request.body.ordertimestamp)) {
-        request.body.ordertimestamp = helper.getNow();
-    } else if (!helper.isGermanDateTimeFormat(request.body.ordertimestamp)) {
-        errorMsgs.push("wrong format of ordertimestamp, allowed: dd.mm.jjjj hh.mm.ss");
-    } else {
-        request.body.ordertimestamp = helper.parseGermanDateTimeString(request.body.ordertimestamp);
-    }
     if (helper.isUndefined(request.body.customer)) {
         request.body.customer = null;
     } else if (helper.isUndefined(request.body.customer.id)) {
@@ -113,17 +58,14 @@ serviceRouter.put("/order", function(request, response) {
     } else {
         request.body.customer = request.body.customer.id;
     }
-    if (helper.isUndefined(request.body.paymentMethod)) {
-        errorMsgs.push("paymentMethod missing");
-    } else if (helper.isUndefined(request.body.paymentMethod.id)) {
-        errorMsgs.push("paymentMethod defined, but id missing");
-    }
-    if (helper.isUndefined(request.body.oderposition)) {
-        errorMsgs.push("oderposition missing");
-    } else if (!helper.isArray(request.body.oderposition)) {
-        errorMsgs.push("oderposition not an array");
-    } else if (request.body.oderposition.length == 0) {
-        errorMsgs.push("oderposition is empty, nothing to save");
+    if (helper.isUndefined(request.body.paymentid))
+        errorMsgs.push("paymentid missing");
+    if (helper.isUndefined(request.body.orderposition)) {
+        errorMsgs.push("orderposition missing");
+    } else if (!helper.isArray(request.body.orderposition)) {
+        errorMsgs.push("orderposition not an array");
+    } else if (request.body.orderposition.length == 0) {
+        errorMsgs.push("orderposition is empty, nothing to save");
     }
 
     if (errorMsgs.length > 0) {
@@ -134,11 +76,11 @@ serviceRouter.put("/order", function(request, response) {
 
     const orderDao = new OrderDao(request.app.locals.dbConnection);
     try {
-        var result = orderDao.update(request.body.id, request.body.ordertimestamp, request.body.customer, request.body.paymentMethod.id, request.body.oderposition);
-        helper.log("Service Order: Record updated, id=" + request.body.id);
+        var result = orderDao.update(request.body.id, request.body.ordertimestamp, request.body.customer, request.body.paymentMethod.id, request.body.orderposition);
+        helper.log("Service Order: Record created, id=" + request.body.id);
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
-        helper.logError("Service Order: Error updating record by id. Exception occured: " + ex.message);
+        helper.logError("Service Order: Error creating record. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }    
 });

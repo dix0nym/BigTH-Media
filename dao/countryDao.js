@@ -21,6 +21,17 @@ class CountryDao {
         return helper.objectKeysToLower(result);
     }
 
+    loadByName(name) {
+        var sql = "SELECT * FROM Country WHERE lower(name)=?";
+        var statement = this._conn.prepare(sql);
+        var result = statement.get(name);
+
+        if (helper.isUndefined(result)) 
+            return -1;
+
+        return helper.objectKeysToLower(result);
+    }
+
     loadAll() {
         var sql = "SELECT * FROM Country";
         var statement = this._conn.prepare(sql);

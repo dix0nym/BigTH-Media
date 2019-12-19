@@ -47,7 +47,7 @@ serviceRouter.get("/customer/exists/:id", function(request, response) {
 
 serviceRouter.post("/customer", function(request, response) {
     helper.log("Service Person: Client requested creation of new record");
-
+    console.log(request.body);
     var errorMsgs=[];
     if (helper.isUndefined(request.body.title)) {
         errorMsgs.push("title missing");
@@ -58,11 +58,8 @@ serviceRouter.post("/customer", function(request, response) {
         errorMsgs.push("name missing");
     if (helper.isUndefined(request.body.surname)) 
         errorMsgs.push("surname missing");
-    if (helper.isUndefined(request.body.address)) {
-        errorMsgs.push("address missing");
-    } else if (helper.isUndefined(request.body.address.id)) {
-        errorMsgs.push("address defined, but id missing");
-    }
+    if (helper.isUndefined(request.body.addressid))
+        errorMsgs.push("addressid missing");
     if (helper.isUndefined(request.body.phonenumber)) 
         request.body.phonenumber = "";
     if (helper.isUndefined(request.body.mail)) 
@@ -71,10 +68,6 @@ serviceRouter.post("/customer", function(request, response) {
         errorMsgs.push("mail wrong format");
     if (helper.isUndefined(request.body.dateofbirth)) {
         request.body.dateofbirth = null;
-    } else if (!helper.isGermanDateTimeFormat(request.body.dateofbirth)) {
-        errorMsgs.push("dateofbirth wrong format, allowed: dd.mm.jjjj");
-    } else {
-        request.body.dateofbirth = helper.parseDateTimeString(request.body.dateofbirth);
     }
     
     if (errorMsgs.length > 0) {
@@ -85,7 +78,7 @@ serviceRouter.post("/customer", function(request, response) {
 
     const customerDao = new CustomerDao(request.app.locals.dbConnection);
     try {
-        var result = customerDao.create(request.body.title, request.body.name, request.body.surname, request.body.address.id, request.body.phonenumber, request.body.mail, request.body.dateofbirth);
+        var result = customerDao.create(request.body.title, request.body.name, request.body.surname, request.body.addressid, request.body.phonenumber, request.body.mail, request.body.dateofbirth);
         helper.log("Service Person: Record inserted");
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {

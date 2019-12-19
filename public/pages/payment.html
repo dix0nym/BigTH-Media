@@ -87,7 +87,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Confirm</button>
+                            <button type="submit" data-id="2" class="submitBtn btn btn-primary">Confirm</button>
                         </form>
                     </li>
                 </ul>
@@ -104,7 +104,9 @@
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item text-center">
-                        <a href="/pages/success.html"><img src="/img/paypal.png"/></a>
+                        <form action="/pages/success.html">
+                            <input type="image" class="submitBtn" data-id="1" src="/img/paypal.png"></button>
+                        </form>
                     </li>
                 </ul>
             </div>
@@ -135,7 +137,7 @@
                                     <label for="inputIBAN">IBAN</label>
                                     <input type="text" class="form-control" id="inputIBAN" placeholder="IBAN" />
                                 </div>
-                                <button type="submit" class="btn btn-primary">Confirm</button>
+                                <button type="submit" data-id="3" class="submitBtn btn btn-primary">Confirm</button>
                             </form>
                         </li>
                     </ul>

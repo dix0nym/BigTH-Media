@@ -160,8 +160,9 @@ async function removeQty(clickedButtonEvent) {
 }
 
 $('#buyBtn').on('click', () => {
+    alert(Object.keys(getCart()).length);
     if (Object.keys(getCart()).length > 0) {
-        window.location.href = $('#buyBtn').attr('href');
+        window.location.href = '/pages/checkout.html';
     } else {
         $('#error').text("Cart is empty");
         $('#error').show();

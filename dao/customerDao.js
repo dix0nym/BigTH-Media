@@ -69,7 +69,7 @@ class CustomerDao {
         return result;
     }
 
-    exists(id) {
+    existsId(id) {
         var sql = "SELECT COUNT(ID) AS cnt FROM Customer WHERE ID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
@@ -80,7 +80,22 @@ class CustomerDao {
         return false;
     }
 
+    exists(name, surname, addressid) {
+        var sql = "SELECT COUNT(ID) as cnt FROM Customer WHERE name=? and surname=? and addressid=?";
+        var statement = this._conn.prepare(sql);
+        var params = [(name, surname, addressid)];
+        var result = statement.get(params);
+
+        result = helper.arrayObjectKeysToLower(result);
+        if (result.cnt == 1)
+            return result.id;
+        return false;
+    }
+
     create(title = "Mr", name = "", surname = "", addressid = 1, phonenumber = "", mail = "", dateofbirth = null) {
+        var id = this.exists(name, surname, addressid);
+        if (id)
+            return this.loadById(id);
         var sql = "INSERT INTO Customer (Title,Name,Surname,AddressID,PhoneNumber,Mail,DateOfBirth) VALUES (?,?,?,?,?,?,?)";
         var statement = this._conn.prepare(sql);
         var params = [(title.toLowerCase() == 'mr' ? 0 : 1), name, surname, addressid, phonenumber, mail, (helper.isNull(dateofbirth) ? null : dateofbirth)];

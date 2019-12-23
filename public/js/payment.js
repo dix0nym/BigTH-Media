@@ -30,3 +30,22 @@ function hide() {
         }
     });
 }
+
+$('.submitBtn').on('click', (event) => {
+    event.preventDefault(); 
+    const clickedButton = $(event.currentTarget);
+    const paymentid = clickedButton.attr("data-id");
+    const customer = getCustomer();
+    let cart = getCart();
+    cart = Object.keys(cart).map((key) => {
+        return {id: key, amount: cart[key]};
+    });
+    // create order
+    console.log(cart);
+    console.log({customerid: customer.id, paymentid: paymentid, orderposition: cart})
+    $.post('/api/order/', {customerid: customer.id, paymentid: paymentid, orderposition: cart}, (response) => {
+        console.log(response)
+    }, 'json').fail( (response) => {
+        console.log(response);
+    });
+});

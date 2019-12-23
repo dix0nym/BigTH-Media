@@ -53,10 +53,10 @@ serviceRouter.post("/order", function(request, response) {
         request.body.ordertimestamp = helper.getNow();
     if (helper.isUndefined(request.body.customer)) {
         request.body.customer = null;
-    } else if (helper.isUndefined(request.body.customer.id)) {
-        errorMsgs.push("customer defined, but id missing");
+    } else if (helper.isUndefined(request.body.customerid)) {
+        errorMsgs.push("customer id missing");
     } else {
-        request.body.customer = request.body.customer.id;
+        request.body.customer = request.body.customerid;
     }
     if (helper.isUndefined(request.body.paymentid))
         errorMsgs.push("paymentid missing");
@@ -76,8 +76,8 @@ serviceRouter.post("/order", function(request, response) {
 
     const orderDao = new OrderDao(request.app.locals.dbConnection);
     try {
-        var result = orderDao.update(request.body.id, request.body.ordertimestamp, request.body.customer, request.body.paymentMethod.id, request.body.orderposition);
-        helper.log("Service Order: Record created, id=" + request.body.id);
+        var result = orderDao.create(request.body.customer, request.body.paymentid, request.body.orderposition);
+        helper.log("Service Order: Record created");
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
         helper.logError("Service Order: Error creating record. Exception occured: " + ex.message);

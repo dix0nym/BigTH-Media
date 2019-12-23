@@ -57,12 +57,12 @@ class OrderDao {
     }
 
     loadAll() {
-        const OrderPositionDao = new OrderPositionDao(this._conn);
-        var positions = OrderPositionDao.loadAll();
+        const orderPositionDao = new OrderPositionDao(this._conn);
+        var positions = orderPositionDao.loadAll();
         const customerDao = new customerDao(this._conn);
         var persons = customerDao.loadAll();
-        const PaymentMethodDao = new PaymentMethodDao(this._conn);
-        var methods = PaymentMethodDao.loadAll();
+        const paymentMethodDao = new PaymentMethodDao(this._conn);
+        var methods = paymentMethodDao.loadAll();
 
         var sql = "SELECT * FROM Order";
         var statement = this._conn.prepare(sql);
@@ -127,7 +127,7 @@ class OrderDao {
     }
 
     create(orderdate = null, customerid = null, paymentid = null, orderpositions = []) {
-        const OrderPositionDao = new OrderPositionDao(this._conn);
+        const orderPositionDao = new OrderPositionDao(this._conn);
 
         if (helper.isNull(orderdate)) 
             orderdate = helper.getNow();
@@ -142,7 +142,7 @@ class OrderDao {
 
         if (orderpositions.length > 0) {
             for (var element of orderpositions) {
-                OrderPositionDao.create(result.lastInsertRowid, element.product.id, element.amount);
+                orderPositionDao.create(result.lastInsertRowid, element.product.id, element.amount);
             }
         }
 
@@ -151,8 +151,8 @@ class OrderDao {
     }
 
     update(id, orderdate = null, customerid = null, paymentid = null, orderpositions = []) {
-        const OrderPositionDao = new OrderPositionDao(this._conn);
-        OrderPositionDao.deleteByParent(id);
+        const orderPositionDao = new OrderPositionDao(this._conn);
+        orderPositionDao.deleteByParent(id);
 
         if (helper.isNull(orderdate)) 
             orderdate = helper.getNow();
@@ -167,7 +167,7 @@ class OrderDao {
         
         if (orderpositions.length > 0) {
             for (var element of orderpositions) {
-                OrderPositionDao.create(id, element.product.id, element.amount);
+                orderPositionDao.create(id, element.product.id, element.amount);
             }
         }
 
@@ -177,8 +177,8 @@ class OrderDao {
 
     delete(id) {
         try {
-            const OrderPositionDao = new OrderPositionDao(this._conn);
-            OrderPositionDao.deleteByParent(id);
+            const orderPositionDao = new OrderPositionDao(this._conn);
+            orderPositionDao.deleteByParent(id);
 
             var sql = "DELETE FROM Order WHERE ID=?";
             var statement = this._conn.prepare(sql);

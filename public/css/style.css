@@ -6,6 +6,7 @@ body {
     border-bottom: 1px solid #17a2b8;
 }
 
+/* index.html */
 .landingImg {
     /* height: 100%;
     width: 100%;
@@ -35,7 +36,7 @@ body {
     display: inline-block;
     vertical-align: top;
 }
-/*
+
 #test {
     display: flex;
     align-items: center;
@@ -54,7 +55,7 @@ body {
     -webkit-box-direction: normal;
     text-align: center;
 }
-*/
+
 #btnSales {
     /* z-index: 10;
     position: absolute; */
@@ -106,8 +107,9 @@ body {
     height: 600px;
 }
 
+/* footer */
 #footerorient {
-    position: relative;
+    /* position: relative; */
     bottom: 0px;
     height:30px;
     overflow: hidden;
@@ -127,4 +129,13 @@ body {
 
 .greycolor{
     color: rgba(255,255,255,.75);
+}
+
+/* products.html */
+.products-preview-img {
+    height: 160px;
+}
+
+.products-body {
+    height: 80px;
 }

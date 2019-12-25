@@ -34,19 +34,20 @@ class TagDao {
     }
 
     countById(id) {
-        var sql = "SELECT COUNT(ProductID) as cnt FROM Product2Tags WHERE TagID=?";
+        var sql = "SELECT COUNT(ProductID) as count FROM Product2Tags WHERE TagID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
         return result.cnt;
     }
 
     countAll() {
-        var sql = "SELECT TagID, COUNT(ProductID) as cnt FROM Product2Tags GROUP BY TagID";
+        var sql = "SELECT TagID, COUNT(ProductID) as count FROM Product2Tags GROUP BY TagID";
         var statment = this._conn.prepare(sql);
         var result = statment.all();
         result = helper.arrayObjectKeysToLower(result);
         for(var i = 0; i < result.length; i++) {
-            result[i].tag = this.loadById(result[i].tagid)
+            var tmp = this.loadById(result[i].tagid);
+            Object.assign(result[i], tmp);
             delete result[i].tagid;
         }
         return result;

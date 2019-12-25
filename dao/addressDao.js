@@ -67,18 +67,20 @@ class AddressDao {
     }
 
     exists(street, number, zip, city, additionaladdressinfo, countryid) {
-        var sql = "SELECT COUNT(ID) as cnt FROM Address WHERE street=? and number=? and zip=? and city=? and addditonaladdressinfo=? and countryid=?";
+        var sql = "SELECT ID as id, COUNT(ID) as cnt FROM Address WHERE Street=? and Number=? and Zip=? and City=? and AdditionalAddressInfo=? and countryid=?";
         var statement = this._conn.prepare(sql);
         var params = [street, number, zip, city, additionaladdressinfo, countryid];
         var result = statement.get(params);
-
-        if (result.cnt == 1)
+        result = helper.arrayObjectKeysToLower(result);
+        console.log(result);
+        if (result.cnt > 0)
             return result.id
         return false;
     }
 
     create(street = "", number = "", additionaladdressinfo = "", zip = "", city = "", countryid = 1) {
         var id = this.exists(street, number, zip, city, additionaladdressinfo, countryid);
+        console.log(id);
         if (id)
             return this.loadById(id);
         var sql = "INSERT INTO Address (Street,Number,AdditionalAddressInfo,ZIP,City,CountryID) VALUES (?,?,?,?,?,?)";

@@ -33,6 +33,8 @@ class CustomerDao {
         result.adresse = adresseDao.loadById(result.addressid);
         delete result.addressid;
 
+        result.newsletter = !!result.newsletter;
+
         return result;
     }
 
@@ -64,6 +66,8 @@ class CustomerDao {
                 }
             }
             delete result[i].addressid;
+
+            result[i].newsletter = !!result[i].newsletter;
         }
 
         return result;
@@ -81,24 +85,25 @@ class CustomerDao {
     }
 
     exists(name, surname, addressid) {
-        var sql = "SELECT COUNT(ID) as cnt FROM Customer WHERE name=? and surname=? and addressid=?";
+        var sql = "SELECT ID as id, COUNT(ID) as cnt FROM Customer WHERE name=? and surname=? and addressid=?";
         var statement = this._conn.prepare(sql);
-        var params = [(name, surname, addressid)];
+        var params = [name, surname, addressid];
         var result = statement.get(params);
-
         result = helper.arrayObjectKeysToLower(result);
-        if (result.cnt == 1)
+        console.log(result)
+        if (result.cnt > 0)
             return result.id;
         return false;
     }
 
-    create(title = "Mr", name = "", surname = "", addressid = 1, phonenumber = "", mail = "", dateofbirth = null) {
+    create(title = "Mr", name = "", surname = "", addressid = 1, phonenumber = "", mail = "", dateofbirth = null, newsletter = 0) {
         var id = this.exists(name, surname, addressid);
+        console.log(id)
         if (id)
             return this.loadById(id);
-        var sql = "INSERT INTO Customer (Title,Name,Surname,AddressID,PhoneNumber,Mail,DateOfBirth) VALUES (?,?,?,?,?,?,?)";
+        var sql = "INSERT INTO Customer (Title,Name,Surname,AddressID,PhoneNumber,Mail,DateOfBirth, Newsletter) VALUES (?,?,?,?,?,?,?, ?)";
         var statement = this._conn.prepare(sql);
-        var params = [(title.toLowerCase() == 'mr' ? 0 : 1), name, surname, addressid, phonenumber, mail, (helper.isNull(dateofbirth) ? null : dateofbirth)];
+        var params = [(title.toLowerCase() == 'mr' ? 0 : 1), name, surname, addressid, phonenumber, mail, (helper.isNull(dateofbirth) ? null : dateofbirth), (newsletter > 0) ? 1 : 0];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -108,10 +113,10 @@ class CustomerDao {
         return newObj;
     }
 
-    update(id, title = "Mr", name = "", surname = "", addressid = 1, phonenumber = "", mail = "", dateofbirth = null) {
-        var sql = "UPDATE Customer SET Title=?,Name=?,Surname=?,AddressID=?,PhoneNumber=?,Mail=?,DateOfBirth=? WHERE ID=?";
+    update(id, title = "Mr", name = "", surname = "", addressid = 1, phonenumber = "", mail = "", dateofbirth = null, newsletter = 0) {
+        var sql = "UPDATE Customer SET Title=?,Name=?,Surname=?,AddressID=?,PhoneNumber=?,Mail=?,DateOfBirth=?,Newsletter=? WHERE ID=?";
         var statement = this._conn.prepare(sql);
-        var params = [(title.toLowerCase() == 'mr' ? 0 : 1), name, surname, addressid, phonenumber, mail, (helper.isNull(dateofbirth) ? null : dateofbirth), id];
+        var params = [(title.toLowerCase() == 'mr' ? 0 : 1), name, surname, addressid, phonenumber, mail, (helper.isNull(dateofbirth) ? null : dateofbirth), (newsletter > 0) ? 1 : 0, id];
         var result = statement.run(params);
 
         if (result.changes != 1) 

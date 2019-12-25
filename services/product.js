@@ -4,60 +4,103 @@ const Product2TagsDao = require("../dao/product2TagsDao.js");
 const express = require("express");
 var serviceRouter = express.Router();
 
+var numPerPage = 10;
+
 serviceRouter.get("/product/get/:id", function(request, response) {
-    helper.log("Service Produkt: Client requested one record, id=" + request.params.id);
+    helper.log("service product: Client requested one record, id=" + request.params.id);
 
     const productDao = new ProductDao(request.app.locals.dbConnection);
     try {
         console.log(request.params.id);
         var result = productDao.loadById(request.params.id);
         console.log(result);
-        helper.log("Service Produkt: Record loaded");
+        helper.log("service product: Record loaded");
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
-        helper.logError("Service Produkt: Error loading record by id. Exception occured: " + ex.message);
+        helper.logError("service product: Error loading record by id. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }
 });
 
 serviceRouter.get("/product/all/", function(request, response) {
-    helper.log("Service Produkt: Client requested all records");
+    helper.log("service product: Client requested all records");
 
     const productDao = new ProductDao(request.app.locals.dbConnection);
     try {
         var result = productDao.loadAll();
-        helper.log("Service Produkt: Records loaded, count=" + result.length);
+        helper.log("service product: Records loaded, count=" + result.length);
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
-        helper.logError("Service Produkt: Error loading all records. Exception occured: " + ex.message);
+        helper.logError("service product: Error loading all records. Exception occured: " + ex.message);
+        response.status(400).json(helper.jsonMsgError(ex.message));
+    }
+});
+
+serviceRouter.get("/product/resolutions/", function(request, response) {
+    helper.log("service product: client requested all resolutions");
+    const productDao = new ProductDao(request.app.locals.dbConnection);
+    try {
+        var result = productDao.getAllResolutions();
+        helper.log("service product: Records loaded, count=" + result.length);
+        response.status(200).json(helper.jsonMsgOK(result));
+    } catch (ex) {
+        helper.logError("service product: Error loading all records. Exception occured: " + ex.message);
+        response.status(400).json(helper.jsonMsgError(ex.message));  
+    }
+});
+
+serviceRouter.get("/product/page/:page/", function(request, response) {
+    helper.log("service product: Client request page " + request.params.page);
+    const productDao = new ProductDao(request.app.locals.dbConnection);
+    var page = parseInt(request.params.page);
+    var skip = page * numPerPage;
+    try {
+        var count = productDao.count();
+        var numPages = Math.ceil(count / numPerPage);
+        if (page < numPages) {
+            var result = {};
+            result.products = productDao.loadByLimit(skip, numPerPage);
+            result.pagination = {
+                current: page,
+                perPage: numPerPage,
+                previous: page > 0 ? page - 1 : undefined,
+                next: page < numPages - 1 ? page + 1 : undefined,
+                numPages: numPages
+            }
+            response.status(200).json(helper.jsonMsgOK(result));
+        } else {
+            response.status(400).json(helper.jsonMsgError("page " + page + " is >= maxPage " + numPages));
+        }
+    } catch (ex) {
+        helper.logError("service product: Error loading all records. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }
 });
 
 serviceRouter.get("/product/:id/tags/", (request, response) => {
-    helper.log("Service Tags: Client requested all tags from productid=" + request.params.id);
+    helper.log("service Tags: Client requested all tags from productid=" + request.params.id);
 
     const product2TagsDao = new Product2TagsDao(request.app.locals.dbConnection);
     try {
         var result = product2TagsDao.loadById(request.params.id);
-        helper.log("Service Tags: Records loaded");
+        helper.log("service Tags: Records loaded");
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
-        helper.logError("Service Tags: Error loading record by id. Exception occured: " + ex.message);
+        helper.logError("service Tags: Error loading record by id. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }
 });
 
 serviceRouter.get("/product/exists/:id", function(request, response) {
-    helper.log("Service Produkt: Client requested check, if record exists, id=" + request.params.id);
+    helper.log("service product: Client requested check, if record exists, id=" + request.params.id);
 
     const productDao = new ProductDao(request.app.locals.dbConnection);
     try {
         var result = productDao.exists(request.params.id);
-        helper.log("Service Produkt: Check if record exists by id=" + request.params.id + ", result=" + result);
+        helper.log("service product: Check if record exists by id=" + request.params.id + ", result=" + result);
         response.status(200).json(helper.jsonMsgOK({ "id": request.params.id, "exists": result }));
     } catch (ex) {
-        helper.logError("Service Produkt: Error checking if record exists. Exception occured: " + ex.message);
+        helper.logError("service product: Error checking if record exists. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }
 });

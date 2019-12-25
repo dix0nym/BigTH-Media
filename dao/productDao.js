@@ -63,6 +63,48 @@ class ProductDao {
         return result;
     }
 
+    loadByLimit(start, count) {
+        const vatDao = new VATDao(this._conn);
+        var taxes = vatDao.loadAll();
+
+        var sql = "SELECT * FROM Product LIMIT " + start + ", " + count;
+        var statement = this._conn.prepare(sql);
+        var result = statement.all();
+
+        if (helper.isArrayEmpty(result))
+            return [];
+        
+        result = helper.arrayObjectKeysToLower(result);
+        for (var i = 0; i < result.length; i++) {
+            for (var element of taxes) {
+                if (element.id == result[i].vatid) {
+                    result[i].vat = element;
+                    break;
+                }
+            }
+            delete result[i].vatid;
+            result[i].vatPart = helper.round((result[i].netprice / 100) * result[i].vat.percentage);
+            result[i].grossPrice = helper.round(result[i].netprice + result[i].vat.percentage);
+        }
+
+        return result;
+    }
+
+    getAllResolutions() {
+        var sql = "SELECT originalresolution as name, COUNT(ID) as count FROM Product GROUP BY originalresolution";
+        var statment = this._conn.prepare(sql);
+        var result = statment.all();
+        result = helper.arrayObjectKeysToLower(result);
+        return result;
+    }
+    
+    count() {
+        var sql = "SELECT COUNT(ID) as cnt FROM Product";
+        var statement = this._conn.prepare(sql);
+        var result = statement.get();
+        return result.cnt;
+    }
+
     exists(id) {
         var sql = "SELECT COUNT(ID) AS cnt FROM Product WHERE ID=?";
         var statement = this._conn.prepare(sql);

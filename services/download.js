@@ -1,115 +1,21 @@
 const helper = require("../helper.js");
-const DownloadDao = require("../dao/downloadDao.js");
 const express = require("express");
+const path = require('path');
+const OrderPositionDao = require("../dao/orderpositionDao.js");
+
 var serviceRouter = express.Router();
 
-serviceRouter.get("/download/get/:id", function(request, response) {
-    helper.log("service Download: Client requested one record, id=" + request.params.id);
+serviceRouter.get("/download/:uuid", function(request, response) {
+    helper.log("service Download: Client requested download of order, uuid=" + request.params.uuid);
 
-    const downloadDao = new DownloadDao(request.app.locals.dbConnection);
+    const orderpositionDao = new OrderPositionDao(request.app.locals.dbConnection);
     try {
-        var result = downloadDao.loadById(request.params.id);
-        helper.log("service Download: Record loaded");
-        response.status(200).json(helper.jsonMsgOK(result));
+        var result = orderpositionDao.loadByUUID(request.params.uuid);
+        const file = path.join("./public/media/original", result.product.filename);
+        response.download(file)
+        helper.log("service Download: File served");
     } catch (ex) {
         helper.logError("service Download: Error loading record by id. Exception occured: " + ex.message);
-        response.status(400).json(helper.jsonMsgError(ex.message));
-    }
-});
-
-serviceRouter.get("/download/all/", function(request, response) {
-    helper.log("service Download: Client requested all records");
-
-    const downloadDao = new DownloadDao(request.app.locals.dbConnection);
-    try {
-        var result = downloadDao.loadAll();
-        helper.log("service Download: Records loaded, count=" + result.length);
-        response.status(200).json(helper.jsonMsgOK(result));
-    } catch (ex) {
-        helper.logError("service Download: Error loading all records. Exception occured: " + ex.message);
-        response.status(400).json(helper.jsonMsgError(ex.message));
-    }
-});
-
-serviceRouter.get("/download/exists/:id", function(request, response) {
-    helper.log("service Download: Client requested check, if record exists, id=" + request.params.id);
-
-    const downloadDao = new DownloadDao(request.app.locals.dbConnection);
-    try {
-        var result = downloadDao.exists(request.params.id);
-        helper.log("service Download: Check if record exists by id=" + request.params.id + ", result=" + result);
-        response.status(200).json(helper.jsonMsgOK({ "id": request.params.id, "exists": result }));
-    } catch (ex) {
-        helper.logError("service Download: Error checking if record exists. Exception occured: " + ex.message);
-        response.status(400).json(helper.jsonMsgError(ex.message));
-    }
-});
-
-serviceRouter.post("/download", function(request, response) {
-    helper.log("service Download: Client requested creation of new record");
-
-    var errorMsgs=[];
-    if (helper.isUndefined(request.body.uuid)) 
-        errorMsgs.push("uuid missing");
-    if (helper.isUndefined(request.body.productid)) 
-        errorMsgs.push("productid missing");
-    
-    if (errorMsgs.length > 0) {
-        helper.log("service Download: Creation not possible, data missing");
-        response.status(400).json(helper.jsonMsgError("Creation not possible, data missing: " + helper.concatArray(errorMsgs)));
-        return;
-    }
-
-    const downloadDao = new DownloadDao(request.app.locals.dbConnection);
-    try {
-        var result = downloadDao.create(request.body.uuid, request.body.productid);
-        helper.log("service Download: Record inserted");
-        response.status(200).json(helper.jsonMsgOK(result));
-    } catch (ex) {
-        helper.logError("service Download: Error creating new record. Exception occured: " + ex.message);
-        response.status(400).json(helper.jsonMsgError(ex.message));
-    }    
-});
-
-serviceRouter.put("/download", function(request, response) {
-    helper.log("service Download: Client requested update of existing record");
-
-    var errorMsgs=[];
-    if (helper.isUndefined(request.body.id)) 
-        errorMsgs.push("id fehlt");
-    if (helper.isUndefined(request.body.uuid)) 
-        errorMsgs.push("bezeichnung fehlt");
-    if (helper.isUndefined(request.body.productid)) 
-        errorMsgs.push("dateipfad fehlt");
-
-    if (errorMsgs.length > 0) {
-        helper.log("service Download: Update not possible, data missing");
-        response.status(400).json(helper.jsonMsgError("Update nicht möglich. Fehlende Daten: " + helper.concatArray(errorMsgs)));
-        return;
-    }
-
-    const downloadDao = new DownloadDao(request.app.locals.dbConnection);
-    try {
-        var result = downloadDao.update(request.body.id, request.body.uuid, request.body.productid);
-        helper.log("service Download: Record updated, id=" + request.body.id);
-        response.status(200).json(helper.jsonMsgOK(result));
-    } catch (ex) {
-        helper.logError("service Download: Error updating record by id. Exception occured: " + ex.message);
-        response.status(400).json(helper.jsonMsgError(ex.message));
-    }    
-});
-
-serviceRouter.delete("/download/:id", function(request, response) {
-    helper.log("service Download: Client requested deletion of record, id=" + request.params.id);
-
-    const downloadDao = new DownloadDao(request.app.locals.dbConnection);
-    try {
-        var obj = downloadDao.loadById(request.params.id);
-        downloadDao.delete(request.params.id);
-        helper.log("service Download: Deletion of record successfull, id=" + request.params.id);
-        response.status(200).json(helper.jsonMsgOK({ "deleted": true, "entry": obj }));
-    } catch (ex) {
-        helper.logError("service Download: Error deleting record. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }
 });

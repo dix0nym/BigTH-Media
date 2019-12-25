@@ -55,7 +55,7 @@ class OrderpositionDao {
         
             for (var element of products) {
                 if (element.id == result[i].productid) {
-                    result[i].produkt = element;
+                    result[i].product = element;
                     break;
                 }
             }
@@ -73,7 +73,7 @@ class OrderpositionDao {
         const productDao = new ProductDao(this._conn);
         var products = productDao.loadAll();
 
-        var sql = "SELECT * FROM OrderPostition WHERE OrderID=?";
+        var sql = "SELECT * FROM OrderPosition WHERE OrderID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.all(orderid);
 
@@ -81,19 +81,18 @@ class OrderpositionDao {
             return [];
         
         result = helper.arrayObjectKeysToLower(result);
-
+        
         for (var i = 0; i < result.length; i++) {
             result[i].order = { "id": result[i].orderid };
             delete result[i].orderid;
         
             for (var element of products) {
                 if (element.id == result[i].productid) {
-                    result[i].produkt = element;
+                    result[i].product = element;
                     break;
                 }
             }
             delete result[i].productid;
-
             result[i].vatsum = helper.round(result[i].amount * result[i].product.vatpart);
             result[i].netsum = helper.round(result[i].amount * result[i].product.netprice);
             result[i].grosssum = helper.round(result[i].amount * result[i].product.grossprice);
@@ -102,6 +101,24 @@ class OrderpositionDao {
         return result;
     }
 
+    loadByUUID(uuid) {
+        const productDao = new ProductDao(this._conn);
+
+        var sql = "SELECT * FROM OrderPosition WHERE UUID=?";
+        var statement = this._conn.prepare(sql);
+        var result = statement.get(uuid);
+
+        if (helper.isUndefined(result)) 
+            throw new Error("No Record found by uuid=" + uuid);
+
+        result = helper.objectKeysToLower(result);
+
+        result.product = productDao.loadById(result.productid);
+        delete result.productid;
+
+        return result;
+    }
+    
     exists(id) {
         var sql = "SELECT COUNT(ID) AS cnt FROM OrderPosition WHERE ID=?";
         var statement = this._conn.prepare(sql);
@@ -113,10 +130,10 @@ class OrderpositionDao {
         return false;
     }
 
-    create(orderid = 1, productid = 1, amount = 1) {
-        var sql = "INSERT INTO OrderPosition (OrderID,ProductID,Amount) VALUES (?,?,?)";
+    create(orderid = 1, productid = 1, amount = 1, uuid=null) {
+        var sql = "INSERT INTO OrderPosition (OrderID,ProductID,Amount,UUID) VALUES (?,?,?,?)";
         var statement = this._conn.prepare(sql);
-        var params = [orderid, productid, amount];
+        var params = [orderid, productid, amount, uuid];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -126,10 +143,10 @@ class OrderpositionDao {
         return newObj;
     }
 
-    update(id, orderid = 1, productid = 1, amount = 1) {
-        var sql = "UPDATE OrderPosition SET OrderID=?,ProductID=?,Amount=? WHERE ID=?";
+    update(id, orderid = 1, productid = 1, amount = 1, uuid=null) {
+        var sql = "UPDATE OrderPosition SET OrderID=?,ProductID=?,Amount=?,UUID=? WHERE ID=?";
         var statement = this._conn.prepare(sql);
-        var params = [orderid, productid, amount, id];
+        var params = [orderid, productid, amount, uuid, id];
         var result = statement.run(params);
 
         if (result.changes != 1) 
@@ -162,7 +179,7 @@ class OrderpositionDao {
 
             return true;
         } catch (ex) {
-            throw new Error("Could not delete Records by bestellungid=" + bestellungid + ". Reason: " + ex.message);
+            throw new Error("Could not delete Records by orderid=" + bestellungid + ". Reason: " + ex.message);
         }
     }
 

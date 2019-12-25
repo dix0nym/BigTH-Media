@@ -38,8 +38,8 @@ class Product2TagsDao {
         result = helper.arrayObjectKeysToLower(result);
         for (var i = 0; i < result.length; i++) {
             result[i].product = productDao.loadById(result[i].productid);
+            result[i].tags = tagDao.loadById(result[i].productid);
             delete result[i].productid;
-            delete result[i].tagid;
         }
         return result;
     }

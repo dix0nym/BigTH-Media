@@ -3,7 +3,7 @@ const OrderDao = require("../dao/orderDao.js");
 const express = require("express");
 var serviceRouter = express.Router();
 
-serviceRouter.get("/bestellung/get/:id", function(request, response) {
+serviceRouter.get("/order/get/:id", function(request, response) {
     helper.log("service Order: Client requested one record, id=" + request.params.id);
 
     const orderDao = new OrderDao(request.app.locals.dbConnection);
@@ -47,17 +47,12 @@ serviceRouter.get("/order/exists/:id", function(request, response) {
 
 serviceRouter.post("/order", function(request, response) {
     helper.log("service Order: Client requested creation of new record");
-    console.log(request.body);
+    // console.log(request.body);
     var errorMsgs=[];
     if (helper.isUndefined(request.body.ordertimestamp))
         request.body.ordertimestamp = helper.getNow();
-    if (helper.isUndefined(request.body.customer)) {
-        request.body.customer = null;
-    } else if (helper.isUndefined(request.body.customerid)) {
+    if (helper.isUndefined(request.body.customerid))
         errorMsgs.push("customer id missing");
-    } else {
-        request.body.customer = request.body.customerid;
-    }
     if (helper.isUndefined(request.body.paymentid))
         errorMsgs.push("paymentid missing");
     if (helper.isUndefined(request.body.orderposition)) {
@@ -76,11 +71,13 @@ serviceRouter.post("/order", function(request, response) {
 
     const orderDao = new OrderDao(request.app.locals.dbConnection);
     try {
-        var result = orderDao.create(request.body.customer, request.body.paymentid, request.body.orderposition);
+        var result = orderDao.create(request.body.ordertimestamp, request.body.customerid, request.body.paymentid, request.body.orderposition);
         helper.log("service Order: Record created");
+        console.log(result.orderpositions);
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
         helper.logError("service Order: Error creating record. Exception occured: " + ex.message);
+        helper.logError(ex.stack);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }    
 });

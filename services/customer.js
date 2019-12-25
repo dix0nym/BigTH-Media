@@ -4,49 +4,49 @@ const express = require("express");
 var serviceRouter = express.Router();
 
 serviceRouter.get("/customer/get/:id", function(request, response) {
-    helper.log("service Person: Client requested one record, id=" + request.params.id);
+    helper.log("service Customer: Client requested one record, id=" + request.params.id);
 
     const customerDao = new CustomerDao(request.app.locals.dbConnection);
     try {
         var result = customerDao.loadById(request.params.id);
-        helper.log("service Person: Record loaded");
+        helper.log("service Customer: Record loaded");
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
-        helper.logError("service Person: Error loading record by id. Exception occured: " + ex.message);
+        helper.logError("service Customer: Error loading record by id. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }
 });
 
 serviceRouter.get("/customer/all/", function(request, response) {
-    helper.log("service Person: Client requested all records");
+    helper.log("service Customer: Client requested all records");
 
     const customerDao = new CustomerDao(request.app.locals.dbConnection);
     try {
         var result = customerDao.loadAll();
-        helper.log("service Person: Records loaded, count=" + result.length);
+        helper.log("service Customer: Records loaded, count=" + result.length);
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
-        helper.logError("service Person: Error loading all records. Exception occured: " + ex.message);
+        helper.logError("service Customer: Error loading all records. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }
 });
 
 serviceRouter.get("/customer/exists/:id", function(request, response) {
-    helper.log("service Person: Client requested check, if record exists, id=" + request.params.id);
+    helper.log("service Customer: Client requested check, if record exists, id=" + request.params.id);
 
     const customerDao = new CustomerDao(request.app.locals.dbConnection);
     try {
         var result = customerDao.exists(request.params.id);
-        helper.log("service Person: Check if record exists by id=" + request.params.id + ", result=" + result);
+        helper.log("service Customer: Check if record exists by id=" + request.params.id + ", result=" + result);
         response.status(200).json(helper.jsonMsgOK({ "id": request.params.id, "exists": result }));
     } catch (ex) {
-        helper.logError("service Person: Error checking if record exists. Exception occured: " + ex.message);
+        helper.logError("service Customer: Error checking if record exists. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }
 });
 
 serviceRouter.post("/customer", function(request, response) {
-    helper.log("service Person: Client requested creation of new record");
+    helper.log("service Customer: Client requested creation of new record");
     console.log(request.body);
     var errorMsgs=[];
     if (helper.isUndefined(request.body.title)) {
@@ -71,7 +71,7 @@ serviceRouter.post("/customer", function(request, response) {
     }
     
     if (errorMsgs.length > 0) {
-        helper.log("service Person: Creation not possible, data missing");
+        helper.log("service Customer: Creation not possible, data missing");
         response.status(400).json(helper.jsonMsgError("Creation not possible, data missing " + helper.concatArray(errorMsgs)));
         return;
     }
@@ -79,16 +79,16 @@ serviceRouter.post("/customer", function(request, response) {
     const customerDao = new CustomerDao(request.app.locals.dbConnection);
     try {
         var result = customerDao.create(request.body.title, request.body.name, request.body.surname, request.body.addressid, request.body.phonenumber, request.body.mail, request.body.dateofbirth);
-        helper.log("service Person: Record inserted");
+        helper.log("service Customer: Record inserted");
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
-        helper.logError("service Person: Error creating new record. Exception occured: " + ex.message);
+        helper.logError("service Customer: Error creating new record. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }    
 });
 
 serviceRouter.put("/customer", function(request, response) {
-    helper.log("service Person: Client requested update of existing record");
+    helper.log("service Customer: Client requested update of existing record");
 
     var errorMsgs=[];
     if (helper.isUndefined(request.body.id)) 
@@ -122,7 +122,7 @@ serviceRouter.put("/customer", function(request, response) {
     }
 
     if (errorMsgs.length > 0) {
-        helper.log("service Person: Update not possible, data missing");
+        helper.log("service Customer: Update not possible, data missing");
         response.status(400).json(helper.jsonMsgError("Update not possible, missing data: " + helper.concatArray(errorMsgs)));
         return;
     }
@@ -130,25 +130,25 @@ serviceRouter.put("/customer", function(request, response) {
     const customerDao = new CustomerDao(request.app.locals.dbConnection);
     try {
         var result = customerDao.update(request.body.id, request.body.title, request.body.name, request.body.surname, request.body.address.id, request.body.phonenumber, request.body.mail, request.body.dateofbirth);
-        helper.log("service Person: Record updated, id=" + request.body.id);
+        helper.log("service Customer: Record updated, id=" + request.body.id);
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
-        helper.logError("service Person: Error updating record by id. Exception occured: " + ex.message);
+        helper.logError("service Customer: Error updating record by id. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }    
 });
 
 serviceRouter.delete("/customer/:id", function(request, response) {
-    helper.log("service Person: Client requested deletion of record, id=" + request.params.id);
+    helper.log("service Customer: Client requested deletion of record, id=" + request.params.id);
 
     const customerDao = new CustomerDao(request.app.locals.dbConnection);
     try {
         var obj = customerDao.loadById(request.params.id);
         customerDao.delete(request.params.id);
-        helper.log("service Person: Deletion of record successfull, id=" + request.params.id);
+        helper.log("service Customer: Deletion of record successfull, id=" + request.params.id);
         response.status(200).json(helper.jsonMsgOK({ "deleted": true, "entry": obj }));
     } catch (ex) {
-        helper.logError("service Person: Error deleting record. Exception occured: " + ex.message);
+        helper.logError("service Customer: Error deleting record. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
     }
 });

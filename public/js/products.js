@@ -26,13 +26,7 @@ async function loadProducts(search, page) {
     var data = productsJson.data;
     var products = data.products;
     for(var i = 0; i < products.length; i++) {
-        const tagsResponse = await fetch("/api/product/" + products[i].id + "/tags");
-        var tagsR = await tagsResponse.json();
-        if (tagsR.error) {
-            console.log("failed to fetch tags");
-            return;
-        }
-        products[i].tags = tagsR.data.map(k => k.name);
+        products[i].tags = products[i].tags.map(k => k.name);
     }
     renderProducts(products);
     renderPagination(data.pagination)

@@ -1,5 +1,6 @@
 const helper = require("../helper.js");
 const VATDao = require("./vatDao.js");
+const Product2TagsDao = require("./product2TagsDao.js");
 
 class ProductDao {
 
@@ -14,6 +15,8 @@ class ProductDao {
     loadById(id) {
         const vatDao = new VATDao(this._conn);
 
+        const product2TagsDao = new Product2TagsDao(this._conn);
+
         var sql = "SELECT * FROM Product WHERE ID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
@@ -22,6 +25,8 @@ class ProductDao {
             throw new Error("No Record found by id=" + id);
 
         result = helper.objectKeysToLower(result);
+
+        result.tags = product2TagsDao.loadById(result.id);
 
         result.vat = vatDao.loadById(result.vatid);
         delete result.vatid;
@@ -36,6 +41,8 @@ class ProductDao {
     loadAll() {
         const vatDao = new VATDao(this._conn);
         var taxes = vatDao.loadAll();
+
+        const product2TagsDao = new Product2TagsDao(this._conn);
 
         var sql = "SELECT * FROM Product";
         var statement = this._conn.prepare(sql);
@@ -54,18 +61,18 @@ class ProductDao {
                 }
             }
             delete result[i].vatid;
-
-            result[i].vatPart = helper.round((result[i].netprice / 100) * result[i].vat.percentage);
-
-            result[i].grossPrice = helper.round(result[i].netprice + result[i].vat.percentage);
+            result[i].tags = product2TagsDao.loadById(result[i].id);
+            result[i].vatpart = helper.round((result[i].netprice / 100) * result[i].vat.percentage);
+            result[i].grossprice = helper.round(result[i].netprice + result[i].vat.percentage);
         }
-
         return result;
     }
 
     loadByLimit(start, count) {
         const vatDao = new VATDao(this._conn);
         var taxes = vatDao.loadAll();
+
+        const product2TagsDao = new Product2TagsDao(this._conn);
 
         var sql = "SELECT * FROM Product LIMIT " + start + ", " + count;
         var statement = this._conn.prepare(sql);
@@ -83,10 +90,10 @@ class ProductDao {
                 }
             }
             delete result[i].vatid;
+            result[i].tags = product2TagsDao.loadById(result[i].id);
             result[i].vatPart = helper.round((result[i].netprice / 100) * result[i].vat.percentage);
             result[i].grossPrice = helper.round(result[i].netprice + result[i].vat.percentage);
         }
-
         return result;
     }
 

@@ -41,12 +41,14 @@ class TagDao {
     }
 
     countAll() {
+        var tags = this.loadAll();
+        tags = new Map(tags.map(tag => [tag.id, tag]));
         var sql = "SELECT TagID, COUNT(ProductID) as count FROM Product2Tags GROUP BY TagID";
         var statment = this._conn.prepare(sql);
         var result = statment.all();
         result = helper.arrayObjectKeysToLower(result);
         for(var i = 0; i < result.length; i++) {
-            var tmp = this.loadById(result[i].tagid);
+            var tmp = tags.get(result[i].tagid);
             Object.assign(result[i], tmp);
             delete result[i].tagid;
         }

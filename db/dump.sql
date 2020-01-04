@@ -187,7 +187,7 @@ CREATE TABLE IF NOT EXISTS "Product" (
 	"Details"	TEXT DEFAULT NULL,
 	"NetPrice"	REAL NOT NULL DEFAULT 0.0,
 	"FileName"	TEXT,
-	"OriginalResolution"	TEXT,
+	"Resolution"	TEXT,
 	CONSTRAINT "fk_Product1" FOREIGN KEY("VATID") REFERENCES "VAT"("ID")
 );
 INSERT INTO Product VALUES(1,'Alps in Winter',1,'A beautiful view of the snowy alps',209.43999999999999772,'DSC_0723.jpg','(6000, 4000)');

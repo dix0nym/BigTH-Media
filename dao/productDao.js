@@ -63,7 +63,7 @@ class ProductDao {
             delete result[i].vatid;
             result[i].tags = product2TagsDao.loadById(result[i].id);
             result[i].vatpart = helper.round((result[i].netprice / 100) * result[i].vat.percentage);
-            result[i].grossprice = helper.round(result[i].netprice + result[i].vat.percentage);
+            result[i].grossprice = helper.round(result[i].netprice + result[i].vatpart);
         }
         return result;
     }
@@ -98,7 +98,7 @@ class ProductDao {
     }
 
     getAllResolutions() {
-        var sql = "SELECT originalresolution as name, COUNT(ID) as count FROM Product GROUP BY originalresolution";
+        var sql = "SELECT Resolution as name, COUNT(ID) as count FROM Product GROUP BY Resolution";
         var statment = this._conn.prepare(sql);
         var result = statment.all();
         result = helper.arrayObjectKeysToLower(result);

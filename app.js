@@ -74,4 +74,7 @@ app.use(TOPLEVELPATH, serviceRouter);
 serviceRouter = require("./services/sales.js");
 app.use(TOPLEVELPATH, serviceRouter);
 
+serviceRouter = require("./services/livesearch.js");
+app.use(TOPLEVELPATH, serviceRouter);
+
 module.exports = app;

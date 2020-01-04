@@ -13,11 +13,16 @@
                 <a class="nav-link" href="/pages/products.html">Products</a>
             </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search">
-            <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+        <form class="form-inline my-2 my-lg-0 search-box dropdown">
+            <input class="form-control mr-sm-2" id="live-search-input" type="search" placeholder="Search">
+            <button class="btn btn-outline-info my-2 my-sm-0" id="livesearchBtn" type="submit">Search</button>
+            <span class="toggle-helper" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown"></span>
+            <div class="live-search-result dropdown-menu">
+                <div class="test"></div>
+            </div>
         </form>
-        <a class="btn btn-outline-info ml-sm-2" href="/pages/shopping_cart.html"><i class="fa fa-shopping-cart"
-                aria-hidden="true"></i></a>
+        <a class="btn btn-outline-info ml-sm-2" id="searchBtn" href="/pages/shopping_cart.html">
+            <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+        </a>
     </div>
 </nav>

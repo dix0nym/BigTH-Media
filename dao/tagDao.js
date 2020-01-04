@@ -27,7 +27,7 @@ class TagDao {
 
         if (helper.isArrayEmpty(result))
             return [];
-        
+
         result = helper.arrayObjectKeysToLower(result);
 
         return result;
@@ -47,7 +47,7 @@ class TagDao {
         var statment = this._conn.prepare(sql);
         var result = statment.all();
         result = helper.arrayObjectKeysToLower(result);
-        for(var i = 0; i < result.length; i++) {
+        for (var i = 0; i < result.length; i++) {
             var tmp = tags.get(result[i].tagid);
             Object.assign(result[i], tmp);
             delete result[i].tagid;
@@ -60,9 +60,21 @@ class TagDao {
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
-        if (result.cnt == 1) 
+        if (result.cnt == 1)
             return true;
         return false;
+    }
+
+    search(needle) {
+        var sql = "SELECT * FROM Tags WHERE Name LIKE '%" + needle + "%'";
+        var statement = this._conn.prepare(sql);
+        var result = statement.all();
+        if (helper.isArrayEmpty(result))
+            return [];
+
+        result = helper.arrayObjectKeysToLower(result);
+
+        return result;
     }
 
     toString() {

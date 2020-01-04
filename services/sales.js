@@ -3,7 +3,7 @@ const SalesDao = require("../dao/salesDao.js");
 const express = require("express");
 var serviceRouter = express.Router();
 
-serviceRouter.get("/api/sales/get/:id", function(request, response) {
+serviceRouter.get("/api/sales/get/:id", (request, response) => {
     helper.log("service Sales: Client requested one record, id=" + request.params.id);
 
     const salesDao = new SalesDao(request.app.locals.dbConnection);
@@ -18,7 +18,7 @@ serviceRouter.get("/api/sales/get/:id", function(request, response) {
     }
 });
 
-serviceRouter.get("/sales/all/", function(request, response) {
+serviceRouter.get("/sales/all/", (request, response) => {
     helper.log("service Sales: Client requested all records");
 
     const salesDao = new SalesDao(request.app.locals.dbConnection);

@@ -3,7 +3,7 @@ const CountryDao = require("../dao/countryDao.js");
 const express = require("express");
 var serviceRouter = express.Router();
 
-serviceRouter.get("/country/all/", function(request, response) {
+serviceRouter.get("/country/all/", (request, response) => {
     helper.log("service Country: Client requested all records");
 
     const countryDao = new CountryDao(request.app.locals.dbConnection);

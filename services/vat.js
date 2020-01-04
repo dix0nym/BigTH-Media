@@ -3,7 +3,7 @@ const VATDao = require("../dao/vatDao.js");
 const express = require("express");
 var serviceRouter = express.Router();
 
-serviceRouter.get("/vat/get/:id", function(request, response) {
+serviceRouter.get("/vat/get/:id", (request, response) => {
     helper.log("service VAT: Client requested one record, id=" + request.params.id);
 
     const vatDao = new VATDao(request.app.locals.dbConnection);
@@ -17,7 +17,7 @@ serviceRouter.get("/vat/get/:id", function(request, response) {
     }
 });
 
-serviceRouter.get("/vat/all/", function(request, response) {
+serviceRouter.get("/vat/all/", (request, response) => {
     helper.log("service VAT: Client requested all records");
 
     const vatDao = new VATDao(request.app.locals.dbConnection);
@@ -31,7 +31,7 @@ serviceRouter.get("/vat/all/", function(request, response) {
     }
 });
 
-serviceRouter.get("/vat/exists/:id", function(request, response) {
+serviceRouter.get("/vat/exists/:id", (request, response) => {
     helper.log("service VAT: Client requested check, if record exists, id=" + request.params.id);
 
     const vatDao = new VATDao(request.app.locals.dbConnection);
@@ -45,7 +45,7 @@ serviceRouter.get("/vat/exists/:id", function(request, response) {
     }
 });
 
-serviceRouter.post("/vat", function(request, response) {
+serviceRouter.post("/vat", (request, response) => {
     helper.log("service VAT: Client requested creation of new record");
 
     var errorMsgs=[];
@@ -76,7 +76,7 @@ serviceRouter.post("/vat", function(request, response) {
     }    
 });
 
-serviceRouter.put("/vat", function(request, response) {
+serviceRouter.put("/vat", (request, response) => {
     helper.log("service VAT: Client requested update of existing record");
 
     var errorMsgs=[];
@@ -109,7 +109,7 @@ serviceRouter.put("/vat", function(request, response) {
     }    
 });
 
-serviceRouter.delete("/vat/:id", function(request, response) {
+serviceRouter.delete("/vat/:id", (request, response) => {
     helper.log("service VAT: Client requested deletion of record, id=" + request.params.id);
 
     const vatDao = new VATDao(request.app.locals.dbConnection);

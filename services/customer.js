@@ -3,7 +3,7 @@ const CustomerDao = require("../dao/customerDao.js");
 const express = require("express");
 var serviceRouter = express.Router();
 
-serviceRouter.get("/customer/get/:id", function(request, response) {
+serviceRouter.get("/customer/get/:id", (request, response) => {
     helper.log("service Customer: Client requested one record, id=" + request.params.id);
 
     const customerDao = new CustomerDao(request.app.locals.dbConnection);
@@ -17,7 +17,7 @@ serviceRouter.get("/customer/get/:id", function(request, response) {
     }
 });
 
-serviceRouter.get("/customer/all/", function(request, response) {
+serviceRouter.get("/customer/all/", (request, response) => {
     helper.log("service Customer: Client requested all records");
 
     const customerDao = new CustomerDao(request.app.locals.dbConnection);
@@ -31,7 +31,7 @@ serviceRouter.get("/customer/all/", function(request, response) {
     }
 });
 
-serviceRouter.get("/customer/exists/:id", function(request, response) {
+serviceRouter.get("/customer/exists/:id", (request, response) => {
     helper.log("service Customer: Client requested check, if record exists, id=" + request.params.id);
 
     const customerDao = new CustomerDao(request.app.locals.dbConnection);
@@ -45,7 +45,7 @@ serviceRouter.get("/customer/exists/:id", function(request, response) {
     }
 });
 
-serviceRouter.post("/customer", function(request, response) {
+serviceRouter.post("/customer", (request, response) => {
     helper.log("service Customer: Client requested creation of new record");
     console.log(request.body);
     var errorMsgs=[];
@@ -87,7 +87,7 @@ serviceRouter.post("/customer", function(request, response) {
     }    
 });
 
-serviceRouter.put("/customer", function(request, response) {
+serviceRouter.put("/customer", (request, response) => {
     helper.log("service Customer: Client requested update of existing record");
 
     var errorMsgs=[];
@@ -138,7 +138,7 @@ serviceRouter.put("/customer", function(request, response) {
     }    
 });
 
-serviceRouter.delete("/customer/:id", function(request, response) {
+serviceRouter.delete("/customer/:id", (request, response) => {
     helper.log("service Customer: Client requested deletion of record, id=" + request.params.id);
 
     const customerDao = new CustomerDao(request.app.locals.dbConnection);

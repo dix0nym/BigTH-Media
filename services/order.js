@@ -3,7 +3,7 @@ const OrderDao = require("../dao/orderDao.js");
 const express = require("express");
 var serviceRouter = express.Router();
 
-serviceRouter.get("/order/get/:id", function(request, response) {
+serviceRouter.get("/order/get/:id", (request, response) => {
     helper.log("service Order: Client requested one record, id=" + request.params.id);
 
     const orderDao = new OrderDao(request.app.locals.dbConnection);
@@ -17,7 +17,7 @@ serviceRouter.get("/order/get/:id", function(request, response) {
     }
 });
 
-serviceRouter.get("/order/all/", function(request, response) {
+serviceRouter.get("/order/all/", (request, response) => {
     helper.log("service Order: Client requested all records");
 
     const orderDao = new OrderDao(request.app.locals.dbConnection);
@@ -31,7 +31,7 @@ serviceRouter.get("/order/all/", function(request, response) {
     }
 });
 
-serviceRouter.get("/order/exists/:id", function(request, response) {
+serviceRouter.get("/order/exists/:id", (request, response) => {
     helper.log("service Order: Client requested check, if record exists, id=" + request.params.id);
 
     const orderDao = new OrderDao(request.app.locals.dbConnection);
@@ -45,7 +45,7 @@ serviceRouter.get("/order/exists/:id", function(request, response) {
     }
 });
 
-serviceRouter.post("/order", function(request, response) {
+serviceRouter.post("/order", (request, response) => {
     helper.log("service Order: Client requested creation of new record");
     // console.log(request.body);
     var errorMsgs=[];
@@ -82,7 +82,7 @@ serviceRouter.post("/order", function(request, response) {
     }    
 });
 
-serviceRouter.delete("/order/:id", function(request, response) {
+serviceRouter.delete("/order/:id", (request, response) => {
     helper.log("service Order: Client requested deletion of record, id=" + request.params.id);
 
     const orderDao = new OrderDao(request.app.locals.dbConnection);

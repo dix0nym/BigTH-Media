@@ -6,7 +6,7 @@ var serviceRouter = express.Router();
 
 var numPerPage = 10;
 
-serviceRouter.get("/product/get/:id", function(request, response) {
+serviceRouter.get("/product/get/:id", (request, response) => {
     helper.log("service product: Client requested one record, id=" + request.params.id);
 
     const productDao = new ProductDao(request.app.locals.dbConnection);
@@ -22,7 +22,7 @@ serviceRouter.get("/product/get/:id", function(request, response) {
     }
 });
 
-serviceRouter.get("/product/all/", function(request, response) {
+serviceRouter.get("/product/all/", (request, response) => {
     helper.log("service product: Client requested all records");
 
     const productDao = new ProductDao(request.app.locals.dbConnection);
@@ -36,7 +36,7 @@ serviceRouter.get("/product/all/", function(request, response) {
     }
 });
 
-serviceRouter.get("/product/resolutions/", function(request, response) {
+serviceRouter.get("/product/resolutions/", (request, response) => {
     helper.log("service product: client requested all resolutions");
     const productDao = new ProductDao(request.app.locals.dbConnection);
     try {
@@ -49,17 +49,20 @@ serviceRouter.get("/product/resolutions/", function(request, response) {
     }
 });
 
-serviceRouter.get("/product/page/:page/", function(request, response) {
+serviceRouter.get("/product/page/:page/", (request, response) => {
+    // /product/page/1/?tags=tag1&tags=tag2&search=search
     helper.log("service product: Client request page " + request.params.page);
     const productDao = new ProductDao(request.app.locals.dbConnection);
     var page = parseInt(request.params.page);
     var skip = page * numPerPage;
+    const tags = request.query.tags;
+    const search = request.query.tags;
     try {
         var count = productDao.count();
         var numPages = Math.ceil(count / numPerPage);
         if (page < numPages) {
             var result = {};
-            result.products = productDao.loadByLimit(skip, numPerPage);
+            result.products = (tags || search) ? productDao.loadFilteredByLimit(skip, numPerPage, tags, search) : productDao.loadByLimit(skip, numPerPage);
             result.pagination = {
                 current: page,
                 perPage: numPerPage,
@@ -91,7 +94,7 @@ serviceRouter.get("/product/:id/tags/", (request, response) => {
     }
 });
 
-serviceRouter.get("/product/exists/:id", function(request, response) {
+serviceRouter.get("/product/exists/:id", (request, response) => {
     helper.log("service product: Client requested check, if record exists, id=" + request.params.id);
 
     const productDao = new ProductDao(request.app.locals.dbConnection);

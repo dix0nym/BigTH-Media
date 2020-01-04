@@ -5,7 +5,7 @@ const OrderPositionDao = require("../dao/orderpositionDao.js");
 
 var serviceRouter = express.Router();
 
-serviceRouter.get("/download/:uuid", function(request, response) {
+serviceRouter.get("/download/:uuid", (request, response) => {
     helper.log("service Download: Client requested download of order, uuid=" + request.params.uuid);
 
     const orderpositionDao = new OrderPositionDao(request.app.locals.dbConnection);

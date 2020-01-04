@@ -4,7 +4,7 @@ const CountryDao = require("../dao/countryDao.js");
 const express = require("express");
 var serviceRouter = express.Router();
 
-serviceRouter.get("/address/get/:id", function(request, response) {
+serviceRouter.get("/address/get/:id", (request, response) => {
     helper.log("service Address: Client requested one record, id=" + request.params.id);
 
     const addressDao = new AddressDao(request.app.locals.dbConnection);
@@ -18,7 +18,7 @@ serviceRouter.get("/address/get/:id", function(request, response) {
     }
 });
 
-serviceRouter.get("/address/all/", function(request, response) {
+serviceRouter.get("/address/all/", (request, response) => {
     helper.log("service Address: Client requested all records");
 
     const addressDao = new AddressDao(request.app.locals.dbConnection);
@@ -32,7 +32,7 @@ serviceRouter.get("/address/all/", function(request, response) {
     }
 });
 
-serviceRouter.get("/address/exists/:id", function(request, response) {
+serviceRouter.get("/address/exists/:id", (request, response) => {
     helper.log("service Address: Client requested check, if record exists, id=" + request.params.id);
 
     const addressDao = new AddressDao(request.app.locals.dbConnection);
@@ -46,7 +46,7 @@ serviceRouter.get("/address/exists/:id", function(request, response) {
     }
 });
 
-serviceRouter.post("/address", function(request, response) {
+serviceRouter.post("/address", (request, response) => {
     console.log(request.body);
     helper.log("service Address: Client requested creation of new record");
 
@@ -93,7 +93,7 @@ serviceRouter.post("/address", function(request, response) {
     }    
 });
 
-serviceRouter.delete("/address/:id", function(request, response) {
+serviceRouter.delete("/address/:id", (request, response) => {
     helper.log("service Address: Client requested deletion of record, id=" + request.params.id);
 
     const addressDao = new AddressDao(request.app.locals.dbConnection);

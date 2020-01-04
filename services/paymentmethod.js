@@ -3,7 +3,7 @@ const PaymentMethodDao = require("../dao/paymentMethodDao.js");
 const express = require("express");
 var serviceRouter = express.Router();
 
-serviceRouter.get("/paymentmethod/get/:id", function(request, response) {
+serviceRouter.get("/paymentmethod/get/:id", (request, response) => {
     helper.log("service PaymentMethod: Client requested one record, id=" + request.params.id);
 
     const paymentmethodDao = new PaymentMethodDao(request.app.locals.dbConnection);
@@ -17,7 +17,7 @@ serviceRouter.get("/paymentmethod/get/:id", function(request, response) {
     }
 });
 
-serviceRouter.get("/paymentmethod/alle", function(request, response) {
+serviceRouter.get("/paymentmethod/alle", (request, response) => {
     helper.log("service PaymentMethod: Client requested all records");
 
     const paymentmethodDao = new PaymentMethodDao(request.app.locals.dbConnection);
@@ -31,7 +31,7 @@ serviceRouter.get("/paymentmethod/alle", function(request, response) {
     }
 });
 
-serviceRouter.get("/paymentmethod/exists/:id", function(request, response) {
+serviceRouter.get("/paymentmethod/exists/:id", (request, response) => {
     helper.log("service PaymentMethod: Client requested check, if record exists, id=" + request.params.id);
 
     const paymentmethodDao = new PaymentMethodDao(request.app.locals.dbConnection);
@@ -45,7 +45,7 @@ serviceRouter.get("/paymentmethod/exists/:id", function(request, response) {
     }
 });
 
-serviceRouter.post("/paymentmethod", function(request, response) {
+serviceRouter.post("/paymentmethod", (request, response) => {
     helper.log("service PaymentMethod: Client requested creation of new record");
 
     var errorMsgs=[];
@@ -69,7 +69,7 @@ serviceRouter.post("/paymentmethod", function(request, response) {
     }    
 });
 
-serviceRouter.put("/paymentmethod", function(request, response) {
+serviceRouter.put("/paymentmethod", (request, response) => {
     helper.log("service PaymentMethod: Client requested update of existing record");
 
     var errorMsgs=[];
@@ -95,7 +95,7 @@ serviceRouter.put("/paymentmethod", function(request, response) {
     }    
 });
 
-serviceRouter.delete("/paymentmethod/:id", function(request, response) {
+serviceRouter.delete("/paymentmethod/:id", (request, response) => {
     helper.log("service PaymentMethod: Client requested deletion of record, id=" + request.params.id);
 
     const paymentmethodDao = new PaymentMethodDao(request.app.locals.dbConnection);

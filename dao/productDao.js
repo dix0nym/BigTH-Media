@@ -1,6 +1,7 @@
 const helper = require("../helper.js");
 const VATDao = require("./vatDao.js");
 const Product2TagsDao = require("./product2TagsDao.js");
+const TagDao = require("./tagDao.js");
 
 class ProductDao {
 
@@ -42,8 +43,21 @@ class ProductDao {
         const vatDao = new VATDao(this._conn);
         var taxes = vatDao.loadAll();
 
-        const product2TagsDao = new Product2TagsDao(this._conn);
+        const tagDao = new TagDao(this._conn);
+        var tags = tagDao.loadAll();
+        tags = tags.reduce((map, obj) => {
+            map[obj.id] = obj;
+            return map;
+        }, {});
 
+        const product2TagsDao = new Product2TagsDao(this._conn);
+        var allProduct2Tags = product2TagsDao.loadAll();
+        var p2t = allProduct2Tags.reduce((map, obj) => {
+            if (!(obj.productid in map))
+                map[obj.productid] = [];
+            map[obj.productid].push(tags[obj.tagid]);
+            return map;
+        }, {});
         var sql = "SELECT * FROM Product";
         var statement = this._conn.prepare(sql);
         var result = statement.all();
@@ -60,7 +74,9 @@ class ProductDao {
                 }
             }
             delete result[i].vatid;
-            result[i].tags = product2TagsDao.loadById(result[i].id);
+            // TODO: test loadByID vs loadAll z. 54
+            // result[i].tags = product2TagsDao.loadById(result[i].id);
+            result[i].tags = (p2t[result[i].id] || []);
             result[i].vatpart = helper.round((result[i].netprice / 100) * result[i].vat.percentage);
             result[i].grossprice = helper.round(result[i].netprice + result[i].vatpart);
         }

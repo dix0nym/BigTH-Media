@@ -81,6 +81,8 @@ function search(event) {
     }
 }
 
+const isEmptyArray = array => !(Array.isArray(array) && array.length);
+
 function getCart() {
     if ('cart' in sessionStorage) {
         return JSON.parse(sessionStorage.getItem('cart'));

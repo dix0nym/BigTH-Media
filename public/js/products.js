@@ -1,60 +1,75 @@
-let tags = {};
 let selectedTags = [];
-let products = [];
 let selectedRezs = [];
-// url -> /products.html?page=1&search=?&tags=?
 
-$(async () => {
+$(async() => {
+    // load footer & header
+    await loadHeader("header.html", "productsNav");
+    await loadFooter("footer.html");
+    // parse & validate SearchParams
+    // url -> /products.html?page=1&tags=?&rezs=?&price_start=?&price_end=?
     let params = new URLSearchParams(window.location.search);
-    let page = params.has('page') ? params.get('page') : 1;
-    let search = params.has('search') ? params.get('search') : undefined;
-    // TODO: parse SEARCH
-    tags = await loadTags();
-    products = await loadProducts(search, page);
-    resolutions = await loadResolutions();
+    let page = params.has('page') ? params.get('page') : 0;
+    selectedTags = params.has('tags') ? params.getAll('tags') : [];
+    console.log("selectedTags: ", selectedTags);
+    selectedRezs = params.has('rezs') ? params.getAll('rezs') : [];
+    var price_start = params.has('price_start') ? params.get('price_start') : undefined;
+    var price_end = params.has('price_end') ? params.get('price_end') : undefined;
+    if (price_start)
+        $('#inputStartPrice').val(price_start);
+    if (price_end)
+        $('#inputEndPrice').val(price_end);
+    // load data
+    var data = await loadProducts(selectedTags, selectedRezs, page, price_start, price_end);
+    await loadTags(selectedTags, data.tagscount);
+    await loadResolutions(selectedRezs, data.rezcount);
+    // add Listeners
+    addEventFilterBtn();
 });
 
 // load functions
 
-async function loadProducts(search, page) {
-    const productResponse = await fetch("/api/product/page/" + page + "/");
+async function loadProducts(tags, rezs, page, price_start, price_end) {
+    var payload = { tags: JSON.stringify(tags), rezs: JSON.stringify(rezs), price_start: price_start, price_end: price_end };
+    var needToFilter = (!isEmptyArray(tags) || !isEmptyArray(rezs));
+    console.log(JSON.stringify({ needToFilter: needToFilter, tags: isEmptyArray(tags), resz: isEmptyArray(rezs) }));
+    var url = (needToFilter) ? "/api/product/filter/page/" + page + "/?" + jQuery.param(payload) : "/api/product/page/" + page + "/";
+    const productResponse = await fetch(url);
     var productsJson = await productResponse.json();
     if (productsJson.error) {
-        console.log("failed to fetch products");
+        console.error("failed to fetch products");
         return;
     }
     var data = productsJson.data;
     var products = data.products;
-    for(var i = 0; i < products.length; i++) {
+    for (var i = 0; i < products.length; i++) {
         products[i].tags = products[i].tags.map(k => k.name);
     }
     renderProducts(products);
-    renderPagination(data.pagination)
-    // tags = await loadTags(products);
-    return products;
+    renderPagination(data.pagination);
+    return data;
 }
 
-async function loadTags() {
+async function loadTags(selectedTags, count) {
     const tagsResponse = await fetch("/api/tags/count/all/");
     var tagJson = await tagsResponse.json();
     if (tagJson.error) {
-        console.log("failed to fetch tags");
+        console.error("failed to fetch tags");
         return;
     }
     var tags = tagJson.data;
-    renderTags(tags);
+    await renderTags(selectedTags, tags, count);
     return tags;
 }
 
-async function loadResolutions() {
+async function loadResolutions(selectedRezs, count) {
     const rezResponse = await fetch("/api/product/resolutions/");
     var rezJson = await rezResponse.json();
     if (rezJson.error) {
-        console.log("failed to fetch resolutions");
+        console.error("failed to fetch resolutions");
         return;
     }
     var resolutions = rezJson.data;
-    renderResoultions(resolutions);
+    renderResoultions(selectedRezs, resolutions, count);
     return resolutions;
 }
 
@@ -63,45 +78,40 @@ async function loadResolutions() {
 function renderProducts(products) {
     const productContainer = $('#productsContainer');
     productContainer.empty();
-    const tagsContainer = $('#tagsContainer');
-    // tagsContainer.empty();
-    for(var product of products) {
+    for (var product of products) {
         const newProduct = createProduct(product);
-        product.tags.forEach( tag => {
-            if (!(tag in tags)) {
-                tags[tag] = 0;
-            } 
-            tags[tag] += 1;
-        })
         productContainer.append(newProduct);
     }
-
-    // Object.keys(tags).forEach(key => {
-    //     const tag = createTag(key, tags[key], false);
-    //     tagsContainer.append(tag);
-    // });
 }
 
-function renderTags(tags) {
+function renderTags(selectedTags, tags, count) {
     const tagsContainer = $('#tagsContainer');
     tagsContainer.empty()
     tags = tags.sort((a, b) => a.count < b.count);
-    console.log(tags);
-    for(var [idx, tag] of tags.entries()) {
-        const newTag = createTag(tag);
-        if (idx >= 5) {
+    var selectedTagHidden = 0;
+    for (var [idx, tag] of tags.entries()) {
+        var active = selectedTags.includes(tag.name);
+        const newTag = createTag(tag, active, count);
+        if (idx >= 3) {
             newTag.hide();
             newTag.addClass("more-tags")
+            if (active)
+                selectedTagHidden++;
         }
         tagsContainer.append(newTag);
     }
     const loadMore = $('<a href="#" class="list-group-item text-center"><span id="toggleTags">display all</span></a>');
+    if (selectedTagHidden > 0) {
+        var text = loadMore.find('#toggleTags');
+        const counter = $('<span class="badge badge-info round ml-2"/>');
+        counter.text(selectedTagHidden);
+        text.append(counter);
+    }
     loadMore.on('click', event => {
-        $('#tagsContainer > .more-tags').each( (idx, tag) => {
+        $('#tagsContainer > .more-tags').each((idx, tag) => {
             $(tag).toggle();
         });
         let clicked = $(event.currentTarget);
-        console.log(clicked.text());
         if (clicked.text() === 'display all') {
             clicked.text("hide");
         } else {
@@ -111,26 +121,34 @@ function renderTags(tags) {
     tagsContainer.append(loadMore);
 }
 
-function renderResoultions(resolutions) {
+function renderResoultions(selectedRezs, resolutions, count) {
     const rezContainer = $('#rezContainer');
     rezContainer.empty();
-    resolutions.sort( (a, b) => a.count < b.count);
-    console.log(resolutions);
-    for(var [idx, rez] of resolutions.entries()) {
-        const newRez = createRezTag(rez);
-        if (idx >= 5) {
+    resolutions.sort((a, b) => a.count < b.count);
+    var selectedTagHidden = 0;
+    for (var [idx, rez] of resolutions.entries()) {
+        var active = selectedRezs.includes(rez.name);
+        const newRez = createRezTag(rez, selectedRezs.includes(rez.name), count);
+        if (idx >= 3) {
             newRez.hide();
             newRez.addClass("more-rezs")
+            if (active)
+                selectedTagHidden++;
         }
         rezContainer.append(newRez);
     }
     const loadMore = $('<a href="#" class="list-group-item text-center"><span id="toggleRez">display all</span></a>');
+    if (selectedTagHidden > 0) {
+        var text = loadMore.find('#toggleRez');
+        const counter = $('<span class="badge badge-info round ml-2"/>');
+        counter.text(selectedTagHidden);
+        text.append(counter);
+    }
     loadMore.on('click', event => {
-        $('#rezContainer > .more-rezs').each( (idx, rez) => {
+        $('#rezContainer > .more-rezs').each((idx, rez) => {
             $(rez).toggle();
         });
         let clicked = $(event.currentTarget);
-        console.log(clicked.text());
         if (clicked.text() === 'display all') {
             clicked.text("hide");
         } else {
@@ -141,18 +159,26 @@ function renderResoultions(resolutions) {
 }
 
 function renderPagination(pagination) {
-    var url = "/pages/products.html?page="
-    $('#pagination-prev').attr('href', url + pagination.previous);
-    $('#pagination-next').attr('href', url + pagination.next);
+    if (pagination.numPages === 0) {
+        $("nav.pagination > ul").hide();
+        return;
+    }
+    var url = "/pages/products.html?"
+    let params = new URLSearchParams(window.location.search);
+    params.set('page', pagination.previous);
+    $('#pagination-prev').attr('href', url + params.toString());
+    params.set('page', pagination.next)
+    $('#pagination-next').attr('href', url + params.toString());
     var tmp = $('#pagination-next').parent();
-    for(var i = 1; i < pagination.numPages; i++) {
+    for (var i = 0; i < pagination.numPages; i++) {
         const pageItem = $('<li class="page-item" />')
         const pageAnchor = $('<a class="page-link" href="#" />')
-        if (i === pagination.current) {
+        if (i === (pagination.current)) {
             pageItem.addClass('active');
         }
-        pageAnchor.attr('href', url + i);
-        pageAnchor.text(i);
+        params.set('page', i);
+        pageAnchor.attr('href', url + params.toString());
+        pageAnchor.text(i + 1);
         pageItem.append(pageAnchor);
         pageItem.insertBefore(tmp);
     }
@@ -161,7 +187,6 @@ function renderPagination(pagination) {
 // create functions
 
 function createProduct(data) {
-    console.log(data);
     const product = $('<div class="card m-2" style="width: 15rem;" />');
     let img = $('<img class="card-img-top products-preview-img"/>');
     img.attr('src', "../media/resized/" + data.filename);
@@ -175,68 +200,73 @@ function createProduct(data) {
     return product;
 }
 
-function createTag(data) {
+function createTag(data, active, count) {
     const tag = $('<a href="#" class="list-group-item tag" data-id="' + data.id + '"/>')
     const counter = $('<span class="float-right badge badge-light round"/>')
-    counter.text(data.count)
+    counter.text((data.name in count) ? count[data.name] : data.count)
     tag.text(data.name);
     tag.attr("data-name", data.name)
     tag.append(counter);
+    if (active)
+        tag.addClass("active");
     tag.on('click', event => {
         let clickedTag = $(event.currentTarget);
         clickedTag.toggleClass('active');
         selectedTags.splice(0, selectedTags.length);
-        $('#tagsContainer .rez.active').each((_, tag) => selectedTags.push($(tag).attr('data-name')));
-        let filteredProducts = products.filter(f => selectedTags.every(tag => f.tags.includes(tag)));
-        updateProducts(filteredProducts);
+        $('#tagsContainer .tag.active').each((_, tag) => selectedTags.push($(tag).attr('data-name')));
+        var url = new URL(window.location.href);
+        url.searchParams.delete("tags");
+        for (var tag of selectedTags) {
+            url.searchParams.append("tags", tag);
+        }
+        window.location.href = url;
     });
     return tag;
 }
 
-function createRezTag(data) {
+function createRezTag(data, active, count) {
     const tag = $('<a href="#" class="list-group-item rez" data-name="' + data.name + '"/>')
     const counter = $('<span class="float-right badge badge-light round"/>')
-    counter.text(data.count)
+    counter.text((data.name in count) ? count[data.name] : data.count)
     tag.text(data.name);
     tag.append(counter);
+    if (active)
+        tag.addClass("active");
     tag.on('click', event => {
         let clickedTag = $(event.currentTarget);
         clickedTag.toggleClass('active');
         selectedRezs.splice(0, selectedRezs.length);
-        $('#rezContainer .tag.active').each((_, tag) => selectedRezs.push($(tag).attr('data-name')));
-        let filteredProducts = products.filter(f => selectedRezs.every(rez => f.originalresolution === rez));
-        updateProducts(filteredProducts);
+        $('#rezContainer .rez.active').each((_, tag) => selectedRezs.push($(tag).attr('data-name')));
+        var url = new URL(window.location.href);
+        url.searchParams.delete("rezs");
+        for (var rez of selectedRezs) {
+            url.searchParams.append("rezs", rez);
+        }
+        window.location.href = url;
     });
     return tag;
 }
 
-// update functions
+// events
+function addEventFilterBtn() {
+    $('#filterBtn').on('click', event => {
+        event.preventDefault();
+        var price_start = $('#inputStartPrice').val();
+        var price_end = $('#inputEndPrice').val();
 
-function updateProducts(products) {
-    const productContainer = $('#productsContainer');
-    productContainer.empty();
-    for(var k in tags) {
-        tags[k] = 0;
-    }
-    products.forEach(product => {
-        const newProduct = createProduct(product);
-        productContainer.append(newProduct);
-        product.tags.forEach( tag => {
-            if (!(tag in tags)) {
-                tags[tag] = 0;
-            } 
-            tags[tag] += 1;
-        })
-    });
-    $('.tag').each( (idx, tag) => {
-        var name = $(tag).attr('data-name');
-        if (name in tags) {
-            console.log(name, tags[name], tags[name] > 0);
-            $(tag).toggle(tags[name] > 0);
-            $('span', tag).text(tags[name]);
-        } else {
-            console.log(name, "not in tags", tags);
+        var url = new URL(window.location.href);
+        if (price_start) {
+            price_start = parseInt(price_start);
+            if (price_start > 0) {
+                url.searchParams.set("price_start", price_start);
+            }
         }
-        console.log(tags);
+        if (price_end) {
+            price_end = parseInt(price_end);
+            if (price_end > 0) {
+                url.searchParams.set("price_end", price_end);
+            }
+        }
+        window.location.href = url;
     });
 }

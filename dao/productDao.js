@@ -21,7 +21,7 @@ class ProductDao {
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
-        if (helper.isUndefined(result)) 
+        if (helper.isUndefined(result))
             throw new Error("No Record found by id=" + id);
 
         result = helper.objectKeysToLower(result);
@@ -48,11 +48,10 @@ class ProductDao {
         var statement = this._conn.prepare(sql);
         var result = statement.all();
 
-        if (helper.isArrayEmpty(result)) 
+        if (helper.isArrayEmpty(result))
             return [];
 
         result = helper.arrayObjectKeysToLower(result);
-
         for (var i = 0; i < result.length; i++) {
             for (var element of taxes) {
                 if (element.id == result[i].vatid) {
@@ -80,7 +79,7 @@ class ProductDao {
 
         if (helper.isArrayEmpty(result))
             return [];
-        
+
         result = helper.arrayObjectKeysToLower(result);
         for (var i = 0; i < result.length; i++) {
             for (var element of taxes) {
@@ -97,6 +96,43 @@ class ProductDao {
         return result;
     }
 
+    loadFilteredByLimit(start, count, queriedtags, queriedRezs, price_start, price_end) {
+        var products = this.loadAll();
+        var tagsCount = {};
+        var rezCount = {};
+        for (var i = products.length - 1; i >= 0; i--) {
+            var product = products[i];
+            console.log(product)
+            var hasAllTags = queriedtags.every(tag => {
+                return product.tags.some(t => t.name === tag)
+            });
+            var hasOneResz = (helper.isArrayEmpty(queriedRezs)) ? true : queriedRezs.some(rez => { return product.resolution == rez; });
+
+            var inPriceRange = true;
+            if (price_start && price_start > 0) {
+                inPriceRange = product.grossprice >= price_start;
+            }
+            if (price_end && price_end > 0) {
+                inPriceRange = product.grossPrice <= price_end;
+            }
+            if (!hasAllTags || !hasOneResz || !inPriceRange) {
+                products.splice(i, 1);
+            } else {
+                for (var tag of product.tags) {
+                    if (!(tag.name in tagsCount)) {
+                        tagsCount[tag.name] = 0;
+                    }
+                    tagsCount[tag.name]++;
+                }
+                if (!(product.resolution in rezCount)) {
+                    rezCount[product.resolution] = 0;
+                }
+                rezCount[product.resolution]++;
+            }
+        }
+        return { products: products.slice((start < 0) ? start - 1 : start, start + count), count: products.length, tagscount: tagsCount, rezcount: rezCount };
+    }
+
     getAllResolutions() {
         var sql = "SELECT Resolution as name, COUNT(ID) as count FROM Product GROUP BY Resolution";
         var statment = this._conn.prepare(sql);
@@ -104,7 +140,7 @@ class ProductDao {
         result = helper.arrayObjectKeysToLower(result);
         return result;
     }
-    
+
     count() {
         var sql = "SELECT COUNT(ID) as cnt FROM Product";
         var statement = this._conn.prepare(sql);
@@ -117,7 +153,7 @@ class ProductDao {
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
-        if (result.cnt == 1) 
+        if (result.cnt == 1)
             return true;
 
         return false;

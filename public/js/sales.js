@@ -59,7 +59,7 @@ function renderSale(sale) {
     console.log(sale);
     
     const container = $('<div class="container mt-2 w-60"/>');
-    const containerHeader = $('<h5 class="text-center">'+sale.title+'</h5>');
+    const containerHeader = $('<h5 class="text-center font-weight-bold">'+sale.title+'</h5>');
     const jumbotron = $('<div class="jumbotron mx-auto mb-0 w-100 py-2 bg-dark"/>');
     const carousel = $('<div id="Sale'+sale.id+'" class="carousel slide" data-ride="carousel"/>');
     const carouselInner = $('<div class="carousel-inner"/>');

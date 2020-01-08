@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS "Sales" (
 	"Price"	REAL,
 	"Title"	TEXT
 );
-INSERT INTO Sales VALUES(1,300.0,'The AWESOME Winter Sale');
-INSERT INTO Sales VALUES(2,600.0,'Let''s do some sports!');
+INSERT INTO Sales VALUES(1001,300.0,'The AWESOME Winter Sale');
+INSERT INTO Sales VALUES(1002,600.0,'Let''s do some sports!');
 CREATE TABLE IF NOT EXISTS "Product2Tags" (
 	"ProductID"	INTEGER NOT NULL,
 	"TagID"	INTEGER NOT NULL,

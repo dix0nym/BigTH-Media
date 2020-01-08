@@ -6,8 +6,6 @@ $(async () => {
 
     /*
     TODO Sven: Dafuer sorgen, dass ein Toast pro Click erscheint; ggf auch style.css ueberarbeiten
-
-    TODO Sven: Offers in Sales umbenennen
     */
 
     $('.addToCart').on('click', event => {
@@ -60,9 +58,9 @@ function renderSale(sale) {
 
     console.log(sale);
     
-    const container = $('<div class="container mt-1 w-60"/>');
-    const containerHeader = $('<h5 class="my-2 mb-0 text-center">'+sale.title+'</h5>');
-    const jumbotron = $('<div class="jumbotron mx-auto mb-0 w-100 bg-dark"/>');
+    const container = $('<div class="container mt-2 w-60"/>');
+    const containerHeader = $('<h5 class="text-center">'+sale.title+'</h5>');
+    const jumbotron = $('<div class="jumbotron mx-auto mb-0 w-100 py-2 bg-dark"/>');
     const carousel = $('<div id="Sale'+sale.id+'" class="carousel slide" data-ride="carousel"/>');
     const carouselInner = $('<div class="carousel-inner"/>');
     sale.items.forEach((item) => {
@@ -90,8 +88,8 @@ function renderSale(sale) {
     carousel.append(carouselInner);
     carousel.append(carouselCtrlPrev);
     carousel.append(carouselCtrlNxt);
-    const containerFooter = $('<div class="d-flex flex-row-reverse"/>');
-    const containerFooterAddToCartBtn = $('<button type="button" class="addToCart btn btn-lite fa fa-cart-plus fa-2x" aria-hidden="true"/>');
+    const containerFooter = $('<div class="salesFooter d-flex flex-row-reverse"/>');
+    const containerFooterAddToCartBtn = $('<button type="button" class="addToCart btn btn-outline-light border-0 mb-1 fa fa-cart-plus fa-2x" aria-hidden="true"/>');
     containerFooterAddToCartBtn.attr('data-id', sale.id);
     const containerFooterPriceTag = $('<h5 class=" mt-2">'+sale.price+'€</h5>');
     containerFooter.append(containerFooterAddToCartBtn);

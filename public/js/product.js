@@ -41,7 +41,7 @@ function addProductToCart(event) {
 function renderProduct(data) {
     console.log(data);
     const pContainer = $('#productContainer');
-    const container = $('<div class="container mt-3" style="height: 100%";/>');
+    const container = $('<div class="container mt-3 margin-bottom" style="height: 100%";/>');
     const card = $('<div class="card text-white"/>');
     const modalAnchor = $(' <a class="mx-auto" data-toggle="modal" data-target="#bigViewModal"/>');
     const img = $('<img class="productImg mt-4" alt="product"/>');

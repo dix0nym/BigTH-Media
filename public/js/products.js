@@ -30,9 +30,9 @@ $(async() => {
 
 async function loadProducts(tags, rezs, page, price_start, price_end) {
     var payload = { tags: JSON.stringify(tags), rezs: JSON.stringify(rezs), price_start: price_start, price_end: price_end };
-    var needToFilter = (!isEmptyArray(tags) || !isEmptyArray(rezs));
-    console.log(JSON.stringify({ needToFilter: needToFilter, tags: isEmptyArray(tags), resz: isEmptyArray(rezs) }));
-    var url = (needToFilter) ? "/api/product/filter/page/" + page + "/?" + jQuery.param(payload) : "/api/product/page/" + page + "/";
+    // var needToFilter = (!isEmptyArray(tags) || !isEmptyArray(rezs));
+    // console.log(JSON.stringify({ needToFilter: needToFilter, tags: isEmptyArray(tags), resz: isEmptyArray(rezs) }));
+    var url = "/api/product/filter/page/" + page + "/?" + jQuery.param(payload);
     const productResponse = await fetch(url);
     var productsJson = await productResponse.json();
     if (productsJson.error) {
@@ -203,7 +203,7 @@ function createProduct(data) {
 function createTag(data, active, count) {
     const tag = $('<a href="#" class="list-group-item tag" data-id="' + data.id + '"/>')
     const counter = $('<span class="float-right badge badge-light round"/>')
-    counter.text((data.name in count) ? count[data.name] : data.count)
+    counter.text((data.name in count) ? count[data.name] : 0)
     tag.text(data.name);
     tag.attr("data-name", data.name)
     tag.append(counter);
@@ -227,7 +227,7 @@ function createTag(data, active, count) {
 function createRezTag(data, active, count) {
     const tag = $('<a href="#" class="list-group-item rez" data-name="' + data.name + '"/>')
     const counter = $('<span class="float-right badge badge-light round"/>')
-    counter.text((data.name in count) ? count[data.name] : data.count)
+    counter.text((data.name in count) ? count[data.name] : 0)
     tag.text(data.name);
     tag.append(counter);
     if (active)

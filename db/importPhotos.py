@@ -15,7 +15,7 @@ print("connect to db")
 con = sqlite3.connect(dbpath)
 cur = con.cursor()
 
-product_sql = "INSERT INTO Produkt(Bezeichnung, MehrwertsteuerID, Details, Nettopreis, DownloadID, FileName, OriginalResolution) VALUES(?,?, ?,?, ?,?,?);"
+product_sql = "INSERT INTO Produkt(Bezeichnung, MehrwertsteuerID, Details, Nettopreis, DownloadID, FileName, Resolution) VALUES(?,?, ?,?, ?,?,?);"
 download_sql = "INSERT INTO Download(Bezeichnung, Beschreibung, Bildpfad) VALUES(?,?,?);"
 product_img_sql = "INSERT INTO Produktbild(Bildpfad, ProduktID) VALUES(?, ?);"
 tag_sql = "INSERT INTO Produkt2Tags (ProduktID, TagID) VALUES(?, ?);"

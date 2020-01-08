@@ -35,14 +35,14 @@ $('#personal-information').on('submit', () => {
             console.log(data);
             setCustomer(data.data);
             window.location.href = "payment.html";
-        }, "json").fail( (jqXHR, textStatus, errorThrown) => {
-            console.log(jqXHR.responseJSON.msg);
-            $('#error').text(jqXHR.responseJSON.msg);
+        }, "json").fail(response => {
+            console.log(response.responseJSON.msg);
+            $('#error').text(response.responseJSON.msg);
             $('#error').show();
         });
-    }, "json" ).fail( function(jqXHR, textStatus, errorThrown) {
-        console.log(jqXHR.responseJSON.msg);
-        $('#error').text(jqXHR.responseJSON.msg);
+    }, "json" ).fail(response => {
+        console.log(response.responseJSON.msg);
+        $('#error').text(response.responseJSON.msg);
         $('#error').show();
     });
     return false;

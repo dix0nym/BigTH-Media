@@ -27,26 +27,29 @@ class TagDao {
 
         if (helper.isArrayEmpty(result))
             return [];
-        
+
         result = helper.arrayObjectKeysToLower(result);
 
         return result;
     }
 
     countById(id) {
-        var sql = "SELECT COUNT(ProductID) as cnt FROM Product2Tags WHERE TagID=?";
+        var sql = "SELECT COUNT(ProductID) as count FROM Product2Tags WHERE TagID=?";
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
         return result.cnt;
     }
 
     countAll() {
-        var sql = "SELECT TagID, COUNT(ProductID) as cnt FROM Product2Tags GROUP BY TagID";
+        var tags = this.loadAll();
+        tags = new Map(tags.map(tag => [tag.id, tag]));
+        var sql = "SELECT TagID, COUNT(ProductID) as count FROM Product2Tags GROUP BY TagID";
         var statment = this._conn.prepare(sql);
         var result = statment.all();
         result = helper.arrayObjectKeysToLower(result);
-        for(var i = 0; i < result.length; i++) {
-            result[i].tag = this.loadById(result[i].tagid)
+        for (var i = 0; i < result.length; i++) {
+            var tmp = tags.get(result[i].tagid);
+            Object.assign(result[i], tmp);
             delete result[i].tagid;
         }
         return result;
@@ -57,9 +60,21 @@ class TagDao {
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
-        if (result.cnt == 1) 
+        if (result.cnt == 1)
             return true;
         return false;
+    }
+
+    search(needle) {
+        var sql = "SELECT * FROM Tags WHERE Name LIKE '%" + needle + "%'";
+        var statement = this._conn.prepare(sql);
+        var result = statement.all();
+        if (helper.isArrayEmpty(result))
+            return [];
+
+        result = helper.arrayObjectKeysToLower(result);
+
+        return result;
     }
 
     toString() {

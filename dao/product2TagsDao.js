@@ -38,8 +38,8 @@ class Product2TagsDao {
         result = helper.arrayObjectKeysToLower(result);
         for (var i = 0; i < result.length; i++) {
             result[i].product = productDao.loadById(result[i].productid);
+            result[i].tags = tagDao.loadById(result[i].productid);
             delete result[i].productid;
-            delete result[i].tagid;
         }
         return result;
     }
@@ -51,7 +51,7 @@ class Product2TagsDao {
 
         if (helper.isArrayEmpty(result))
             return [];
-        
+
         result = helper.arrayObjectKeysToLower(result);
 
         return result;
@@ -60,9 +60,9 @@ class Product2TagsDao {
     hasTags(id) {
         var sql = "SELECT COUNT(ID) AS cnt FROM Product2Tags WHERE ProductID=?";
         var statement = this._conn.prepare(sql);
-        var result = statment.get(id);
+        var result = statement.get(id);
 
-        if (result.cnt == 1) 
+        if (result.cnt == 1)
             return true;
         return false;
     }

@@ -34,7 +34,7 @@ async function loadData(cart) {
 
 function createRow(rowdata) {
     // rowdata: {id, img_src, title, desc, price, qty }
-    let row = $('<div class="row cart-entry"/>');
+    let row = $('<div class="row cart-entry mb-2"/>');
     
     let imgWrapper = $('<div class="col-xs-2 col-md-2"/>');
     let productImg = $('<img class="img-responsive alt="preview"/>');

@@ -204,9 +204,8 @@ body {
 /* product.html */
 
 .productImg {
-    height: 600px;
+    height: 550px;
 }
-
 
 .productImgBig {
     height: 850px;
@@ -214,6 +213,10 @@ body {
 
 #productContainer {
     height: 100%;
+}
+
+.productTag {
+    margin-right: 5px;
 }
 
 #productContainer .card {

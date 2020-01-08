@@ -174,7 +174,7 @@ body {
     color: white;
 }
 
-.col-sm-2 .card {
+#filterContainer {
     background-color: #343a40;
     border: 1px solid #17a2b8;
     color: white;
@@ -188,12 +188,18 @@ body {
     border-top: 1px solid #17a2b8;
     border-bottom: 1px solid #17a2b8;
 }
-/*
-#filterSel {
+
+#rezContainer a {
+    background-color: #343a40;
+    border-top: 1px solid #17a2b8;
+    border-bottom: 1px solid #17a2b8;
+}
+
+.pagination li a {
     background-color: #343a40;
     border: 1px solid #17a2b8;
+
 }
-*/
 
 /* product.html */
 

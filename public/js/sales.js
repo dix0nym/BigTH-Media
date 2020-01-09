@@ -1,5 +1,3 @@
-//let sales = [];
-
 $(async () => {
     sales = await loadSales();
     renderSales(sales);
@@ -7,7 +5,7 @@ $(async () => {
     /*
     TODO Sven: Dafuer sorgen, dass ein Toast pro Click erscheint; ggf auch style.css ueberarbeiten
     */
-
+    
     $('.addToCart').on('click', event => {
         addSetToCart(event);
         /*

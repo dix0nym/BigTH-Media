@@ -10,7 +10,7 @@ $(async () => {
 
     $('.addToCart').on('click', event => {
         addSetToCart(event);
-
+        /*
         id = renderToast(event);        
         idString = '#toast'+id;
 
@@ -18,20 +18,20 @@ $(async () => {
             autohide: true,
             delay: 2000
         });
-        $(idString).toast('show');
+        $(idString).toast('show');*/
     });
 });
 
 async function loadSales() {
     let searchParams = new URLSearchParams(window.location.search);
     try {
+        let id = 1001;
         const response = await fetch("/api/sales/all/");
         var sales = await response.json();
     } catch (exception) {
         console.log(exception);
         return;
     }
-    
     return sales.data;
 }
 
@@ -93,7 +93,7 @@ function renderSale(sale) {
     const containerFooter = $('<div class="salesFooter d-flex flex-row-reverse"/>');
     const containerFooterAddToCartBtn = $('<button type="button" class="addToCart btn btn-outline-light border-0 mb-1 fa fa-cart-plus fa-2x" aria-hidden="true"/>');
     containerFooterAddToCartBtn.attr('data-id', sale.id);
-    const containerFooterPriceTag = $('<h5 class=" mt-2">'+sale.price+'€</h5>');
+    const containerFooterPriceTag = $('<h5 class=" mt-2">'+sale.grossprice+'€</h5>');
     containerFooter.append(containerFooterAddToCartBtn);
     containerFooter.append(containerFooterPriceTag);
 

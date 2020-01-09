@@ -1,7 +1,7 @@
-$(async () => {
+$(async() => {
     let cart = getCart();
     await loadData(cart);
-    
+
 });
 
 /*
@@ -10,32 +10,29 @@ TODO Sven: differentiate between product types: sales and pictures
 async function loadData(cart) {
     let data = [];
 
-    for(var id in cart) {
+    for (var id in cart) {
         try {
-            const productResponse = await fetch("/api/product/get/" + id);
-            console.log(productResponse);
-            if (!productResponse.ok) {
-                console.log("failed", productResponse);
+            const url = (id > 1000) ? "/api/product/get/" + id : "/api/sales/get/" + id;
+            const response = await fetch(url);
+            if (!response.ok) {
+                console.log("failed", response);
                 return data;
             }
-            var product = await productResponse.json();
+            var product = await response.json();
             product = product.data;
             product.qty = cart[id]
             data.push(product);
-            // data.push({id: product.id, img_src: product.filename, title: product.bezeichnung, desc: product.details, netto: product.nettopreis, steuer: product.mehrwertsteuer.steuersatz, brutto: product.bruttopreis, qty: cart[id]});
         } catch (exception) {
             console.log(exception);
             return;
         }
     };
-    console.log(data);
     await createCartEntries(data);
 }
 
 function createRow(rowdata) {
-    // rowdata: {id, img_src, title, desc, price, qty }
     let row = $('<div class="row cart-entry mb-2"/>');
-    
+
     let imgWrapper = $('<div class="col-xs-2 col-md-2"/>');
     let productImg = $('<img class="img-responsive alt="preview"/>');
     productImg.attr('src', "../media/resized/" + rowdata.filename);
@@ -75,7 +72,7 @@ function createRow(rowdata) {
     return row;
 }
 
-async function createCartEntries(data){
+async function createCartEntries(data) {
     let container = $("#cart-container")
     container.empty();
     if (data.length == 0) {
@@ -88,9 +85,9 @@ async function createCartEntries(data){
             total += rowdata.brutto * rowdata.qty;
         });
         $('div#price-wrapper > b').first().text(Number(total).toFixed(2) + '€');
-        $('.deleteEntryBtn', container).click(async (clickedButtonEvent) => deleteCartEntry(clickedButtonEvent));
-        $('.btnAddQty', container).click(async (clickedButtonEvent) => addQty(clickedButtonEvent));
-        $('.btnRedQty', container).click(async (clickedButtonEvent) => removeQty(clickedButtonEvent));
+        $('.deleteEntryBtn', container).click(async(clickedButtonEvent) => deleteCartEntry(clickedButtonEvent));
+        $('.btnAddQty', container).click(async(clickedButtonEvent) => addQty(clickedButtonEvent));
+        $('.btnRedQty', container).click(async(clickedButtonEvent) => removeQty(clickedButtonEvent));
         calcTotal();
     }
 }
@@ -130,10 +127,10 @@ async function addQty(clickedButtonEvent) {
 
 function calcTotal() {
     let total = 0;
-    $('#cart-container > div.row').each( (idx, item) => {
+    $('#cart-container > div.row').each((idx, item) => {
         let price = $(item).find('div#price').text();
         let qty = $(item).find('input#qtyInput').val()
-        console.log(idx, price, qty, price*qty);
+        console.log(idx, price, qty, price * qty);
         total += price * qty;
     });
     $('div#price-wrapper > b').first().text(Number(total).toFixed(2) + '€');
@@ -160,7 +157,6 @@ async function removeQty(clickedButtonEvent) {
 }
 
 $('#buyBtn').on('click', () => {
-    alert(Object.keys(getCart()).length);
     if (Object.keys(getCart()).length > 0) {
         window.location.href = '/pages/checkout.html';
     } else {

@@ -12,10 +12,10 @@ async function loadData(cart) {
 
     for (var id in cart) {
         try {
-            const url = (id > 1000) ? "/api/product/get/" + id : "/api/sales/get/" + id;
+            const url = (parseInt(id) > 1000) ? "/api/sales/get/" + id : "/api/product/get/" + id;
             const response = await fetch(url);
             if (!response.ok) {
-                console.log("failed", response);
+                console.log("failed to get product/sales", response);
                 return data;
             }
             var product = await response.json();

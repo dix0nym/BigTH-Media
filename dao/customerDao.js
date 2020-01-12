@@ -18,14 +18,14 @@ class CustomerDao {
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
-        if (helper.isUndefined(result)) 
+        if (helper.isUndefined(result))
             throw new Error("No Record found by id=" + id);
 
         result = helper.objectKeysToLower(result);
 
-        if (result.title == 0) 
+        if (result.title == 0)
             result.title = "Mr.";
-        else 
+        else
             result.title = "Mrs.";
 
         result.dateofbirth = helper.parseSQLDateTimeString(result.dateofbirth);
@@ -46,19 +46,19 @@ class CustomerDao {
         var statement = this._conn.prepare(sql);
         var result = statement.all();
 
-        if (helper.isArrayEmpty(result)) 
+        if (helper.isArrayEmpty(result))
             return [];
-        
+
         result = helper.arrayObjectKeysToLower(result);
 
         for (var i = 0; i < result.length; i++) {
-            if (result[i].title == 0) 
+            if (result[i].title == 0)
                 result[i].title = "Mr.";
-            else 
+            else
                 result[i].title = "Mrs.";
 
             result[i].dateofbirth = helper.parseSQLDateTimeString(result[i].dateofbirth);
-            
+
             for (var element of addresses) {
                 if (element.id == result[i].addressid) {
                     result[i].adresse = element;
@@ -78,7 +78,7 @@ class CustomerDao {
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
-        if (result.cnt == 1) 
+        if (result.cnt == 1)
             return true;
 
         return false;
@@ -101,12 +101,12 @@ class CustomerDao {
         console.log(id)
         if (id)
             return this.loadById(id);
-        var sql = "INSERT INTO Customer (Title,Name,Surname,AddressID,PhoneNumber,Mail,DateOfBirth, Newsletter) VALUES (?,?,?,?,?,?,?, ?)";
+        var sql = "INSERT INTO Customer (Title,Name,Surname,AddressID,PhoneNumber,Mail,DateOfBirth, Newsletter) VALUES (?,?,?,?,?,?,?,?)";
         var statement = this._conn.prepare(sql);
         var params = [(title.toLowerCase() == 'mr' ? 0 : 1), name, surname, addressid, phonenumber, mail, (helper.isNull(dateofbirth) ? null : dateofbirth), (newsletter > 0) ? 1 : 0];
         var result = statement.run(params);
 
-        if (result.changes != 1) 
+        if (result.changes != 1)
             throw new Error("Could not insert new Record. Data: " + params);
 
         var newObj = this.loadById(result.lastInsertRowid);
@@ -119,7 +119,7 @@ class CustomerDao {
         var params = [(title.toLowerCase() == 'mr' ? 0 : 1), name, surname, addressid, phonenumber, mail, (helper.isNull(dateofbirth) ? null : dateofbirth), (newsletter > 0) ? 1 : 0, id];
         var result = statement.run(params);
 
-        if (result.changes != 1) 
+        if (result.changes != 1)
             throw new Error("Could not update existing Record. Data: " + params);
 
         var updatedObj = this.loadById(id);
@@ -132,7 +132,7 @@ class CustomerDao {
             var statement = this._conn.prepare(sql);
             var result = statement.run(id);
 
-            if (result.changes != 1) 
+            if (result.changes != 1)
                 throw new Error("Could not delete Record by id=" + id);
 
             return true;

@@ -5,6 +5,16 @@ $(async() => {
     // load footer & header
     await loadHeader("header.html", "productsNav");
     await loadFooter("footer.html");
+    var payload = parseSearchParams();
+    // load data
+    var data = await loadProducts(payload);
+    await loadTags(selectedTags, data.tagscount);
+    await loadResolutions(selectedRezs, data.rezcount);
+    // add Listeners
+    addEventFilterBtn();
+});
+
+function parseSearchParams() {
     // parse & validate SearchParams
     // url -> /products.html?page=1&tags=?&rezs=?&price_start=?&price_end=?
     let params = new URLSearchParams(window.location.search);
@@ -18,45 +28,51 @@ $(async() => {
         $('#inputStartPrice').val(price_start);
     if (price_end)
         $('#inputEndPrice').val(price_end);
-    // load data
-    var data = await loadProducts(selectedTags, selectedRezs, page, price_start, price_end);
-    await loadTags(selectedTags, data.tagscount);
-    await loadResolutions(selectedRezs, data.rezcount);
-    // add Listeners
-    addEventFilterBtn();
-});
+    return { page: page, tags: JSON.stringify(selectedTags), rezs: JSON.stringify(selectedRezs), price_start: price_start, price_end: price_end };
+}
 
 // load functions
 
-async function loadProducts(tags, rezs, page, price_start, price_end) {
-    var payload = { tags: JSON.stringify(tags), rezs: JSON.stringify(rezs), price_start: price_start, price_end: price_end };
-    // var needToFilter = (!isEmptyArray(tags) || !isEmptyArray(rezs));
-    // console.log(JSON.stringify({ needToFilter: needToFilter, tags: isEmptyArray(tags), resz: isEmptyArray(rezs) }));
+async function loadProducts(payload) {
+    // prepare payload
+    var page = payload.page;
+    delete payload.page;
+    // build url
     var url = "/api/product/filter/page/" + page + "/?" + jQuery.param(payload);
+    // make request
     const productResponse = await fetch(url);
+    // parse request to json
     var productsJson = await productResponse.json();
+    // check for error
     if (productsJson.error) {
         console.error("failed to fetch products");
         return;
     }
     var data = productsJson.data;
     var products = data.products;
+    // change format of product-tags
     for (var i = 0; i < products.length; i++) {
         products[i].tags = products[i].tags.map(k => k.name);
     }
+    console.log(products);
+    // render products and pagination
     renderProducts(products);
     renderPagination(data.pagination);
     return data;
 }
 
 async function loadTags(selectedTags, count) {
+    // make request
     const tagsResponse = await fetch("/api/tags/count/all/");
+    // parse request to json
     var tagJson = await tagsResponse.json();
+    // check for error
     if (tagJson.error) {
         console.error("failed to fetch tags");
         return;
     }
     var tags = tagJson.data;
+    // render tags
     await renderTags(selectedTags, tags, count);
     return tags;
 }
@@ -73,22 +89,50 @@ async function loadResolutions(selectedRezs, count) {
     return resolutions;
 }
 
+async function dynloadProducts() {
+    // fetch new data
+    var payload = parseSearchParams();
+    var data = await loadProducts(payload);
+    // update tags and resolutions
+    await loadTags(selectedTags, data.tagscount);
+    await loadResolutions(selectedRezs, data.rezcount);
+}
+
 // render functions
 
 function renderProducts(products) {
+    // select container for products
     const productContainer = $('#productsContainer');
+    // make it empty
     productContainer.empty();
+    // create products
     for (var product of products) {
         const newProduct = createProduct(product);
         productContainer.append(newProduct);
     }
 }
 
+// TODO: merge renderTags and renderResolution - doing same things - needs attribute to differ tags from resolution in url
 function renderTags(selectedTags, tags, count) {
     const tagsContainer = $('#tagsContainer');
     tagsContainer.empty()
-    tags = tags.sort((a, b) => a.count < b.count);
+    console.log("tags: " + JSON.stringify(tags));
+    console.log("counts: " + JSON.stringify(count));
+    // update tag count from received query
+    tags = tags.map(tag => {
+        tag.count = (tag.name in count) ? count[tag.name] : 0;
+        return tag;
+    });
+    // sort tags by select-status > count > name
+    tags = tags.sort((a, b) => {
+        if (selectedTags.includes(a.name) && !selectedTags.includes(b.name)) return -1;
+        if (!selectedTags.includes(a.name) && selectedTags.includes(b.name)) return 1;
+        if (a.count < b.count) return 1;
+        if (a.count > b.count) return -1;
+        return a.name > b.name;
+    });
     var selectedTagHidden = 0;
+    // create tags and count hidden tags
     for (var [idx, tag] of tags.entries()) {
         var active = selectedTags.includes(tag.name);
         const newTag = createTag(tag, active, count);
@@ -100,23 +144,35 @@ function renderTags(selectedTags, tags, count) {
         }
         tagsContainer.append(newTag);
     }
-    const loadMore = $('<a href="#" class="list-group-item text-center"><span id="toggleTags">display all</span></a>');
+    // create loadMore-Button and add indicator if active tag is hidden
+    const loadMore = $('<a href="#" class="list-group-item text-center loadMore"><span id="toggleTags">display all</span></a>');
     if (selectedTagHidden > 0) {
         var text = loadMore.find('#toggleTags');
-        const counter = $('<span class="badge badge-info round ml-2"/>');
+        const counter = $('<span class="badge badge-info round ml-2 counter"/>');
         counter.text(selectedTagHidden);
         text.append(counter);
     }
+    // laodMore-Click-Event: update text and counter on click
     loadMore.on('click', event => {
         $('#tagsContainer > .more-tags').each((idx, tag) => {
             $(tag).toggle();
         });
+        // get button
         let clicked = $(event.currentTarget);
-        if (clicked.text() === 'display all') {
-            clicked.text("hide");
-        } else {
-            clicked.text("display all");
+        // get span element
+        var innerSpan = $(clicked).find('#toggleTags');
+        // change text of span according action
+        innerSpan.text(($(clicked).hasClass("loadMore")) ? "hide" : "display all");
+        if (!$(clicked).hasClass("loadMore")) {
+            // check if some hidden tags are active and add indicator
+            var count = $("#tagsContainer > .tag.active.more-tags").length;
+            if (count > 0) {
+                const counter = $('<span class="badge badge-info round ml-2 counter"/>');
+                counter.text(count);
+                innerSpan.append(counter);
+            }
         }
+        $(clicked).toggleClass("loadMore")
     });
     tagsContainer.append(loadMore);
 }
@@ -124,11 +180,22 @@ function renderTags(selectedTags, tags, count) {
 function renderResoultions(selectedRezs, resolutions, count) {
     const rezContainer = $('#rezContainer');
     rezContainer.empty();
+    resolutions = resolutions.map(rez => {
+        rez.count = (rez.name in count) ? count[rez.name] : 0;
+        return rez;
+    })
     resolutions.sort((a, b) => a.count < b.count);
+    resolutions = resolutions.sort((a, b) => {
+        if (selectedRezs.includes(a.name) && !selectedRezs.includes(b.name)) return -1;
+        if (!selectedRezs.includes(a.name) && selectedRezs.includes(b.name)) return 1;
+        if (a.count < b.count) return 1;
+        if (a.count > b.count) return -1;
+        return a.name > b.name;
+    });
     var selectedTagHidden = 0;
     for (var [idx, rez] of resolutions.entries()) {
         var active = selectedRezs.includes(rez.name);
-        const newRez = createRezTag(rez, selectedRezs.includes(rez.name), count);
+        const newRez = createRezTag(rez, active, count);
         if (idx >= 3) {
             newRez.hide();
             newRez.addClass("more-rezs")
@@ -149,39 +216,63 @@ function renderResoultions(selectedRezs, resolutions, count) {
             $(rez).toggle();
         });
         let clicked = $(event.currentTarget);
-        if (clicked.text() === 'display all') {
-            clicked.text("hide");
-        } else {
-            clicked.text("display all");
+        var innerSpan = $(clicked).find('#toggleRez');
+        innerSpan.text(($(clicked).hasClass("loadMore")) ? "hide" : "display all");
+        if (!$(clicked).hasClass("loadMore")) {
+            var count = $("#rezContainer > .rez.active.more-rezs").length;
+            if (count > 0) {
+                const counter = $('<span class="badge badge-info round ml-2 counter"/>');
+                counter.text(count);
+                innerSpan.append(counter);
+            }
         }
+        $(clicked).toggleClass("loadMore")
     });
     rezContainer.append(loadMore);
 }
 
 function renderPagination(pagination) {
+    // hide pagination if no pages
     if (pagination.numPages === 0) {
         $("nav.pagination > ul").hide();
         return;
     }
-    var url = "/pages/products.html?"
-    let params = new URLSearchParams(window.location.search);
-    params.set('page', pagination.previous);
-    $('#pagination-prev').attr('href', url + params.toString());
-    params.set('page', pagination.next)
-    $('#pagination-next').attr('href', url + params.toString());
+    // remove all pages
+    $('ul.pagination > li.page-num').remove();
+    // add data-page to next and previous - can be undefined
+    $('#pagination-prev').attr("data-page", pagination.previous);
+    $('#pagination-next').attr("data-page", pagination.next);
+    // check if prev/next is undefined and set disabled accordingly
+    $('#pagination-prev').parent('li.page-item').toggleClass('disabled', pagination.previous === undefined);
+    $('#pagination-next').parent('li.page-item').toggleClass('disabled', pagination.next === undefined);
+
     var tmp = $('#pagination-next').parent();
+    // create elements for pages 0 - numPages
     for (var i = 0; i < pagination.numPages; i++) {
-        const pageItem = $('<li class="page-item" />')
+        const pageItem = $('<li class="page-item page-num" />')
         const pageAnchor = $('<a class="page-link" href="#" />')
         if (i === (pagination.current)) {
             pageItem.addClass('active');
         }
-        params.set('page', i);
-        pageAnchor.attr('href', url + params.toString());
+        pageAnchor.attr("data-page", i);
         pageAnchor.text(i + 1);
         pageItem.append(pageAnchor);
         pageItem.insertBefore(tmp);
     }
+    // add click event for pagination item => dynamically load next page
+    $('a.page-link').on('click', event => {
+        var clicked = $(event.currentTarget);
+        // get data-page
+        var page = $(clicked).attr("data-page");
+        // return if page is undefined
+        if (page === undefined) return;
+        // update url without reloading
+        var url = new URL(window.location.href);
+        url.searchParams.set('page', page)
+        window.history.pushState({ "html": "products.html" }, "", url);
+        // load next page
+        dynloadProducts();
+    });
 }
 
 // create functions
@@ -200,10 +291,10 @@ function createProduct(data) {
     return product;
 }
 
-function createTag(data, active, count) {
+function createTag(data, active) {
     const tag = $('<a href="#" class="list-group-item tag" data-id="' + data.id + '"/>')
     const counter = $('<span class="float-right badge badge-light round"/>')
-    counter.text((data.name in count) ? count[data.name] : 0)
+    counter.text(data.count)
     tag.text(data.name);
     tag.attr("data-name", data.name)
     tag.append(counter);
@@ -219,15 +310,16 @@ function createTag(data, active, count) {
         for (var tag of selectedTags) {
             url.searchParams.append("tags", tag);
         }
-        window.location.href = url;
+        window.history.pushState({ "html": "products.html" }, "", url);
+        dynloadProducts();
     });
     return tag;
 }
-
-function createRezTag(data, active, count) {
+// TODO: same as createTag-function -> merge
+function createRezTag(data, active) {
     const tag = $('<a href="#" class="list-group-item rez" data-name="' + data.name + '"/>')
     const counter = $('<span class="float-right badge badge-light round"/>')
-    counter.text((data.name in count) ? count[data.name] : 0)
+    counter.text(data.count)
     tag.text(data.name);
     tag.append(counter);
     if (active)
@@ -242,12 +334,15 @@ function createRezTag(data, active, count) {
         for (var rez of selectedRezs) {
             url.searchParams.append("rezs", rez);
         }
-        window.location.href = url;
+        window.history.pushState({ "html": "products.html" }, "", url);
+        dynloadProducts();
     });
     return tag;
 }
 
 // events
+
+// TODO: price filtering somehow doesnt work - maybe error in service/dao?????
 function addEventFilterBtn() {
     $('#filterBtn').on('click', event => {
         event.preventDefault();
@@ -267,6 +362,7 @@ function addEventFilterBtn() {
                 url.searchParams.set("price_end", price_end);
             }
         }
-        window.location.href = url;
+        window.history.pushState({ "html": "products.html" }, "", url);
+        dynloadProducts();
     });
 }

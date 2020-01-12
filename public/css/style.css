@@ -84,7 +84,16 @@ body {
     vertical-align: top;
 }
 
-#test {
+#wrapper1 {
+    flex-direction: column;
+    display: flex;
+    height: 90%;
+    width: 100%;
+    min-height: 640px;
+    position: absolute;
+}
+
+#wrapper2 {
     display: flex;
     align-items: center;
     position: absolute;
@@ -96,7 +105,7 @@ body {
     flex-direction: row;
 }
 
-#test2 {
+#wrapper3 {
     margin: 0 auto;
     max-width: 640px;
     -webkit-box-direction: normal;
@@ -115,15 +124,6 @@ body {
     padding: 0 20px;
     display: inline-block;
     vertical-align: top;
-}
-
-#w {
-    flex-direction: column;
-    display: flex;
-    height: 90%;
-    width: 100%;
-    min-height: 640px;
-    position: absolute;
 }
 
 #bigImg {

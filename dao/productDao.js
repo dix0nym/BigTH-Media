@@ -112,6 +112,7 @@ class ProductDao {
         return result;
     }
 
+    // TODO: separate filtering in filter-function to use with products.filter(f => filterfunction(f))
     loadFilteredByLimit(start, count, queriedtags, queriedRezs, price_start, price_end) {
         var products = this.loadAll();
         var tagsCount = {};
@@ -128,8 +129,8 @@ class ProductDao {
             if (price_start && price_start > 0) {
                 inPriceRange = product.grossprice >= price_start;
             }
-            if (price_end && price_end > 0) {
-                inPriceRange = product.grossPrice <= price_end;
+            if (price_end && price_end > 0 && inPriceRange) {
+                inPriceRange = product.grossprice <= price_end;
             }
             if (!hasAllTags || !hasOneResz || !inPriceRange) {
                 products.splice(i, 1);

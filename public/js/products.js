@@ -342,7 +342,6 @@ function createRezTag(data, active) {
 
 // events
 
-// TODO: price filtering somehow doesnt work - maybe error in service/dao?????
 function addEventFilterBtn() {
     $('#filterBtn').on('click', event => {
         event.preventDefault();

@@ -281,3 +281,12 @@ body {
 .margin-bottom {
     margin-bottom: 40px;
 }
+
+
+/* success.html */
+
+.success-card,
+.success-body,
+.success-header {
+    border: 1px solid #17a2b8;
+}

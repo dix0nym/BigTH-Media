@@ -67,7 +67,7 @@ function renderProduct(data) {
     const addtToCartBtn = $('<button type="button" class="addToCart btn btn-outline-info fa fa-cart-plus fa-2x" href="#"/>');
     addtToCartBtn.attr('data-id', data.id);
     const price = $('<span class="mr-2 font-weight-bold"/>');
-    price.text(data.grossprice+"$");
+    price.text((data.grossprice).toFixed(2) + "$");
     cardTextRight.append(price);
     cardTextRight.append(addtToCartBtn);
     cardTextRow.append(cardTextRight);

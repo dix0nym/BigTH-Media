@@ -48,7 +48,7 @@ function createRow(rowdata) {
 
     let priceQtyWrapper = $('<div class="col-xs-6 col-md-4 row align-self-center"/>');
     let priceWrapper = $('<div class="col-xs-4 col-md-4 text-right align-self-center" style="padding-top: 5px"/>');
-    let price = $('<h6><strong><div id="price">' + rowdata.grossprice + '</div> (' + rowdata.netprice + ' + ' + rowdata.vat.percentage + '%) <span class="text-muted">x</span></strong</h6>');
+    let price = $('<h6><strong><div id="price">' + (rowdata.grossprice).toFixed(2) + '€</div> (' + (rowdata.netprice).toFixed(2) + '€ + ' + rowdata.vat.percentage + '%) <span class="text-muted">x</span></strong</h6>');
     priceWrapper.append(price);
     priceQtyWrapper.append(priceWrapper);
 
@@ -128,7 +128,7 @@ async function addQty(clickedButtonEvent) {
 function calcTotal() {
     let total = 0;
     $('#cart-container > div.row').each((idx, item) => {
-        let price = $(item).find('div#price').text();
+        let price = parseFloat($(item).find('div#price').text().replace("€", ""));
         let qty = $(item).find('input#qtyInput').val()
         console.log(idx, price, qty, price * qty);
         total += price * qty;

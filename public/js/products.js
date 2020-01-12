@@ -73,7 +73,7 @@ async function loadTags(selectedTags, count) {
     }
     var tags = tagJson.data;
     // render tags
-    await renderTags(selectedTags, tags, count);
+    await renderTags('tagsContainer', "tag", selectedTags, tags, count);
     return tags;
 }
 
@@ -85,7 +85,7 @@ async function loadResolutions(selectedRezs, count) {
         return;
     }
     var resolutions = rezJson.data;
-    renderResoultions(selectedRezs, resolutions, count);
+    await renderTags('rezContainer', "rez", selectedRezs, resolutions, count);
     return resolutions;
 }
 
@@ -112,18 +112,15 @@ function renderProducts(products) {
     }
 }
 
-// TODO: merge renderTags and renderResolution - doing same things - needs attribute to differ tags from resolution in url
-function renderTags(selectedTags, tags, count) {
-    const tagsContainer = $('#tagsContainer');
-    tagsContainer.empty()
+function renderTags(containerName, type, selected, tags, count) {
+    const container = $('#' + containerName);
+    container.empty();
     console.log("tags: " + JSON.stringify(tags));
     console.log("counts: " + JSON.stringify(count));
-    // update tag count from received query
     tags = tags.map(tag => {
         tag.count = (tag.name in count) ? count[tag.name] : 0;
         return tag;
     });
-    // sort tags by select-status > count > name
     tags = tags.sort((a, b) => {
         if (selectedTags.includes(a.name) && !selectedTags.includes(b.name)) return -1;
         if (!selectedTags.includes(a.name) && selectedTags.includes(b.name)) return 1;
@@ -131,41 +128,42 @@ function renderTags(selectedTags, tags, count) {
         if (a.count > b.count) return -1;
         return a.name > b.name;
     });
-    var selectedTagHidden = 0;
+    var activeHiddenTags = 0;
     // create tags and count hidden tags
     for (var [idx, tag] of tags.entries()) {
-        var active = selectedTags.includes(tag.name);
-        const newTag = createTag(tag, active, count);
+        var active = selected.includes(tag.name);
+        const newTag = createTag(tag, active, type);
         if (idx >= 3) {
             newTag.hide();
-            newTag.addClass("more-tags")
+            newTag.addClass("more-tags");
             if (active)
-                selectedTagHidden++;
+                activeHiddenTags++;
         }
-        tagsContainer.append(newTag);
+        container.append(newTag);
     }
     // create loadMore-Button and add indicator if active tag is hidden
-    const loadMore = $('<a href="#" class="list-group-item text-center loadMore"><span id="toggleTags">display all</span></a>');
-    if (selectedTagHidden > 0) {
-        var text = loadMore.find('#toggleTags');
+    const loadMore = $('<a href="#" class="list-group-item text-center loadMore"><span class="loadMoreText">display all</span></a>');
+    if (activeHiddenTags > 0) {
+        var text = loadMore.find('.loadMoreText');
         const counter = $('<span class="badge badge-info round ml-2 counter"/>');
-        counter.text(selectedTagHidden);
+        counter.text(activeHiddenTags);
         text.append(counter);
     }
     // laodMore-Click-Event: update text and counter on click
     loadMore.on('click', event => {
-        $('#tagsContainer > .more-tags').each((idx, tag) => {
-            $(tag).toggle();
-        });
         // get button
         let clicked = $(event.currentTarget);
+        // set clicked tag to active
+        $(clicked).parent('#' + containerName).find('.more-tags').each((idx, tag) => {
+            $(tag).toggle();
+        });
         // get span element
-        var innerSpan = $(clicked).find('#toggleTags');
+        var innerSpan = $(clicked).find('.loadMoreText');
         // change text of span according action
         innerSpan.text(($(clicked).hasClass("loadMore")) ? "hide" : "display all");
         if (!$(clicked).hasClass("loadMore")) {
             // check if some hidden tags are active and add indicator
-            var count = $("#tagsContainer > .tag.active.more-tags").length;
+            var count = $(clicked).parent().find('.tag.active.more-tags').length;
             if (count > 0) {
                 const counter = $('<span class="badge badge-info round ml-2 counter"/>');
                 counter.text(count);
@@ -174,61 +172,7 @@ function renderTags(selectedTags, tags, count) {
         }
         $(clicked).toggleClass("loadMore")
     });
-    tagsContainer.append(loadMore);
-}
-
-function renderResoultions(selectedRezs, resolutions, count) {
-    const rezContainer = $('#rezContainer');
-    rezContainer.empty();
-    resolutions = resolutions.map(rez => {
-        rez.count = (rez.name in count) ? count[rez.name] : 0;
-        return rez;
-    })
-    resolutions.sort((a, b) => a.count < b.count);
-    resolutions = resolutions.sort((a, b) => {
-        if (selectedRezs.includes(a.name) && !selectedRezs.includes(b.name)) return -1;
-        if (!selectedRezs.includes(a.name) && selectedRezs.includes(b.name)) return 1;
-        if (a.count < b.count) return 1;
-        if (a.count > b.count) return -1;
-        return a.name > b.name;
-    });
-    var selectedTagHidden = 0;
-    for (var [idx, rez] of resolutions.entries()) {
-        var active = selectedRezs.includes(rez.name);
-        const newRez = createRezTag(rez, active, count);
-        if (idx >= 3) {
-            newRez.hide();
-            newRez.addClass("more-rezs")
-            if (active)
-                selectedTagHidden++;
-        }
-        rezContainer.append(newRez);
-    }
-    const loadMore = $('<a href="#" class="list-group-item text-center"><span id="toggleRez">display all</span></a>');
-    if (selectedTagHidden > 0) {
-        var text = loadMore.find('#toggleRez');
-        const counter = $('<span class="badge badge-info round ml-2"/>');
-        counter.text(selectedTagHidden);
-        text.append(counter);
-    }
-    loadMore.on('click', event => {
-        $('#rezContainer > .more-rezs').each((idx, rez) => {
-            $(rez).toggle();
-        });
-        let clicked = $(event.currentTarget);
-        var innerSpan = $(clicked).find('#toggleRez');
-        innerSpan.text(($(clicked).hasClass("loadMore")) ? "hide" : "display all");
-        if (!$(clicked).hasClass("loadMore")) {
-            var count = $("#rezContainer > .rez.active.more-rezs").length;
-            if (count > 0) {
-                const counter = $('<span class="badge badge-info round ml-2 counter"/>');
-                counter.text(count);
-                innerSpan.append(counter);
-            }
-        }
-        $(clicked).toggleClass("loadMore")
-    });
-    rezContainer.append(loadMore);
+    container.append(loadMore);
 }
 
 function renderPagination(pagination) {
@@ -291,48 +235,28 @@ function createProduct(data) {
     return product;
 }
 
-function createTag(data, active) {
+function createTag(data, active, type) {
     const tag = $('<a href="#" class="list-group-item tag" data-id="' + data.id + '"/>')
     const counter = $('<span class="float-right badge badge-light round"/>')
     counter.text(data.count)
     tag.text(data.name);
     tag.attr("data-name", data.name)
+    tag.attr("data-type", type)
     tag.append(counter);
     if (active)
         tag.addClass("active");
     tag.on('click', event => {
         let clickedTag = $(event.currentTarget);
+        let type = $(clickedTag).attr("data-type");
         clickedTag.toggleClass('active');
-        selectedTags.splice(0, selectedTags.length);
-        $('#tagsContainer .tag.active').each((_, tag) => selectedTags.push($(tag).attr('data-name')));
+        let selectedList = (type === "tag") ? selectedTags : selectedRezs;
+
+        selectedList.splice(0, selectedList.length);
+        $(clickedTag).parent().find('.tag.active').each((_, tag) => selectedList.push($(tag).attr('data-name')));
         var url = new URL(window.location.href);
-        url.searchParams.delete("tags");
-        for (var tag of selectedTags) {
-            url.searchParams.append("tags", tag);
-        }
-        window.history.pushState({ "html": "products.html" }, "", url);
-        dynloadProducts();
-    });
-    return tag;
-}
-// TODO: same as createTag-function -> merge
-function createRezTag(data, active) {
-    const tag = $('<a href="#" class="list-group-item rez" data-name="' + data.name + '"/>')
-    const counter = $('<span class="float-right badge badge-light round"/>')
-    counter.text(data.count)
-    tag.text(data.name);
-    tag.append(counter);
-    if (active)
-        tag.addClass("active");
-    tag.on('click', event => {
-        let clickedTag = $(event.currentTarget);
-        clickedTag.toggleClass('active');
-        selectedRezs.splice(0, selectedRezs.length);
-        $('#rezContainer .rez.active').each((_, tag) => selectedRezs.push($(tag).attr('data-name')));
-        var url = new URL(window.location.href);
-        url.searchParams.delete("rezs");
-        for (var rez of selectedRezs) {
-            url.searchParams.append("rezs", rez);
+        url.searchParams.delete((type === "tag") ? "tags" : "rezs");
+        for (var tag of selectedList) {
+            url.searchParams.append((type === "tag") ? "tags" : "rezs", tag);
         }
         window.history.pushState({ "html": "products.html" }, "", url);
         dynloadProducts();

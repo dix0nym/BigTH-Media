@@ -4,9 +4,6 @@ $(async() => {
 
 });
 
-/*
-TODO Sven: differentiate between product types: sales and pictures
-*/
 async function loadData(cart) {
     let data = [];
 

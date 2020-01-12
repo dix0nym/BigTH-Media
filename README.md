@@ -15,6 +15,9 @@ SUM:|53|794|151|5128
 
 ## TODO
 
+all:
+- $ or €? (unify in product, sales, cart, ...)
+
 Schmiels
 - product/sales toast
 - product resolution as "tag"?

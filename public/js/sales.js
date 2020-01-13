@@ -1,12 +1,12 @@
 $(async() => {
-    sales = await loadSales();
+    var sales = await loadSales();
     renderSales(sales);
 
     $('.addToCart').on('click', event => {
         addSetToCart(event);
 
-        id = renderToast(event);
-        idString = '#toast' + id;
+        var id = renderToast(event);
+        var idString = '#toast' + id;
 
         $(idString).toast({
             autohide: true,
@@ -17,9 +17,7 @@ $(async() => {
 });
 
 async function loadSales() {
-    let searchParams = new URLSearchParams(window.location.search);
     try {
-        let id = 1001;
         const response = await fetch("/api/sales/all/");
         var sales = await response.json();
     } catch (exception) {
@@ -32,7 +30,6 @@ async function loadSales() {
 function addSetToCart(event) {
     const btn = $(event.currentTarget);
     const entryToAdd = btn.attr("data-id");
-
     addToCart(entryToAdd);
 }
 
@@ -48,23 +45,17 @@ function renderSales(sales) {
 }
 
 function renderSale(sale) {
-    firstItem = true;
-
     console.log(sale);
-
-
     const container = $('<div class="container mt-2 w-60 margin-bottom"/>');
     const containerHeader = $('<h5 class="text-center font-weight-bold">' + sale.title + '</h5>');
 
     const jumbotron = $('<div class="jumbotron mx-auto mb-0 w-100 py-2 bg-dark"/>');
     const carousel = $('<div id="Sale' + sale.id + '" class="carousel slide" data-ride="carousel"/>');
     const carouselInner = $('<div class="carousel-inner"/>');
-    sale.items.forEach((item) => {
+    sale.items.forEach((item, idx) => {
         const carouselItem = $('<div class="carousel-item text-center"/>');
-        if (firstItem) {
+        if (idx === 0)
             carouselItem.addClass('active')
-            firstItem = false;
-        }
         const carouselImg = $('<img src="/media/compressed/' + item.filename + '" class="d-block mx-auto carouselImg" alt="' + item.id + '"/>');
         carouselItem.append(carouselImg);
         carouselInner.append(carouselItem);

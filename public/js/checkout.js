@@ -22,7 +22,7 @@ async function loadCountry() {
 
 $('#personal-information').on('submit', () => {
     var formData = $("form#personal-information").serializeArray();
-    var formData = formData.reduce(function(map, obj) {
+    formData = formData.reduce(function(map, obj) {
         map[obj.name] = obj.value;
         return map;
     }, {});

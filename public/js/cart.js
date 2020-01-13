@@ -50,9 +50,9 @@ function createRow(rowdata) {
     priceQtyWrapper.append(priceWrapper);
 
     let qtyWrapper = $('<div class="col-xs-6 col-md-6">');
-    let qtyInputGroup = $('<div class="input-group"/>');
+    let qtyInputGroup = $('<div class="input-group qtyInputGroup"/>');
     let qtyInputGroupPrepend = $('<div class="input-group-prepend"><button data-id="' + rowdata.id + '" style="min-width: 2.5rem;" class="btn btn-decrement btn-outline-secondary btnRedQty" type="button"><strong>-</strong></button></div>');
-    let qtyInput = $('<input type="text" id="qtyInput" style="text-align: center;" class="form-control" value="' + parseInt(rowdata.qty) + '"/>');
+    let qtyInput = $('<input type="text" style="text-align: center;" class="qtyInput form-control" value="' + parseInt(rowdata.qty) + '"/>');
     let qtyInputGroupAppend = $('<div class="input-group-append"><button data-id="' + rowdata.id + '" style="min-width: 2.5rem;" class="btn btn-increment btn-outline-secondary btnAddQty" type="button"><strong>+</strong></button></div>');
     qtyInputGroup.append(qtyInputGroupPrepend);
     qtyInputGroup.append(qtyInput);
@@ -117,7 +117,7 @@ async function addQty(clickedButtonEvent) {
     let cart = getCart();
     if (id in cart) {
         cart[id] += 1;
-        $('input#qtyInput').val(cart[id]);
+        $(clickedButton).parents('div.qtyInputGroup').children('.qtyInput').val(cart[id]);
         setCart(cart);
     }
     calcTotal();
@@ -148,7 +148,7 @@ async function removeQty(clickedButtonEvent) {
             deleteCartEntry(clickedButtonEvent);
             setCart(cart);
         } else {
-            $('input#qtyInput').val(cart[id]);
+            $(clickedButton).parents('div.qtyInputGroup').children('.qtyInput').val(cart[id]);
         }
     }
     calcTotal();

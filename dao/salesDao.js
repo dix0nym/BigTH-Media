@@ -24,17 +24,18 @@ class SalesDao {
         }
 
         result = helper.objectKeysToLower(result);
-        
+
         result.items = [];
 
         sql = "SELECT * FROM Product2Sales p2s INNER JOIN Product p ON p2s.ProductID=p.ID WHERE p2s.SalesID=?";
         statement = this._conn.prepare(sql);
         var productResult = statement.all(id);
-    
+
         productResult = helper.arrayObjectKeysToLower(productResult);
 
         productResult.forEach(product => {
             var item = {
+                id: product.id,
                 filename: product.filename,
                 title: product.title
             };
@@ -74,7 +75,7 @@ class SalesDao {
 
             if (helper.isArrayEmpty(productResult))
                 return [];
-            
+
             productResult = helper.arrayObjectKeysToLower(productResult);
             console.log(productResult);
             productResult.forEach(product => {
@@ -83,18 +84,18 @@ class SalesDao {
                     title: product.title
                 };
 
-                sale.items.push(item);    
+                sale.items.push(item);
             });
 
             // VAT calc
             // change sales.price to sales.grossprice
-            
+
             sale.vat = vatDao.loadById(sale.vatid);
             delete sale.vatid;
 
             sale.vatpart = helper.round((sale.netprice / 100) * sale.vat.percentage);
 
-            sale.grossprice = helper.round(sale.netprice + sale.vatpart);    
+            sale.grossprice = helper.round(sale.netprice + sale.vatpart);
         });
 
         console.log(result);

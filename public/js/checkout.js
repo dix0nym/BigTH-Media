@@ -1,6 +1,6 @@
 $(async() => {
     console.log("loaded");
-    await loadHeader("header2.html", "");
+    await loadHeader("header2.html", "personalInfoNav");
     await loadFooter("footer.html");
     await loadCountry();
 });

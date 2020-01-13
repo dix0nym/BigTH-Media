@@ -81,7 +81,7 @@ serviceRouter.post("/customer", (request, response) => {
 
     const customerDao = new CustomerDao(request.app.locals.dbConnection);
     try {
-        var result = customerDao.create(request.body.title, request.body.name, request.body.surname, request.body.addressid, request.body.phonenumber, request.body.mail, request.body.dateofbirth, reques.body.newsletter);
+        var result = customerDao.create(request.body.title, request.body.name, request.body.surname, request.body.addressid, request.body.phonenumber, request.body.mail, request.body.dateofbirth, request.body.newsletter);
         helper.log("service Customer: Record inserted");
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {

@@ -127,7 +127,7 @@ function calcTotal() {
     let total = 0;
     $('#cart-container > div.row').each((idx, item) => {
         let price = parseFloat($(item).find('div#price').text().replace("$", ""));
-        let qty = $(item).find('input#qtyInput').val()
+        let qty = $(item).find('input.qtyInput').val()
         console.log(idx, price, qty, price * qty);
         total += price * qty;
     });

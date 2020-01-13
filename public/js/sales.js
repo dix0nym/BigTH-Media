@@ -2,10 +2,6 @@ $(async() => {
     sales = await loadSales();
     renderSales(sales);
 
-    /*
-    TODO Sven: Dafuer sorgen, dass ein Toast pro Click erscheint; ggf auch style.css ueberarbeiten
-    */
-
     $('.addToCart').on('click', event => {
         addSetToCart(event);
         
@@ -89,7 +85,7 @@ function renderSale(sale) {
     carousel.append(carouselCtrlPrev);
     carousel.append(carouselCtrlNxt);
     const containerFooter = $('<div class="salesFooter d-flex flex-row-reverse"/>');
-    const containerFooterAddToCartBtn = $('<button type="button" class="addToCart btn btn-outline-light border-0 mb-1 fa fa-cart-plus fa-2x" aria-hidden="true"/>');
+    const containerFooterAddToCartBtn = $('<button type="button" class="addToCart btn btn-outline-light border-0 mb-1 ml-2 fa fa-cart-plus fa-2x" aria-hidden="true"/>');
     containerFooterAddToCartBtn.attr('data-id', sale.id);
     const containerFooterPriceTag = $('<h5 class=" mt-2">$' + sale.grossprice + '</h5>');
     containerFooter.append(containerFooterAddToCartBtn);

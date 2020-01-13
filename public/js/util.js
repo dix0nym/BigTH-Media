@@ -33,7 +33,7 @@ function addListeners() {
     $('#livesearchBtn').on('click', (event) => {
         event.preventDefault();
         var tags = $("#live-search-input").val().trim().split(" ")
-        var url = (isEmptyArray(tags)) ? "/pages/products.html?tags=" + tags.join("&tags=") : "/pages/products.html";
+        var url = (isEmptyArray(tags)) ? "/pages/products.html" : "/pages/products.html?tags=" + tags.join("&tags=");
         window.location.href = url;
     });
 

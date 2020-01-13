@@ -42,12 +42,12 @@ function addListeners() {
 function search(event) {
     var searchterm = $(event.currentTarget).val().toLowerCase();
     var resultDropdown = $(event.currentTarget).siblings(".live-search-result");
-    console.log(searchterm);
+    console.log("searchterm: " + searchterm);
     if (searchterm.includes(" ")) {
         var tmp = searchterm.split(" ");
         searchterm = tmp[Math.max(tmp.length - 1, 0)];
     }
-    console.log(searchterm)
+    console.log("splitted-term: " + searchterm)
     if (searchterm.length >= 2) {
         resultDropdown.show();
         $(resultDropdown).siblings('span.toggle-helper').dropdown('toggle');
@@ -55,7 +55,7 @@ function search(event) {
         $.post(
             "/api/livesearch", { search: searchterm }
         ).done((response) => {
-            console.log(response)
+            console.log("response: " + response)
             var data = response.data;
             if (data.length > 0) {
                 resultDropdown.empty();
@@ -66,7 +66,6 @@ function search(event) {
                         var input = $('#live-search-input');
                         const pattern = new RegExp("(:?^||\\s)" + searchterm + "$", "g")
                         input.val(input.val().replace(pattern, " " + clickedEntry.attr("data-name")).trim());
-
                         resultDropdown.hide();
                         resultDropdown.empty();
                     });
@@ -80,8 +79,6 @@ function search(event) {
         resultDropdown.empty();
     }
 }
-
-const isEmptyArray = array => !(Array.isArray(array) && array.length);
 
 function getCart() {
     return ('cart' in sessionStorage) ? JSON.parse(sessionStorage.getItem('cart')) : {};
@@ -97,21 +94,19 @@ function clearCart() {
 
 function addToCart(id) {
     let cart = getCart();
-    console.log(JSON.stringify(cart));
-    if (id in cart) {
-        cart[id] += 1;
-    } else {
-        cart[id] = 1;
-    }
+    if (!(id in cart))
+        cart[id] = 0
+    cart[id] += 1;
     setCart(cart);
-    console.log(JSON.stringify(cart));
 }
 
 function removeFromCart(item) {
     let cart = getCart();
-    if (item.id in card) {
-        delete card[item.id];
+    if (item in cart) {
+        delete cart[item];
         setCart(cart);
+    } else {
+        console.log(item + " not in cart");
     }
 }
 

@@ -23,7 +23,7 @@ async function loadData(cart) {
             console.log(exception);
             return;
         }
-    };
+    }
     await createCartEntries(data);
 }
 
@@ -92,34 +92,22 @@ async function createCartEntries(data) {
 async function deleteCartEntry(clickedButtonEvent) {
     const clickedButton = $(clickedButtonEvent.currentTarget);
     const entryIdToDelete = clickedButton.attr("data-id");
-    console.log(entryIdToDelete);
-
+    removeFromCart(entryIdToDelete);
+    const entryRow = clickedButton.parents(".cart-entry");
+    entryRow.remove();
     let cart = getCart();
-    if (entryIdToDelete in cart) {
-        delete cart[entryIdToDelete];
-        const entryRow = clickedButton.parents(".cart-entry");
-        entryRow.remove();
-        setCart(cart);
-        if (Object.keys(cart).length == 0) {
-            $("#cart-container").append('<div class="text-center text-muted">shopping cart is empty</div>')
-        }
-        calcTotal();
-    } else {
-        console.log(entryIdToDelete, "not in cart");
+    if (Object.keys(cart).length == 0) {
+        $("#cart-container").append('<div class="text-center text-muted">shopping cart is empty</div>')
     }
+    calcTotal();
 }
 
 async function addQty(clickedButtonEvent) {
     const clickedButton = $(clickedButtonEvent.currentTarget);
     const id = clickedButton.attr("data-id");
-    console.log(id);
-
+    addToCart(id);
     let cart = getCart();
-    if (id in cart) {
-        cart[id] += 1;
-        $(clickedButton).parents('div.qtyInputGroup').children('.qtyInput').val(cart[id]);
-        setCart(cart);
-    }
+    $(clickedButton).parents('div.qtyInputGroup').children('.qtyInput').val(cart[id]);
     calcTotal();
 }
 
@@ -137,8 +125,6 @@ function calcTotal() {
 async function removeQty(clickedButtonEvent) {
     const clickedButton = $(clickedButtonEvent.currentTarget);
     const id = clickedButton.attr("data-id");
-    console.log(id);
-
     let cart = getCart();
     if (id in cart) {
         cart[id] -= 1;

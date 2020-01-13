@@ -23,7 +23,7 @@ class OrderDao {
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
-        if (helper.isUndefined(result)) 
+        if (helper.isUndefined(result))
             throw new Error("No Record found by id=" + id);
 
         result = helper.objectKeysToLower(result);
@@ -41,11 +41,10 @@ class OrderDao {
         delete result.paymentid;
 
         result.orderpositions = orderPositionDao.loadByParent(result.id);
-        
+
         result.total = { "net": 0, "gross": 0, "vat": 0 };
 
         for (i = 0; i < result.orderpositions.length; i++) {
-            // console.log(result.orderpositions[i]);
             result.total.net += result.orderpositions[i].netsum;
             result.total.gross += result.orderpositions[i].grosssum;
             result.total.vat += result.orderpositions[i].vatsum;
@@ -70,7 +69,7 @@ class OrderDao {
         var statement = this._conn.prepare(sql);
         var result = statement.all();
 
-        if (helper.isArrayEmpty(result)) 
+        if (helper.isArrayEmpty(result))
             return [];
 
         result = helper.arrayObjectKeysToLower(result);
@@ -102,12 +101,11 @@ class OrderDao {
 
             for (var element of positions) {
                 if (element.order.id == result[i].id) {
-                    // console.log(element);
                     result[i].total.net += element.netsum;
                     result[i].total.gross += element.grosssum;
                     result[i].total.vat += element.vatsum;
-                    result[i].orderpositions.push(element);    
-                }                
+                    result[i].orderpositions.push(element);
+                }
             }
 
             result[i].total.net = helper.round(result[i].total.nettotal);
@@ -123,7 +121,7 @@ class OrderDao {
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
-        if (result.cnt == 1) 
+        if (result.cnt == 1)
             return true;
 
         return false;
@@ -140,16 +138,15 @@ class OrderDao {
         var params = [helper.formatToSQLDateTime(orderdate), customerid, paymentid];
         var result = statement.run(params);
 
-        if (result.changes != 1) 
+        if (result.changes != 1)
             throw new Error("Could not insert new Record. Data: " + params);
-            
+
         if (orderpositions.length > 0) {
             for (var element of orderpositions) {
                 orderPositionDao.create(result.lastInsertRowid, element.id, element.amount, uuidv4());
             }
         }
         var newObj = this.loadById(result.lastInsertRowid);
-        // console.log(newObj);
         return newObj;
     }
 
@@ -157,7 +154,7 @@ class OrderDao {
         const orderPositionDao = new OrderPositionDao(this._conn);
         orderPositionDao.deleteByParent(id);
 
-        if (helper.isNull(orderdate)) 
+        if (helper.isNull(orderdate))
             orderdate = helper.getNow();
 
         var sql = "UPDATE `Order` SET OrderDate=?,CustomerID=?,ZahlungsartID=? WHERE ID=?";
@@ -165,9 +162,9 @@ class OrderDao {
         var params = [helper.formatToSQLDateTime(orderdate), customerid, paymentid, id];
         var result = statement.run(params);
 
-        if (result.changes != 1) 
+        if (result.changes != 1)
             throw new Error("Could not update existing Record. Data: " + params);
-        
+
         if (orderpositions.length > 0) {
             for (var element of orderpositions) {
                 orderPositionDao.create(id, element.product.id, element.amount);
@@ -187,7 +184,7 @@ class OrderDao {
             var statement = this._conn.prepare(sql);
             var result = statement.run(id);
 
-            if (result.changes != 1) 
+            if (result.changes != 1)
                 throw new Error("Could not delete Record by id=" + id);
 
             return true;

@@ -25,14 +25,7 @@ SUM:|53|794|151|5128
 
 all:
 - testing
+- validate inputs checkout.html, payments.html
 
 Schmiels
-- product/sales toast
-- product resolution as "tag"?
 - success.html ok?
-
-Cozy-T
-- db Sales needs details
-
-dixonym
-- ?

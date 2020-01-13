@@ -39,6 +39,7 @@ $('.card-body').on('click', event => {
 });
 
 $('.submitBtn').on('click', (event) => {
+    // TODO: validating inputs
     event.preventDefault();
     const clickedButton = $(event.currentTarget);
     const paymentid = clickedButton.attr("data-id");

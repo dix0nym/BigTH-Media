@@ -9,17 +9,21 @@ async function loadDownloads() {
     const customer = getCustomer();
     if (customer === undefined || customer === null) {
         $('.success-card').hide();
-        $('#error').text("you didn't bought anything - try again!");
+        $('#error').append('<span class="mr-2">you didn\'t bought anything - try again!</span<');
+        $('#error').append('<a href="/index.html"><i class="fa fa-home"></i></a>');
         $('#error').show();
         return;
     }
-    console.log(customer);
-    let orderpositions = customer.orderpositions;
-    const tbody = $('#dl-table-body');
-    for (let pos of orderpositions) {
-        let row = createDownloadRow(pos.product, pos.uuid);
-        tbody.append(row);
+    if ('orderpositions' in customer) {
+        let orderpositions = customer.orderpositions;
+        const tbody = $('#dl-table-body');
+        for (let pos of orderpositions) {
+            let row = createDownloadRow(pos.product, pos.uuid);
+            tbody.append(row);
+        }
     }
+    clearCart();
+    clearCustomer();
 }
 
 function createDownloadRow(product, uuid) {

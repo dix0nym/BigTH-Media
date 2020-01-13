@@ -91,6 +91,10 @@ function setCart(cart) {
     sessionStorage.setItem('cart', JSON.stringify(cart));
 }
 
+function clearCart() {
+    sessionStorage.removeItem('cart');
+}
+
 function addToCart(id) {
     let cart = getCart();
     console.log(JSON.stringify(cart));
@@ -117,4 +121,8 @@ function setCustomer(customer) {
 
 function getCustomer() {
     return JSON.parse(sessionStorage.getItem('customer'));
+}
+
+function clearCustomer() {
+    sessionStorage.removeItem('customer');
 }

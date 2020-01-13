@@ -4,18 +4,15 @@ $(async() => {
 
 });
 
-/*
-TODO Sven: differentiate between product types: sales and pictures
-*/
 async function loadData(cart) {
     let data = [];
 
     for (var id in cart) {
         try {
-            const url = (id > 1000) ? "/api/product/get/" + id : "/api/sales/get/" + id;
+            const url = (parseInt(id) > 1000) ? "/api/sales/get/" + id : "/api/product/get/" + id;
             const response = await fetch(url);
             if (!response.ok) {
-                console.log("failed", response);
+                console.log("failed to get product/sales", response);
                 return data;
             }
             var product = await response.json();
@@ -48,7 +45,7 @@ function createRow(rowdata) {
 
     let priceQtyWrapper = $('<div class="col-xs-6 col-md-4 row align-self-center"/>');
     let priceWrapper = $('<div class="col-xs-4 col-md-4 text-right align-self-center" style="padding-top: 5px"/>');
-    let price = $('<h6><strong><div id="price">' + rowdata.grossprice + '</div> (' + rowdata.netprice + ' + ' + rowdata.vat.percentage + '%) <span class="text-muted">x</span></strong</h6>');
+    let price = $('<h6><strong><div id="price">$' + (rowdata.grossprice).toFixed(2) + '</div> ($' + (rowdata.netprice).toFixed(2) + ' + ' + rowdata.vat.percentage + '%) <span class="text-muted">x</span></strong</h6>');
     priceWrapper.append(price);
     priceQtyWrapper.append(priceWrapper);
 
@@ -84,7 +81,7 @@ async function createCartEntries(data) {
             container.append(row);
             total += rowdata.brutto * rowdata.qty;
         });
-        $('div#price-wrapper > b').first().text(Number(total).toFixed(2) + '€');
+        $('div#price-wrapper > b').first().text('$' + Number(total).toFixed(2));
         $('.deleteEntryBtn', container).click(async(clickedButtonEvent) => deleteCartEntry(clickedButtonEvent));
         $('.btnAddQty', container).click(async(clickedButtonEvent) => addQty(clickedButtonEvent));
         $('.btnRedQty', container).click(async(clickedButtonEvent) => removeQty(clickedButtonEvent));
@@ -128,12 +125,12 @@ async function addQty(clickedButtonEvent) {
 function calcTotal() {
     let total = 0;
     $('#cart-container > div.row').each((idx, item) => {
-        let price = $(item).find('div#price').text();
+        let price = parseFloat($(item).find('div#price').text().replace("$", ""));
         let qty = $(item).find('input#qtyInput').val()
         console.log(idx, price, qty, price * qty);
         total += price * qty;
     });
-    $('div#price-wrapper > b').first().text(Number(total).toFixed(2) + '€');
+    $('div#price-wrapper > b').first().text('$' + Number(total).toFixed(2));
 }
 
 async function removeQty(clickedButtonEvent) {

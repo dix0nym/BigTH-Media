@@ -1,11 +1,11 @@
-$(async () => {
+$(async() => {
     sales = await loadSales();
     renderSales(sales);
 
     /*
     TODO Sven: Dafuer sorgen, dass ein Toast pro Click erscheint; ggf auch style.css ueberarbeiten
     */
-    
+
     $('.addToCart').on('click', event => {
         addSetToCart(event);
         
@@ -55,13 +55,13 @@ function renderSale(sale) {
     firstItem = true;
 
     console.log(sale);
-    
+
 
     const container = $('<div class="container mt-2 w-60 margin-bottom"/>');
-    const containerHeader = $('<h5 class="text-center font-weight-bold">'+sale.title+'</h5>');
+    const containerHeader = $('<h5 class="text-center font-weight-bold">' + sale.title + '</h5>');
 
     const jumbotron = $('<div class="jumbotron mx-auto mb-0 w-100 py-2 bg-dark"/>');
-    const carousel = $('<div id="Sale'+sale.id+'" class="carousel slide" data-ride="carousel"/>');
+    const carousel = $('<div id="Sale' + sale.id + '" class="carousel slide" data-ride="carousel"/>');
     const carouselInner = $('<div class="carousel-inner"/>');
     sale.items.forEach((item) => {
         const carouselItem = $('<div class="carousel-item text-center"/>');
@@ -69,17 +69,17 @@ function renderSale(sale) {
             carouselItem.addClass('active')
             firstItem = false;
         }
-        const carouselImg = $('<img src="/media/compressed/'+item.filename+'" class="d-block mx-auto carouselImg" alt="'+item.id+'"/>');
+        const carouselImg = $('<img src="/media/compressed/' + item.filename + '" class="d-block mx-auto carouselImg" alt="' + item.id + '"/>');
         carouselItem.append(carouselImg);
         carouselInner.append(carouselItem);
     });
-    const carouselCtrlPrev = $('<a class="carousel-control-prev w-10" href="#Sale'+sale.id+'" role="button" data-slide="prev"/>');
+    const carouselCtrlPrev = $('<a class="carousel-control-prev w-10" href="#Sale' + sale.id + '" role="button" data-slide="prev"/>');
     const carouselCtrlPrevBtn = $('<span class="carousel-control-prev-icon" aria-hidden="true"/>');
     const carouselCtrlPrevDesc = $('<span class="sr-only"/>');
     carouselCtrlPrevDesc.text("Previous");
     carouselCtrlPrev.append(carouselCtrlPrevBtn);
     carouselCtrlPrev.append(carouselCtrlPrevDesc);
-    const carouselCtrlNxt = $('<a class="carousel-control-next w-10" href="#Sale'+sale.id+'" role="button" data-slide="next"/>');
+    const carouselCtrlNxt = $('<a class="carousel-control-next w-10" href="#Sale' + sale.id + '" role="button" data-slide="next"/>');
     const carouselCtrlNxtBtn = $('<span class="carousel-control-next-icon" aria-hidden="true"/>');
     const carouselCtrlNxtDesc = $('<span class="sr-only"/>');
     carouselCtrlNxtDesc.text("Next");
@@ -91,7 +91,7 @@ function renderSale(sale) {
     const containerFooter = $('<div class="salesFooter d-flex flex-row-reverse"/>');
     const containerFooterAddToCartBtn = $('<button type="button" class="addToCart btn btn-outline-light border-0 mb-1 fa fa-cart-plus fa-2x" aria-hidden="true"/>');
     containerFooterAddToCartBtn.attr('data-id', sale.id);
-    const containerFooterPriceTag = $('<h5 class=" mt-2">'+sale.grossprice+'€</h5>');
+    const containerFooterPriceTag = $('<h5 class=" mt-2">$' + sale.grossprice + '</h5>');
     containerFooter.append(containerFooterAddToCartBtn);
     containerFooter.append(containerFooterPriceTag);
 
@@ -99,7 +99,7 @@ function renderSale(sale) {
     container.append(containerHeader);
     container.append(jumbotron);
     container.append(containerFooter);
-    
+
     return container;
 }
 
@@ -110,7 +110,7 @@ function renderToast(event) {
     const toastContainer = $('#toastContainer');
     toastContainer.empty();
 
-    const toast = $('<div class="toast ml-auto" id="toast'+addedEntry+'" role="alert" aria-live="assertive" aria-atomic="true"/>');
+    const toast = $('<div class="toast ml-auto" id="toast' + addedEntry + '" role="alert" aria-live="assertive" aria-atomic="true"/>');
     const toastHeader = $('<div class="toast-header"/>');
     const toastHeaderTitle = $('<strong class="mr-auto"/>');
     toastHeader.text("Success");

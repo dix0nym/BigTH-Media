@@ -116,36 +116,19 @@ class ProductDao {
         var products = this.loadAll();
         var tagsCount = {};
         var rezCount = {};
-        for (var i = products.length - 1; i >= 0; i--) {
-            var product = products[i];
-            console.log(product)
-            var hasAllTags = queriedtags.every(tag => {
-                return product.tags.some(t => t.name === tag)
-            });
-            var hasOneResz = (helper.isArrayEmpty(queriedRezs)) ? true : queriedRezs.some(rez => { return product.resolution == rez; });
-
-            var inPriceRange = true;
-            if (price_start && price_start > 0) {
-                inPriceRange = product.grossprice >= price_start;
-            }
-            if (price_end && price_end > 0) {
-                inPriceRange = product.grossPrice <= price_end;
-            }
-            if (!hasAllTags || !hasOneResz || !inPriceRange) {
-                products.splice(i, 1);
-            } else {
-                for (var tag of product.tags) {
-                    if (!(tag.name in tagsCount)) {
-                        tagsCount[tag.name] = 0;
-                    }
-                    tagsCount[tag.name]++;
+        products = products.filter(product => filterProducts(product, queriedtags, queriedRezs, price_start, price_end));
+        products.forEach(product => {
+            for (var tag of product.tags) {
+                if (!(tag.name in tagsCount)) {
+                    tagsCount[tag.name] = 0;
                 }
-                if (!(product.resolution in rezCount)) {
-                    rezCount[product.resolution] = 0;
-                }
-                rezCount[product.resolution]++;
+                tagsCount[tag.name]++;
             }
-        }
+            if (!(product.resolution in rezCount)) {
+                rezCount[product.resolution] = 0;
+            }
+            rezCount[product.resolution]++;
+        });
         return { products: products.slice((start < 0) ? start - 1 : start, start + count), count: products.length, tagscount: tagsCount, rezcount: rezCount };
     }
 
@@ -178,6 +161,22 @@ class ProductDao {
     toString() {
         helper.log("ProductDao [_conn=" + this._conn + "]");
     }
+}
+
+function filterProducts(product, queriedtags, queriedRezs, price_start, price_end) {
+    var hasAllTags = queriedtags.every(tag => {
+        return product.tags.some(t => t.name === tag)
+    });
+    var hasOneResz = (helper.isArrayEmpty(queriedRezs)) ? true : queriedRezs.some(rez => { return product.resolution == rez; });
+
+    var inPriceRange = true;
+    if (price_start && price_start > 0) {
+        inPriceRange = product.grossprice >= price_start;
+    }
+    if (price_end && price_end > 0 && inPriceRange) {
+        inPriceRange = product.grossprice <= price_end;
+    }
+    return !(!hasAllTags || !hasOneResz || !inPriceRange);
 }
 
 module.exports = ProductDao;

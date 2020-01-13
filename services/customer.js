@@ -48,28 +48,31 @@ serviceRouter.get("/customer/exists/:id", (request, response) => {
 serviceRouter.post("/customer", (request, response) => {
     helper.log("service Customer: Client requested creation of new record");
     console.log(request.body);
-    var errorMsgs=[];
+    var errorMsgs = [];
     if (helper.isUndefined(request.body.title)) {
         errorMsgs.push("title missing");
     } else if (request.body.title.toLowerCase() !== "mr" && request.body.title.toLowerCase() !== "mrs") {
         errorMsgs.push("title wrong. Mr and Mrs are allowed");
-    }        
-    if (helper.isUndefined(request.body.name)) 
+    }
+    if (helper.isUndefined(request.body.name))
         errorMsgs.push("name missing");
-    if (helper.isUndefined(request.body.surname)) 
+    if (helper.isUndefined(request.body.surname))
         errorMsgs.push("surname missing");
     if (helper.isUndefined(request.body.addressid))
         errorMsgs.push("addressid missing");
-    if (helper.isUndefined(request.body.phonenumber)) 
+    if (helper.isUndefined(request.body.phonenumber))
         request.body.phonenumber = "";
-    if (helper.isUndefined(request.body.mail)) 
+    if (helper.isUndefined(request.body.mail))
         errorMsgs.push("mail missing");
-    if (!helper.isEmail(request.body.mail)) 
+    if (!helper.isEmail(request.body.mail))
         errorMsgs.push("mail wrong format");
     if (helper.isUndefined(request.body.dateofbirth)) {
-        request.body.dateofbirth = null;
+        errorMsgs.push("dateofbirth missing");
     }
-    
+    if (helper.isUndefined(request.body.newsletter)) {
+        request.body.newsletter = 0;
+    }
+
     if (errorMsgs.length > 0) {
         helper.log("service Customer: Creation not possible, data missing");
         response.status(400).json(helper.jsonMsgError("Creation not possible, data missing " + helper.concatArray(errorMsgs)));
@@ -78,40 +81,40 @@ serviceRouter.post("/customer", (request, response) => {
 
     const customerDao = new CustomerDao(request.app.locals.dbConnection);
     try {
-        var result = customerDao.create(request.body.title, request.body.name, request.body.surname, request.body.addressid, request.body.phonenumber, request.body.mail, request.body.dateofbirth);
+        var result = customerDao.create(request.body.title, request.body.name, request.body.surname, request.body.addressid, request.body.phonenumber, request.body.mail, request.body.dateofbirth, reques.body.newsletter);
         helper.log("service Customer: Record inserted");
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {
         helper.logError("service Customer: Error creating new record. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
-    }    
+    }
 });
 
 serviceRouter.put("/customer", (request, response) => {
     helper.log("service Customer: Client requested update of existing record");
 
-    var errorMsgs=[];
-    if (helper.isUndefined(request.body.id)) 
+    var errorMsgs = [];
+    if (helper.isUndefined(request.body.id))
         errorMsgs.push("id missing");
     if (helper.isUndefined(request.body.title)) {
         errorMsgs.push("title missing");
     } else if (request.body.title.toLowerCase() !== "mr" && request.body.title.toLowerCase() !== "mrs") {
         errorMsgs.push("title wrong. Mr and Mrs are allowd");
-    }        
-    if (helper.isUndefined(request.body.name)) 
+    }
+    if (helper.isUndefined(request.body.name))
         errorMsgs.push("name missing");
-    if (helper.isUndefined(request.body.surname)) 
+    if (helper.isUndefined(request.body.surname))
         errorMsgs.push("surname missing");
     if (helper.isUndefined(request.body.address)) {
         errorMsgs.push("address missing");
     } else if (helper.isUndefined(request.body.address.id)) {
         errorMsgs.push("address defined, but id missing");
     }
-    if (helper.isUndefined(request.body.phonenumber)) 
+    if (helper.isUndefined(request.body.phonenumber))
         request.body.phonenumber = "";
-    if (helper.isUndefined(request.body.mail)) 
+    if (helper.isUndefined(request.body.mail))
         errorMsgs.push("mail missing");
-    if (!helper.isEmail(request.body.mail)) 
+    if (!helper.isEmail(request.body.mail))
         errorMsgs.push("mail wrong format");
     if (helper.isUndefined(request.body.dateofbirth)) {
         request.body.dateofbirth = null;
@@ -135,7 +138,7 @@ serviceRouter.put("/customer", (request, response) => {
     } catch (ex) {
         helper.logError("service Customer: Error updating record by id. Exception occured: " + ex.message);
         response.status(400).json(helper.jsonMsgError(ex.message));
-    }    
+    }
 });
 
 serviceRouter.delete("/customer/:id", (request, response) => {

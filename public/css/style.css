@@ -27,22 +27,23 @@ body {
 
 
 /* footer.html */
+
 #footerorient {
     bottom: 0px;
-    height:30px;
+    height: 30px;
     overflow: hidden;
     border-top: #17a2b8;
     border-width: 1px;
     border-style: solid;
 }
 
-.right{
+.right {
     text-align: right;
     padding-right: 40px;
 }
 
-.greycolor{
-    color: rgba(255,255,255,.75);
+.greycolor {
+    color: rgba(255, 255, 255, .75);
 }
 
 .toggle-helper {
@@ -93,7 +94,16 @@ body {
     vertical-align: top;
 }
 
-#test {
+#wrapper1 {
+    flex-direction: column;
+    display: flex;
+    height: 90%;
+    width: 100%;
+    min-height: 640px;
+    position: absolute;
+}
+
+#wrapper2 {
     display: flex;
     align-items: center;
     position: absolute;
@@ -105,7 +115,7 @@ body {
     flex-direction: row;
 }
 
-#test2 {
+#wrapper3 {
     margin: 0 auto;
     max-width: 640px;
     -webkit-box-direction: normal;
@@ -124,15 +134,6 @@ body {
     padding: 0 20px;
     display: inline-block;
     vertical-align: top;
-}
-
-#w {
-    flex-direction: column;
-    display: flex;
-    height: 90%;
-    width: 100%;
-    min-height: 640px;
-    position: absolute;
 }
 
 #bigImg {
@@ -172,10 +173,11 @@ body {
     padding-top: 4px;
 }
 
+
 /* products.html */
+
 .row {
     margin-right: 0px !important;
-    
 }
 
 #productsContainer .card {
@@ -206,10 +208,14 @@ body {
 }
 
 .pagination li a {
-    background-color: #343a40;
-    border: 1px solid #17a2b8;
-
+    background-color: #343a40 !important;
+    border: 1px solid #17a2b8 !important;
 }
+
+.price-header {
+    border-bottom: 1px solid #17a2b8 !important;
+}
+
 
 /* product.html */
 
@@ -248,6 +254,7 @@ body {
     padding: 0px;
 }
 
+
 /* shopping-cart */
 
 #cart {
@@ -263,13 +270,13 @@ body {
 .card-footer {
     background-color: #343a40;
     border: none;
-
 }
 
 .card-header {
     background-color: #343a40;
     border: none;
 }
+
 
 /* products.html */
 
@@ -281,7 +288,7 @@ body {
     height: 80px;
 }
 
-.margin-bottom{
+.margin-bottom {
     margin-bottom: 40px;
 }
 
@@ -294,4 +301,12 @@ body {
 
 .container * {
     background-color: #343a40;
+}
+
+/* success.html */
+
+.success-card,
+.success-body,
+.success-header {
+    border: 1px solid #17a2b8;
 }

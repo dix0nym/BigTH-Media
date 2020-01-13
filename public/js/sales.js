@@ -4,9 +4,9 @@ $(async() => {
 
     $('.addToCart').on('click', event => {
         addSetToCart(event);
-        
-        id = renderToast(event);        
-        idString = '#toast'+id;
+
+        id = renderToast(event);
+        idString = '#toast' + id;
 
         $(idString).toast({
             autohide: true,
@@ -87,7 +87,7 @@ function renderSale(sale) {
     const containerFooter = $('<div class="salesFooter d-flex flex-row-reverse"/>');
     const containerFooterAddToCartBtn = $('<button type="button" class="addToCart btn btn-outline-light border-0 mb-1 ml-2 fa fa-cart-plus fa-2x" aria-hidden="true"/>');
     containerFooterAddToCartBtn.attr('data-id', sale.id);
-    const containerFooterPriceTag = $('<h5 class=" mt-2">$' + sale.grossprice + '</h5>');
+    const containerFooterPriceTag = $('<h5 class=" mt-2">$' + (sale.grossprice).toFixed(2) + '</h5>');
     containerFooter.append(containerFooterAddToCartBtn);
     containerFooter.append(containerFooterPriceTag);
 

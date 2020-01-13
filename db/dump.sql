@@ -21,10 +21,11 @@ CREATE TABLE IF NOT EXISTS "Sales" (
 	"NetPrice"	REAL,
 	"FileName"	TEXT,
 	"VATID"	INTEGER NOT NULL,
-	"Title"	TEXT
+	"Title"	TEXT, 
+	"Description" TEXT
 );
-INSERT INTO Sales VALUES(1001,300.0,'Winter.jpg',1,'The AWESOME Winter Sale');
-INSERT INTO Sales VALUES(1002,600.0,'Sports.jpg',1,'Let''s do some sports!');
+INSERT INTO Sales VALUES(1001,300.0,'Winter.jpg',1,'The AWESOME Winter Sale','Enjoy this cold time of the year with the pictures. They will show you how awesome the cold days can be!');
+INSERT INTO Sales VALUES(1002,600.0,'Sports.jpg',1,'Let''s do some sports!','HAPPY NEW YEAR! To motivate yourself to do some sports buy this amazing motivation package to see, what you can reach with doing some sport!');
 CREATE TABLE IF NOT EXISTS "Product2Tags" (
 	"ProductID"	INTEGER NOT NULL,
 	"TagID"	INTEGER NOT NULL,

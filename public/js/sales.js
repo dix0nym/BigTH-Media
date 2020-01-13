@@ -8,15 +8,15 @@ $(async() => {
 
     $('.addToCart').on('click', event => {
         addSetToCart(event);
-        /*
+        
         id = renderToast(event);        
         idString = '#toast'+id;
 
         $(idString).toast({
             autohide: true,
-            delay: 2000
+            delay: 1000
         });
-        $(idString).toast('show');*/
+        $(idString).toast('show');
     });
 });
 

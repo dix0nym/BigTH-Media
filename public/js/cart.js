@@ -30,13 +30,13 @@ async function loadData(cart) {
 function createRow(rowdata) {
     let row = $('<div class="row cart-entry mb-2"/>');
 
-    let imgWrapper = $('<div class="col-xs-2 col-md-2"/>');
+    let imgWrapper = $('<div class="col-xs-2 col-md-2 align-self-center"/>');
     let productImg = $('<img class="img-responsive alt="preview"/>');
     productImg.attr('src', "../media/resized/" + rowdata.filename);
     imgWrapper.append(productImg);
     row.append(imgWrapper)
 
-    let titlewrapper = $('<div class="col-xs-4 col-md-6"/>');
+    let titlewrapper = $('<div class="col-xs-4 col-md-6 align-self-center"/>');
     let title = $('<h4 class="product-name"><strong>' + rowdata.title + '</strong></h4>');
     let desc = $('<h4><small>' + rowdata.details + '</small></h4>');
     titlewrapper.append(title)
@@ -49,7 +49,7 @@ function createRow(rowdata) {
     priceWrapper.append(price);
     priceQtyWrapper.append(priceWrapper);
 
-    let qtyWrapper = $('<div class="col-xs-6 col-md-6">');
+    let qtyWrapper = $('<div class="col-xs-6 col-md-6 align-self-center">');
     let qtyInputGroup = $('<div class="input-group qtyInputGroup"/>');
     let qtyInputGroupPrepend = $('<div class="input-group-prepend"><button data-id="' + rowdata.id + '" style="min-width: 2.5rem;" class="btn btn-decrement btn-outline-secondary btnRedQty" type="button"><strong>-</strong></button></div>');
     let qtyInput = $('<input type="text" style="text-align: center;" class="qtyInput form-control" value="' + parseInt(rowdata.qty) + '"/>');
@@ -60,7 +60,7 @@ function createRow(rowdata) {
     qtyWrapper.append(qtyInputGroup);
     priceQtyWrapper.append(qtyWrapper);
 
-    let removeBtnWrapper = $('<div class="col-xs-2 col-md-2"/>');
+    let removeBtnWrapper = $('<div class="col-xs-2 col-md-2 align-self-center"/>');
     let removeBtn = $('<button data-id="' + rowdata.id + '" type="button" class="btn btn-outline-danger btn-xs deleteEntryBtn"><i class="fa fa-trash" aria-hidden="true"></i></button>');
     removeBtnWrapper.append(removeBtn);
     priceQtyWrapper.append(removeBtnWrapper);

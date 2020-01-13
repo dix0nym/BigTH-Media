@@ -106,9 +106,13 @@ function renderProducts(products) {
     // make it empty
     productContainer.empty();
     // create products
-    for (var product of products) {
-        const newProduct = createProduct(product);
-        productContainer.append(newProduct);
+    if (Array.isArray(products) && products.length) {
+        for (var product of products) {
+            const newProduct = createProduct(product);
+            productContainer.append(newProduct);
+        }
+    } else {
+        productContainer.parent().append('<div class="alert alert-info mt-2">no products found!</div>');
     }
 }
 

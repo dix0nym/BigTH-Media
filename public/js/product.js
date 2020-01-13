@@ -3,15 +3,15 @@ $(async () => {
     
     $('.addToCart').on('click', event => {
         addProductToCart(event);
-
-        /*id = renderToast(event);        
+        
+        id = renderToast(event);        
         idString = '#toast'+id;
 
         $(idString).toast({
             autohide: true,
             delay: 2000
         });
-        $(idString).toast('show');*/
+        $(idString).toast('show');
     });
 });
 
@@ -100,4 +100,26 @@ function createTag(data) {
     tag.text(data.name);
 
     return tag;
+}
+
+function renderToast(event) {
+    const btn = $(event.currentTarget);
+    const addedEntry = btn.attr("data-id");
+
+    const toastContainer = $('#toastContainer');
+    toastContainer.empty();
+
+    const toast = $('<div class="toast ml-auto" id="toast' + addedEntry + '" role="alert" aria-live="assertive" aria-atomic="true"/>');
+    const toastHeader = $('<div class="toast-header"/>');
+    const toastHeaderTitle = $('<strong class="mr-auto"/>');
+    toastHeader.text("Success");
+    toastHeader.append(toastHeaderTitle);
+    const toastBody = $('<div class="toast-body"/>');
+    toastBody.text("Added item to shopping cart.");
+    toast.append(toastHeader);
+    toast.append(toastBody);
+
+    toastContainer.append(toast);
+
+    return addedEntry;
 }

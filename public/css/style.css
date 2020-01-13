@@ -292,10 +292,13 @@ body {
     margin-bottom: 40px;
 }
 
+
 /* checkout.html */
+
 #nextStepBtn {
     margin-bottom: 15px;
 }
+
 
 /* payment.html */
 
@@ -307,10 +310,15 @@ body {
     background-color: #343a40;
 }
 
+
 /* success.html */
 
 .success-card,
 .success-body,
 .success-header {
     border: 1px solid #17a2b8;
+}
+
+#dl-table-body>tr {
+    border-bottom: 1px solid #454d55;
 }

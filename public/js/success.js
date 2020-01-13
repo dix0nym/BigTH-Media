@@ -24,7 +24,7 @@ async function loadDownloads() {
 
 function createDownloadRow(product, uuid) {
     const row = $('<tr />');
-    const col2 = $('<th class="align-middle p-1 pull-left"><img class="img-responsive alt="preview" height="48" width="48" src="../media/resized/' + product.filename + '" /></th>');
+    const col2 = $('<th class="align-middle p-1"><img class="img-responsive alt="preview" height="48" width="48" src="../media/resized/' + product.filename + '" /></th>');
     row.append(col2);
     const col3 = $('<th class="align-middle">' + product.title + '</th>');
     row.append(col3);

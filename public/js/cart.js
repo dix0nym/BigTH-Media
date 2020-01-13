@@ -52,7 +52,7 @@ function createRow(rowdata) {
     let qtyWrapper = $('<div class="col-xs-6 col-md-6">');
     let qtyInputGroup = $('<div class="input-group"/>');
     let qtyInputGroupPrepend = $('<div class="input-group-prepend"><button data-id="' + rowdata.id + '" style="min-width: 2.5rem;" class="btn btn-decrement btn-outline-secondary btnRedQty" type="button"><strong>-</strong></button></div>');
-    let qtyInput = $('<input type="text" id="qtyInput" style="text-align: center;" class="form-control" value="' + parseInt(rowdata.qty) + '"/>');
+    let qtyInput = $('<input type="text" id="qtyInput" style="text-align: center; color: white" class="form-control" value="' + parseInt(rowdata.qty) + '"/>');
     let qtyInputGroupAppend = $('<div class="input-group-append"><button data-id="' + rowdata.id + '" style="min-width: 2.5rem;" class="btn btn-increment btn-outline-secondary btnAddQty" type="button"><strong>+</strong></button></div>');
     qtyInputGroup.append(qtyInputGroupPrepend);
     qtyInputGroup.append(qtyInput);

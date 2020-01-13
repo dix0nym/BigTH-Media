@@ -38,7 +38,7 @@ function createRow(rowdata) {
 
     let titlewrapper = $('<div class="col-xs-4 col-md-6 align-self-center"/>');
     let title = $('<h4 class="product-name"><strong>' + rowdata.title + '</strong></h4>');
-    let desc = $('<h4><small>' + rowdata.details + '</small></h4>');
+    let desc = $('<h4><small style="font-size: 16px;">' + rowdata.details + '</small></h4>');
     titlewrapper.append(title)
     titlewrapper.append(desc);
     row.append(titlewrapper)

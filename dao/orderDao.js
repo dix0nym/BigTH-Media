@@ -3,6 +3,7 @@ const OrderPositionDao = require("./orderpositionDao.js");
 const CustomerDao = require("./customerDao.js");
 const PaymentMethodDao = require("./paymentMethodDao.js");
 const uuidv4 = require('uuid/v4');
+const SalesDao = require("./salesDao.js");
 
 class OrderDao {
 
@@ -129,6 +130,7 @@ class OrderDao {
 
     create(orderdate = null, customerid = null, paymentid = null, orderpositions = []) {
         const orderPositionDao = new OrderPositionDao(this._conn);
+        const salesDao = new SalesDao(this._conn);
 
         if (helper.isNull(orderdate)) {
             orderdate = helper.getNow();
@@ -143,7 +145,14 @@ class OrderDao {
 
         if (orderpositions.length > 0) {
             for (var element of orderpositions) {
-                orderPositionDao.create(result.lastInsertRowid, element.id, element.amount, uuidv4());
+                if (element.id > 1000) {
+                    var sale = salesDao.loadById(element.id);
+                    sale.items.foreach(item => {
+                        orderPositionDao.create(result.lastInsertRowid, item.id, element.amount, uuidv4());
+                    });
+                } else {
+                    orderPositionDao.create(result.lastInsertRowid, element.id, element.amount, uuidv4());
+                }
             }
         }
         var newObj = this.loadById(result.lastInsertRowid);

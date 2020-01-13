@@ -258,6 +258,7 @@ function createTag(data, active, type) {
         for (var tag of selectedList) {
             url.searchParams.append((type === "tag") ? "tags" : "rezs", tag);
         }
+        url.searchParams.set("page", 0);
         window.history.pushState({ "html": "products.html" }, "", url);
         dynloadProducts();
     });

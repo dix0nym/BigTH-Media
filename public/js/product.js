@@ -40,7 +40,6 @@ function addProductToCart(event) {
 }
 
 function renderProduct(data) {
-    console.log(data);
     const pContainer = $('#productContainer');
     const container = $('<div class="container mt-3 margin-bottom" style="height: 100%";/>');
     const card = $('<div class="card text-white"/>');
@@ -59,6 +58,9 @@ function renderProduct(data) {
         const tag = createTag(element);
         cardText.append(tag);
     });
+    const tag = $('<a href="/pages/products.html?tags='+data.resolution+'" class="productTag badge badge-pill badge-info"/>');
+    tag.text(data.resolution);
+    cardText.append(tag);
     const cardTextDetails = $('<p/>');
     cardTextDetails.text(data.details);
     cardTextLeft.append(cardTextDetails);

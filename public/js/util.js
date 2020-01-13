@@ -32,8 +32,8 @@ function addListeners() {
     });
     $('#livesearchBtn').on('click', (event) => {
         event.preventDefault();
-        var tags = $("#live-search-input").val().trim().split(" ")
-        var url = (isEmptyArray(tags)) ? "/pages/products.html" : "/pages/products.html?tags=" + tags.join("&tags=");
+        var tags = $("#live-search-input").val().trim().split(" ").filter(t => t !== null && t !== '');
+        var url = (Array.isArray(tags) && tags.length) ? "/pages/products.html?tags=" + tags.join("&tags=") : "/pages/products.html";
         window.location.href = url;
     });
 

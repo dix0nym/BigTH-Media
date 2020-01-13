@@ -2,9 +2,6 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const helper = require("./helper.js");
-
-// var indexRouter = require('./routes/indexRouter');
 
 // database
 
@@ -19,13 +16,12 @@ var app = express();
 app.locals.dbConnection = dbConnection;
 
 app.use(logger('dev'));
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
+
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(function(request, response, next){
-    response.setHeader("Access-Control-Allow-Origin", "*"); 
+app.use(function(request, response, next) {
+    response.setHeader("Access-Control-Allow-Origin", "*");
     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
@@ -34,14 +30,14 @@ app.use(function(request, response, next){
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// routes
+// public - serve html
 
-// public
 app.get("/", (request, response) => {
     response.render('index');
 });
 
 // APIs
+
 TOPLEVELPATH = "/api/";
 
 serviceRouter = require("./services/address.js");

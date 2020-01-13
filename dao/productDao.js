@@ -74,8 +74,6 @@ class ProductDao {
                 }
             }
             delete result[i].vatid;
-            // TODO: test loadByID vs loadAll z. 54
-            // result[i].tags = product2TagsDao.loadById(result[i].id);
             result[i].tags = (p2t[result[i].id] || []);
             result[i].vatpart = helper.round((result[i].netprice / 100) * result[i].vat.percentage);
             result[i].grossprice = helper.round(result[i].netprice + result[i].vatpart);

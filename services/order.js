@@ -47,8 +47,7 @@ serviceRouter.get("/order/exists/:id", (request, response) => {
 
 serviceRouter.post("/order", (request, response) => {
     helper.log("service Order: Client requested creation of new record");
-    // console.log(request.body);
-    var errorMsgs=[];
+    var errorMsgs = [];
     if (helper.isUndefined(request.body.ordertimestamp))
         request.body.ordertimestamp = helper.getNow();
     if (helper.isUndefined(request.body.customerid))
@@ -79,7 +78,7 @@ serviceRouter.post("/order", (request, response) => {
         helper.logError("service Order: Error creating record. Exception occured: " + ex.message);
         helper.logError(ex.stack);
         response.status(400).json(helper.jsonMsgError(ex.message));
-    }    
+    }
 });
 
 serviceRouter.delete("/order/:id", (request, response) => {

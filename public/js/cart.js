@@ -100,9 +100,10 @@ async function deleteCartEntry(clickedButtonEvent) {
         const entryRow = clickedButton.parents(".cart-entry");
         entryRow.remove();
         setCart(cart);
-        if (cart.length == 0) {
+        if (Object.keys(cart).length == 0) {
             $("#cart-container").append('<div class="text-center text-muted">shopping cart is empty</div>')
         }
+        calcTotal();
     } else {
         console.log(entryIdToDelete, "not in cart");
     }

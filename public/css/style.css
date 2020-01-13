@@ -13,7 +13,7 @@ body {
 }
 
 #toastContainer {
-    position: absolute;
+    position: fixed;
     top: 70px;
     right: 0px;
 }
@@ -299,8 +299,12 @@ body {
 
 /* payment.html */
 
-.container * {
-    /*background-color: #343a40;*/
+.container .pm {
+    border: 1px solid #17a2b8;
+}
+
+.container .pm * {
+    background-color: #343a40;
 }
 
 /* success.html */

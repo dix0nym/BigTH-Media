@@ -18,7 +18,7 @@ class AddressDao {
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
-        if (helper.isUndefined(result)) 
+        if (helper.isUndefined(result))
             throw new Error("No Record found by id=" + id);
 
         result = helper.objectKeysToLower(result);
@@ -37,9 +37,9 @@ class AddressDao {
         var statement = this._conn.prepare(sql);
         var result = statement.all();
 
-        if (helper.isArrayEmpty(result)) 
+        if (helper.isArrayEmpty(result))
             return [];
-        
+
         result = helper.arrayObjectKeysToLower(result);
 
         for (var i = 0; i < result.length; i++) {
@@ -60,7 +60,7 @@ class AddressDao {
         var statement = this._conn.prepare(sql);
         var result = statement.get(id);
 
-        if (result.cnt == 1) 
+        if (result.cnt == 1)
             return true;
 
         return false;
@@ -72,7 +72,6 @@ class AddressDao {
         var params = [street, number, zip, city, additionaladdressinfo, countryid];
         var result = statement.get(params);
         result = helper.arrayObjectKeysToLower(result);
-        console.log(result);
         if (result.cnt > 0)
             return result.id
         return false;
@@ -80,15 +79,17 @@ class AddressDao {
 
     create(street = "", number = "", additionaladdressinfo = "", zip = "", city = "", countryid = 1) {
         var id = this.exists(street, number, zip, city, additionaladdressinfo, countryid);
-        console.log(id);
-        if (id)
-            return this.loadById(id);
+        if (id) {
+            var result = this.loadById(id);
+            console.log("Address already exists: " + JSON.stringify(result));
+            return result;
+        }
         var sql = "INSERT INTO Address (Street,Number,AdditionalAddressInfo,ZIP,City,CountryID) VALUES (?,?,?,?,?,?)";
         var statement = this._conn.prepare(sql);
         var params = [street, number, additionaladdressinfo, zip, city, countryid];
         var result = statement.run(params);
 
-        if (result.changes != 1) 
+        if (result.changes != 1)
             throw new Error("Could not insert new Record. Data: " + params);
 
         var newObj = this.loadById(result.lastInsertRowid);
@@ -101,7 +102,7 @@ class AddressDao {
         var params = [street, number, additionaladdressinfo, zip, city, countryid, id];
         var result = statement.run(params);
 
-        if (result.changes != 1) 
+        if (result.changes != 1)
             throw new Error("Could not update existing Record. Data: " + params);
 
         var updatedObj = this.loadById(id);
@@ -114,7 +115,7 @@ class AddressDao {
             var statement = this._conn.prepare(sql);
             var result = statement.run(id);
 
-            if (result.changes != 1) 
+            if (result.changes != 1)
                 throw new Error("Could not delete Record by id=" + id);
 
             return true;

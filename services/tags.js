@@ -33,11 +33,7 @@ serviceRouter.get("/tags/count/:id", (request, response) => {
     helper.log("service Tags: Client request count of tag with id=" + request.params.id);
     const tagsDao = new TagsDao(request.app.locals.dbConnection);
     try {
-        if (request.params.id === 'all') {
-            var result = tagsDao.countAll();
-        } else {
-            var result = tagsDao.countById(request.params.id);
-        }
+        var result = (request.params.id === 'all') ? tagsDao.countAll() : tagsDao.countById(request.params.id);
         helper.log("service Tags: Records loaded");
         response.status(200).json(helper.jsonMsgOK(result));
     } catch (ex) {

@@ -1,11 +1,11 @@
 $(async() => {
-    let prodcut = await loadData();
+    await loadData();
 
     $('.addToCart').on('click', event => {
         addProductToCart(event);
 
-        id = renderToast(event);
-        idString = '#toast' + id;
+        var id = renderToast(event);
+        var idString = '#toast' + id;
 
         $(idString).toast({
             autohide: true,

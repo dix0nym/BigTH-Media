@@ -26,6 +26,3 @@ SUM:|53|794|151|5128
 all:
 - testing
 - validate inputs checkout.html, payments.html
-
-Schmiels
-- success.html ok?

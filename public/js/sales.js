@@ -56,7 +56,7 @@ function renderSale(sale) {
         const carouselItem = $('<div class="carousel-item text-center"/>');
         if (idx === 0)
             carouselItem.addClass('active')
-        const carouselImg = $('<img src="/media/compressed/' + item.filename + '" class="d-block mx-auto carouselImg" alt="' + item.id + '"/>');
+        const carouselImg = $('<img src="/media/compressed/' + item.filename + '" class="d-block mx-auto carouselImg" alt="' + item.title + '"/>');
         carouselItem.append(carouselImg);
         carouselInner.append(carouselItem);
     });

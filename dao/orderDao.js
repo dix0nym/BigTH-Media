@@ -148,7 +148,7 @@ class OrderDao {
                 if (element.id > 1000) {
                     var sale = salesDao.loadById(element.id);
                     for (var item of sale.items) {
-                        orderPositionDao.create(result.lastInsertRowid, item.id, element.amount, uuidv4());
+                        orderPositionDao.create(result.lastInsertRowid, item.id, 1, uuidv4());
                     }
                 } else {
                     orderPositionDao.create(result.lastInsertRowid, element.id, element.amount, uuidv4());

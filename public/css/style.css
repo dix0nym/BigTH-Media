@@ -306,7 +306,9 @@ body {
     border: 1px solid #17a2b8;
 }
 
-.container .pm * {
+.container .pm,
+.container .pm .card-body .card-title,
+.container .pm .card-body ul li {
     background-color: #343a40;
 }
 

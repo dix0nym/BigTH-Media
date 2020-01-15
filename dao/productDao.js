@@ -165,7 +165,10 @@ function filterProducts(product, queriedtags, queriedRezs, price_start, price_en
     var hasAllTags = queriedtags.every(tag => {
         return product.tags.some(t => t.name === tag)
     });
+    if (!hasAllTags) return false;
+
     var hasOneResz = (helper.isArrayEmpty(queriedRezs)) ? true : queriedRezs.some(rez => { return product.resolution == rez; });
+    if (!hasOneResz) return false;
 
     var inPriceRange = true;
     if (price_start && price_start > 0) {
@@ -174,7 +177,9 @@ function filterProducts(product, queriedtags, queriedRezs, price_start, price_en
     if (price_end && price_end > 0 && inPriceRange) {
         inPriceRange = product.grossprice <= price_end;
     }
-    return !(!hasAllTags || !hasOneResz || !inPriceRange);
+    if (!inPriceRange) return false;
+
+    return true;
 }
 
 module.exports = ProductDao;

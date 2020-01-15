@@ -90,7 +90,6 @@ class CustomerDao {
         var params = [name, surname, addressid];
         var result = statement.get(params);
         result = helper.arrayObjectKeysToLower(result);
-        console.log(result)
         if (result.cnt > 0)
             return result.id;
         return false;
@@ -98,9 +97,11 @@ class CustomerDao {
 
     create(title = "Mr", name = "", surname = "", addressid = 1, phonenumber = "", mail = "", dateofbirth = null, newsletter = 0) {
         var id = this.exists(name, surname, addressid);
-        console.log(id)
-        if (id)
-            return this.loadById(id);
+        if (id) {
+            var result = this.loadById(id);
+            console.log("Customer already exists: " + JSON.stringify(result));
+            return result;
+        }
         var sql = "INSERT INTO Customer (Title,Name,Surname,AddressID,PhoneNumber,Mail,DateOfBirth, Newsletter) VALUES (?,?,?,?,?,?,?,?)";
         var statement = this._conn.prepare(sql);
         var params = [(title.toLowerCase() == 'mr' ? 0 : 1), name, surname, addressid, phonenumber, mail, (helper.isNull(dateofbirth) ? null : dateofbirth), (newsletter > 0) ? 1 : 0];

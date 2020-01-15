@@ -12,17 +12,10 @@
 ## lines of code
 Language|files|blank|comment|code
 :-------|-------:|-------:|-------:|-------:
-JavaScript|33|609|126|2912
-HTML|14|108|2|787
-SQL|1|0|0|596
+JavaScript|33|612|99|2957
+HTML|14|109|1|792
+SQL|1|0|0|597
 JSON|2|0|0|553
-CSS|1|62|21|209
-Python|1|9|2|48
-Markdown|1|6|0|23
-SUM:|53|794|151|5128
-
-## TODO
-
-all:
-- testing
-- validate inputs checkout.html, payments.html
+CSS|1|72|23|229
+Markdown|1|5|0|23
+SUM:|52|798|123|5151

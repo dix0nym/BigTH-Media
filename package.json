@@ -13,7 +13,7 @@
         "better-sqlite3": "^5.4.3",
         "cookie-parser": "^1.4.4",
         "ejs": "^3.1.7",
-        "express": "^4.17.3",
+        "express": "^4.19.2",
         "luxon": "^1.28.1",
         "md5": "^2.2.1",
         "morgan": "^1.9.1",
